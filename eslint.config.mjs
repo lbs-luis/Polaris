@@ -22,11 +22,6 @@ export default [
         },
       },
       globals: {
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        exports: 'writable',
-        module: 'writable',
-        require: 'readonly',
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
@@ -51,10 +46,10 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-require-imports': 'off',
-      'react/react-in-jsx-scope': 'off', // React 17+
-      'react/prop-types': 'off', // Usando TypeScript
-      'no-undef': 'off', // TypeScript já cuida disso
+      '@typescript-eslint/no-require-imports': 'error',
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'no-undef': 'off',
     },
     settings: {
       react: {
