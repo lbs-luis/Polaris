@@ -3,8 +3,9 @@
   "tabWidth": 2,
   "printWidth": 80,
   "singleQuote": true,
-  "trailingComma": "all",
+  "trailingComma": "es5",
   "bracketSpacing": true,
   "arrowParens": "always",
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "tailwindAttributes": ["className"]
 }

@@ -1,17 +1,20 @@
-import '../../global.css';
-
-import { DatabaseProvider } from '@/contexts/DatabaseProvider';
+import { migrate } from '@/database/migrate';
+import '@/styles/global.css';
 import { Slot } from 'expo-router';
+import { SQLiteProvider } from 'expo-sqlite';
+import { Suspense } from 'react';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <SafeAreaView className="flex h-screen w-screen flex-col bg-red-500">
-        <DatabaseProvider>
-          <Slot />
-        </DatabaseProvider>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <Suspense>
+      <SQLiteProvider onInit={migrate} databaseName="polaris.db" useSuspense>
+        <SafeAreaProvider>
+          <SafeAreaView className="flex h-dvh w-screen flex-col">
+            <Slot />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </SQLiteProvider>
+    </Suspense>
   );
 }
