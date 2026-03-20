@@ -16,7 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     backgroundColor: '#0A192F',
   },
 
-  backgroundColor: '#0A192F',
+  backgroundColor: '#000000',
 
   android: {
     package: namespace,
