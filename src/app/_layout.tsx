@@ -10,7 +10,7 @@ export default function RootLayout() {
     <Suspense>
       <SQLiteProvider onInit={migrate} databaseName="polaris.db" useSuspense>
         <SafeAreaProvider>
-          <SafeAreaView className="flex flex-1 flex-col bg-background">
+          <SafeAreaView className="bg-primary flex flex-1 flex-col">
             <Slot />
           </SafeAreaView>
         </SafeAreaProvider>

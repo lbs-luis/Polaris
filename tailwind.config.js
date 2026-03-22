@@ -6,7 +6,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#0A192F',
+        primary: '#0F131C',
+        'primary-foreground': '#3D5AFE',
+        secondary: '#31353F',
+        'secondary-foreground': '#BBC3FF',
+      },
+      transitionProperty: {
+        width: 'width',
+        margin: 'margin',
       },
     },
   },

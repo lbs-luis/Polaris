@@ -1,5 +1,5 @@
 import { Redirect } from 'expo-router';
 
 export default function RootPage() {
-  return <Redirect href={'/onboarding/user-step'} />;
+  return <Redirect href={'/onboarding'} />;
 }
