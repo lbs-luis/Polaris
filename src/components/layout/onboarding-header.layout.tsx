@@ -47,10 +47,12 @@ export function OnboardingHeader({
         >
           <ArrowLeft size={22} color="#3D5AFE" />
         </TouchableOpacity>
-        <Text className="text-xl font-semibold text-white">{currentStep}</Text>
+        <Text className="text-xl font-semibold text-white">
+          {steps.titles[currentStep]}
+        </Text>
       </View>
       <View className="ml-auto flex size-fit flex-row items-center gap-2">
-        {steps.map((step) => (
+        {steps.keys.map((step) => (
           <ProgressBar key={step} isActive={currentStep === step} />
         ))}
       </View>

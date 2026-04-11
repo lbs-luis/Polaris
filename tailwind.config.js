@@ -6,10 +6,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#0F131C',
-        'primary-foreground': '#3D5AFE',
-        secondary: '#31353F',
-        'secondary-foreground': '#BBC3FF',
+        primary: {
+          bg: '#0F131C',
+          'bg-foreground': '#3D5AFE',
+          text: '#DFE2EF',
+        },
+        secondary: {
+          bg: '#262a34',
+          'bg-foreground': '#1c1f29',
+          text: '#8E8FA2',
+        },
       },
       transitionProperty: {
         width: 'width',

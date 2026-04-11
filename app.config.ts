@@ -29,6 +29,31 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: namespace,
   },
 
-  plugins: ['expo-router', 'expo-sqlite'],
+  plugins: [
+    'expo-router',
+    'expo-sqlite',
+    [
+      'expo-image-picker',
+      {
+        photosPermission:
+          'Polaris utiliza apenas sua foto de perfil, ela não é processada nem armazenada, sua foto permanece no seu dispositivo.',
+        colors: {
+          cropToolbarColor: '#000000',
+        },
+        dark: {
+          colors: {
+            cropToolbarColor: '#000000',
+          },
+        },
+      },
+    ],
+    [
+      'expo-file-system',
+      {
+        supportsOpeningDocumentsInPlace: true,
+        enableFileSharing: true,
+      },
+    ],
+  ],
   ...config,
 });
