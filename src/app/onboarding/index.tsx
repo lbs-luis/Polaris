@@ -1,5 +1,5 @@
 import { OnboardingHeader } from '@/components/layout/onboarding-header.layout';
-import { ISteps, steps } from '@/interfaces/onboarding.types';
+import { IRenderStepProps, ISteps, steps } from '@/interfaces/onboarding.types';
 import { useState } from 'react';
 import { View } from 'react-native';
 import CategoryStep from './(steps)/_category.step';
@@ -7,16 +7,16 @@ import IncomeStep from './(steps)/_income.step';
 import OutcomeStep from './(steps)/_outcome.step';
 import UserStep from './(steps)/_user.step';
 
-const Step = ({ currentStep }: { currentStep: ISteps }) => {
-  switch (currentStep) {
+const Step = (props: IRenderStepProps) => {
+  switch (props.currentStep) {
     case 'user':
-      return <UserStep />;
+      return <UserStep {...props} />;
     case 'category':
-      return <CategoryStep />;
+      return <CategoryStep {...props} />;
     case 'income':
-      return <IncomeStep />;
+      return <IncomeStep {...props} />;
     case 'outcome':
-      return <OutcomeStep />;
+      return <OutcomeStep {...props} />;
   }
 };
 
@@ -37,30 +37,15 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <View className="flex size-full flex-col items-center ">
+    <View className="flex h-full w-full flex-col">
       <OnboardingHeader
         currentStep={currentStep}
         previousStep={handlePreviousStep}
       />
 
-      <View className="flex h-full w-full flex-col p-6">
-        <Step currentStep={currentStep} />
+      <View className="flex  flex-1 flex-col p-6">
+        <Step currentStep={currentStep} onNextStep={handleNextStep} />
       </View>
-
-      {/* <TouchableOpacity
-        onPress={handleNextStep}
-        className="flex flex-row items-center justify-center gap-4 rounded-full bg-[#3c56ec] px-6 py-4"
-      >
-        <Text className="text-xl font-semibold text-white">Confirmar</Text>
-        <ChevronRight size={22} color="#FFFFFF" />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={handlePreviousStep}
-        className="flex flex-row items-center justify-center gap-4 rounded-full bg-[#3c56ec] px-6 py-4"
-      >
-        <ChevronLeft size={22} color="#FFFFFF" />
-        <Text className="text-xl font-semibold text-white">Anterior</Text>
-      </TouchableOpacity> */}
     </View>
   );
 }

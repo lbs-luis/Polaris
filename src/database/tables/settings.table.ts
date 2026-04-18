@@ -12,47 +12,32 @@ export type ISettingsTRow = {
   updateAt: string;
 };
 
-export type ISettingsTSelect = Array<ISettingsTRow>;
+export type ISettingsTSelect = ISettingsTRow | null;
 
 export function useSettingsTable() {
   const database = useSQLiteContext();
 
-  async function insert(settings: ISettingsTUpdate) {
-    const duplicated = (await database.getFirstAsync(
-      `SELECT * FROM settings WHERE sKey = ?`,
-      [settings.sKey]
-    )) as ISettingsTRow;
-
-    if (duplicated) return;
-
+  async function set(settings: ISettingsTUpdate) {
     await database.runAsync(
-      'INSERT INTO settings (sKey, sValue, updateAt) VALUES (?, ?, CURRENT_TIMESTAMP)',
+      `
+      INSERT INTO settings (sKey, sValue, updateAt)
+      VALUES (?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(sKey) DO UPDATE SET
+        sValue = excluded.sValue,
+        updateAt = CURRENT_TIMESTAMP
+      `,
       [settings.sKey, settings.sValue]
     );
   }
 
-  async function selectWhere(sKey: string): Promise<ISettingsTSelect> {
-    return (await database.getAllAsync(
+  async function select(sKey: string): Promise<ISettingsTSelect> {
+    return (await database.getFirstAsync(
       `SELECT * FROM settings WHERE sKey = ?`,
       [sKey]
     )) as ISettingsTSelect;
   }
 
-  async function update(settings: ISettingsTUpdate) {
-    const duplicated = (await database.getFirstAsync(
-      `SELECT * FROM settings WHERE sKey = ?`,
-      [settings.sKey]
-    )) as ISettingsTRow;
-
-    if (!duplicated) return;
-
-    await database.runAsync(
-      'UPDATE settings SET sValue = ?, updateAt = CURRENT_TIMESTAMP WHERE sKey = ?',
-      [settings.sValue, settings.sKey]
-    );
-  }
-
-  return { insert, selectWhere, update };
+  return { set, select };
 }
 
 export const CreateSettingsTable = `

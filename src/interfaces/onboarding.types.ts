@@ -8,3 +8,8 @@ const stepsTitles: Record<ISteps, string> = {
 
 export type ISteps = (typeof stepskeys)[number];
 export const steps = { keys: stepskeys, titles: stepsTitles };
+
+export interface IRenderStepProps {
+  currentStep: ISteps;
+  onNextStep: () => void;
+}
