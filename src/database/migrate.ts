@@ -1,4 +1,5 @@
 import { SQLiteDatabase } from 'expo-sqlite';
+import { CreateCategoriesTable } from './tables/categories.table';
 import { CreateSettingsTable } from './tables/settings.table';
 
 export async function migrate(database: SQLiteDatabase) {
@@ -6,5 +7,6 @@ export async function migrate(database: SQLiteDatabase) {
       PRAGMA foreign_key = ON;
 
       ${CreateSettingsTable}
+      ${CreateCategoriesTable}
     `);
 }

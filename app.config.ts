@@ -1,5 +1,5 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
-import { version } from 'package.json';
+import { version } from './package.json';
 
 const APP_VERSION = version;
 const BUILD_NUMBER = 1;
@@ -45,7 +45,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     versionCode: BUILD_NUMBER,
     adaptiveIcon: {
       foregroundImage: './assets/android/icon.png',
-      monochromeImage: './assets/android/icon-monochrome.png',
+      // monochromeImage: './assets/android/icon-monochrome.png',
       backgroundColor: '#0A192F',
     },
     permissions: [

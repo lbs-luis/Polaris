@@ -9,7 +9,7 @@ export type ISettingsTRow = {
   id: number;
   sKey: string;
   sValue: string;
-  updateAt: string;
+  updatedAt: string;
 };
 
 export type ISettingsTSelect = ISettingsTRow | null;
@@ -20,11 +20,11 @@ export function useSettingsTable() {
   async function set(settings: ISettingsTUpdate) {
     await database.runAsync(
       `
-      INSERT INTO settings (sKey, sValue, updateAt)
+      INSERT INTO settings (sKey, sValue, updatedAt)
       VALUES (?, ?, CURRENT_TIMESTAMP)
       ON CONFLICT(sKey) DO UPDATE SET
         sValue = excluded.sValue,
-        updateAt = CURRENT_TIMESTAMP
+        updatedAt = CURRENT_TIMESTAMP
       `,
       [settings.sKey, settings.sValue]
     );
@@ -45,6 +45,6 @@ export const CreateSettingsTable = `
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sKey TEXT NOT NULL UNIQUE,
     sValue TEXT,
-    updateAt TIMESTAMP NOT NULL
+    updatedAt TIMESTAMP NOT NULL
   );
 `;

@@ -1,20 +1,20 @@
+import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
+import { StepHeader } from '@/components/onboarding/step-header';
 import { useSettingsTable } from '@/database/tables/settings.table';
 import pickImage from '@/hooks/image/pick-image';
 import saveImageToApp from '@/hooks/image/save-image-to-app';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
+import { cn } from '@/libs/utils';
 import * as FileSystem from 'expo-file-system/legacy';
-import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, Images } from 'lucide-react-native';
+import { Images } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   Image,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { twMerge } from 'tailwind-merge';
 
 export default function UserStep({ onNextStep }: IRenderStepProps) {
   const { select, set } = useSettingsTable();
@@ -54,14 +54,12 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
 
   return (
     <>
-      <Text className="mt-6 text-3xl font-semibold text-primary-text">
-        Qual seu nome?
-      </Text>
+      <StepHeader>Qual seu nome?</StepHeader>
 
       <TextInput
         value={name}
         onChangeText={setName}
-        className={twMerge(
+        className={cn(
           'mt-4 h-20 w-full rounded-3xl bg-secondary-bg px-6 py-5 text-2xl font-normal text-primary-text',
           'placeholder:text-primary-text/50'
         )}
@@ -71,7 +69,7 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
       <View className="mt-10 flex w-full flex-row gap-4">
         <TouchableWithoutFeedback onPress={handlePickImage}>
           <View
-            className={twMerge(
+            className={cn(
               'flex w-[48%] select-none flex-col rounded-3xl bg-secondary-bg p-5'
             )}
           >
@@ -93,20 +91,7 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
           }}
         />
       </View>
-      <TouchableOpacity
-        className="mt-auto w-full overflow-hidden rounded-3xl"
-        onPress={handleNextStep}
-      >
-        <LinearGradient
-          colors={['#3D5AFE', '#37438B']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          className="flex flex-row items-center justify-center gap-2  py-6"
-        >
-          <Text className="text-xl font-semibold text-white">Continuar</Text>
-          <ArrowRight color="#ffffff" size={24} />
-        </LinearGradient>
-      </TouchableOpacity>
+      <StepConfirmButton onNextStep={handleNextStep} />
     </>
   );
 }
