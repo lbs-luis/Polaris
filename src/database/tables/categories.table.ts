@@ -38,6 +38,10 @@ export function useCategoriesTable() {
     )) as ICategoriesTSelect;
   }
 
+  async function exclude(name: string) {
+    await database.runAsync('DELETE FROM categories WHERE name = ?', [name]);
+  }
+
   async function list(type?: 'income' | 'outcome'): Promise<ICategoriesTRow[]> {
     const query = type
       ? 'SELECT * FROM categories WHERE type = ?'
@@ -48,7 +52,7 @@ export function useCategoriesTable() {
     return (await database.getAllAsync(query, params)) as ICategoriesTRow[];
   }
 
-  return { set, select, list };
+  return { set, select, list, exclude };
 }
 
 export const CreateCategoriesTable = `

@@ -6,13 +6,14 @@ import {
 } from '@/database/tables/categories.table';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
 import { cn } from '@/libs/utils';
-import { Plus } from 'lucide-react-native';
+import { Plus, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
   Text,
   TextInput,
   TouchableOpacity,
   TouchableOpacityProps,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 
@@ -49,14 +50,23 @@ function CategoryTypeButton({
   );
 }
 
-const CategoryBadge = ({ label }: { label: string }) => (
-  <View className="items-center justify-center self-start rounded-full border border-primary-text/20 bg-secondary-bg px-4 py-2">
+const CategoryBadge = ({
+  label,
+  onDelete,
+}: {
+  label: string;
+  onDelete: () => Promise<void>;
+}) => (
+  <View className="flex flex-row items-center justify-center gap-2 self-start rounded-full border border-primary-text/20 bg-secondary-bg px-4 py-2">
     <Text className="text-base font-normal text-primary-text">{label}</Text>
+    <TouchableWithoutFeedback onPress={onDelete}>
+      <X size={12} color="#ffffff" />
+    </TouchableWithoutFeedback>
   </View>
 );
 
 export default function CategoryStep({ onNextStep }: IRenderStepProps) {
-  const { set, list } = useCategoriesTable();
+  const { set, list, exclude } = useCategoriesTable();
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [categoryType, setCategoryType] = useState<'income' | 'outcome'>(
     'outcome'
@@ -79,6 +89,12 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
     setIsSaving(true);
     await set({ name: category, type: categoryType });
     setCategory('');
+    setIsSaving(false);
+  }
+
+  async function handleDeleteCategory(name: string) {
+    setIsSaving(true);
+    await exclude(name);
     setIsSaving(false);
   }
 
@@ -128,7 +144,11 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
           {categoryList
             .filter((item) => item.type === 'income')
             .map((item) => (
-              <CategoryBadge label={item.name} key={item.id} />
+              <CategoryBadge
+                label={item.name}
+                key={item.id}
+                onDelete={() => handleDeleteCategory(item.name)}
+              />
             ))}
         </View>
       </View>
@@ -138,7 +158,11 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
           {categoryList
             .filter((item) => item.type === 'outcome')
             .map((item) => (
-              <CategoryBadge label={item.name} key={item.id} />
+              <CategoryBadge
+                label={item.name}
+                key={item.id}
+                onDelete={() => handleDeleteCategory(item.name)}
+              />
             ))}
         </View>
       </View>

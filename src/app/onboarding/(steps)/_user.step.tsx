@@ -7,7 +7,7 @@ import { IRenderStepProps } from '@/interfaces/onboarding.types';
 import { cn } from '@/libs/utils';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Images } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Image,
   Text,
@@ -51,6 +51,21 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
     });
     setAvatar(savedUri);
   }
+
+  useEffect(() => {
+    async function handleLoadUserAvatar() {
+      const [userAvatar, userName] = await Promise.all([
+        select('avatar'),
+        select('name'),
+      ]);
+
+      if (userAvatar) setAvatar(userAvatar.sValue);
+      if (userName) setName(userName.sValue);
+    }
+
+    handleLoadUserAvatar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>

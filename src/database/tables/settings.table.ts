@@ -12,8 +12,6 @@ export type ISettingsTRow = {
   updatedAt: string;
 };
 
-export type ISettingsTSelect = ISettingsTRow | null;
-
 export function useSettingsTable() {
   const database = useSQLiteContext();
 
@@ -30,11 +28,11 @@ export function useSettingsTable() {
     );
   }
 
-  async function select(sKey: string): Promise<ISettingsTSelect> {
+  async function select(sKey: string): Promise<ISettingsTRow | null> {
     return (await database.getFirstAsync(
       `SELECT * FROM settings WHERE sKey = ?`,
       [sKey]
-    )) as ISettingsTSelect;
+    )) as ISettingsTRow | null;
   }
 
   return { set, select };
