@@ -3,5 +3,6 @@ node_modules/
 dist/
 android/
 ios/
+assets/
 pnpm-lock.yaml
 *.tsbuildinfo

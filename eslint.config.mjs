@@ -7,7 +7,14 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['node_modules/', '.expo/', 'dist/', 'android/', 'ios/'],
+    ignores: [
+      'node_modules/',
+      '.expo/',
+      'dist/',
+      'android/',
+      'ios/',
+      'assets/',
+    ],
   },
   {
     files: ['**/*.{ts,tsx}'],
