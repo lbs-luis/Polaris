@@ -9,7 +9,10 @@
     "ios": "expo run:ios",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prebuild": "expo prebuild --clean",
+    "build:android": "npm run prebuild && cd android && ./gradlew assembleRelease",
+    "install:android": "adb install android/app/build/outputs/apk/release/app-release.apk"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
