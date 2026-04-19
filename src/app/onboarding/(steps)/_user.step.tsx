@@ -68,9 +68,9 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
 
       <TouchableOpacity
         onPress={handlePickImage}
-        className="border-app-accent/30 relative mx-auto mt-12 h-40 w-40 rounded-full border"
+        className="relative mx-auto mt-12 h-40 w-40 rounded-full border border-app-accent/30"
       >
-        <View className="border-app-accent bg-surface-tertiary absolute bottom-0 right-0 z-20 h-12 w-12 items-center justify-center rounded-full border">
+        <View className="absolute bottom-0 right-0 z-20 h-12 w-12 items-center justify-center rounded-full border border-app-accent bg-surface-tertiary">
           <Pencil size={18} fill={'#a9c7ff'} color={'#353534'} />
         </View>
         {avatar ? (
@@ -81,7 +81,7 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
             }}
           />
         ) : (
-          <View className="bg-surface-secondary z-10 flex-1 items-center justify-center rounded-full">
+          <View className="z-10 flex-1 items-center justify-center rounded-full bg-surface-secondary">
             <View className="opacity-30">
               <User2 size={42} strokeWidth={1} color="#a9c7ff" />
             </View>
@@ -90,14 +90,14 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
       </TouchableOpacity>
 
       <View className="mt-12 flex w-full flex-col gap-2">
-        <Text className="text-text-primary text-lg font-normal">
+        <Text className="text-lg font-normal text-text-primary">
           Nome ou Apelido
         </Text>
         <TextInput
           value={name}
           onChangeText={setName}
           className={cn(
-            'bg-input-primary text-text-primary w-full rounded-lg px-5 py-5 text-lg font-normal',
+            'w-full rounded-lg bg-input-primary px-5 py-5 text-lg font-normal text-text-primary',
             'placeholder:text-app-accent/40'
           )}
           placeholder="Zero Two"

@@ -12,7 +12,7 @@ export default function RootLayout() {
         <SafeAreaProvider className="flex-1">
           <SafeAreaView
             edges={['bottom', 'top']}
-            className="bg-app-bg flex flex-1 flex-col"
+            className="flex flex-1 flex-col bg-app-bg"
           >
             <Slot />
           </SafeAreaView>
