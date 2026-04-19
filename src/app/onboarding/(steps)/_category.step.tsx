@@ -100,7 +100,7 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
 
   return (
     <>
-      <StepHeader>Receita e Despesa</StepHeader>
+      <StepHeader title="Categoria" description="" />
       <View className="mt-6 flex w-full flex-row gap-2 rounded-xl bg-secondary-bg p-2">
         <CategoryTypeButton
           selected={categoryType === 'income'}

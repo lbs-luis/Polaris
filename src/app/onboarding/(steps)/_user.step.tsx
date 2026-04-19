@@ -6,15 +6,10 @@ import saveImageToApp from '@/hooks/image/save-image-to-app';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
 import { cn } from '@/libs/utils';
 import * as FileSystem from 'expo-file-system/legacy';
-import { Images } from 'lucide-react-native';
+import { Pencil, User2 } from 'lucide-react-native';
+
 import { useEffect, useState } from 'react';
-import {
-  Image,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function UserStep({ onNextStep }: IRenderStepProps) {
   const { select, set } = useSettingsTable();
@@ -69,41 +64,43 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
 
   return (
     <>
-      <StepHeader>Qual seu nome?</StepHeader>
+      <StepHeader title="Perfil" description="Personalize sua experiência." />
 
-      <TextInput
-        value={name}
-        onChangeText={setName}
-        className={cn(
-          'mt-4 h-20 w-full rounded-3xl bg-secondary-bg px-6 py-5 text-2xl font-normal text-primary-text',
-          'placeholder:text-primary-text/50'
-        )}
-        placeholder="ex: Zero Two"
-      />
-
-      <View className="mt-10 flex w-full flex-row gap-4">
-        <TouchableWithoutFeedback onPress={handlePickImage}>
-          <View
-            className={cn(
-              'flex w-[48%] select-none flex-col rounded-3xl bg-secondary-bg p-5'
-            )}
-          >
-            <View className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary-bg-foreground">
-              <Images size={20} color={'#BBC3FF'} className="shrink-0" />
+      <TouchableOpacity
+        onPress={handlePickImage}
+        className="border-app-accent/30 relative mx-auto mt-12 h-40 w-40 rounded-full border"
+      >
+        <View className="border-app-accent bg-surface-tertiary absolute bottom-0 right-0 z-20 h-12 w-12 items-center justify-center rounded-full border">
+          <Pencil size={18} fill={'#a9c7ff'} color={'#353534'} />
+        </View>
+        {avatar ? (
+          <Image
+            className="z-10 h-40 w-40 rounded-full"
+            source={{
+              uri: avatar,
+            }}
+          />
+        ) : (
+          <View className="bg-surface-secondary z-10 flex-1 items-center justify-center rounded-full">
+            <View className="opacity-30">
+              <User2 size={42} strokeWidth={1} color="#a9c7ff" />
             </View>
-            <Text className="mt-4 text-2xl font-normal text-primary-text">
-              Galeria
-            </Text>
-            <Text className="mt-1 text-base font-normal text-secondary-text">
-              Escolha diretamente{'\n'}do aparelho
-            </Text>
           </View>
-        </TouchableWithoutFeedback>
-        <Image
-          className="aspect-square w-[48%] rounded-3xl bg-white"
-          source={{
-            uri: avatar ?? 'https://picsum.photos/128',
-          }}
+        )}
+      </TouchableOpacity>
+
+      <View className="mt-12 flex w-full flex-col gap-2">
+        <Text className="text-text-primary text-lg font-normal">
+          Nome ou Apelido
+        </Text>
+        <TextInput
+          value={name}
+          onChangeText={setName}
+          className={cn(
+            'bg-input-primary text-text-primary w-full rounded-lg px-5 py-5 text-lg font-normal',
+            'placeholder:text-app-accent/40'
+          )}
+          placeholder="Zero Two"
         />
       </View>
       <StepConfirmButton onNextStep={handleNextStep} />

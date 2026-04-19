@@ -6,6 +6,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        text: {
+          primary: '#FFFFFF',
+          secondary: '#BABABA',
+          accent: '#D6E3FF',
+        },
+        surface: {
+          primary: '#131313',
+          secondary: '#1c1b1b',
+          tertiary: '#353534',
+        },
+        input: {
+          primary: '#0E0E0E',
+        },
+        app: {
+          bg: '#131313',
+          accent: '#a9c7ff',
+          'accent-muted': '#0A305F',
+        },
+
         primary: {
           bg: '#0F131C',
           'bg-foreground': '#3D5AFE',

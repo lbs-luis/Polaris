@@ -1,13 +1,18 @@
-import { cn } from '@/libs/utils';
-import { Text, TextProps } from 'react-native';
+import { Text, View } from 'react-native';
 
-export function StepHeader({ children, className, ...props }: TextProps) {
+export function StepHeader({
+  description,
+  title,
+}: {
+  title: string;
+  description: string;
+}) {
   return (
-    <Text
-      className={cn('mt-0 text-3xl font-semibold text-primary-text', className)}
-      {...props}
-    >
-      {children}
-    </Text>
+    <View className="flex w-full flex-col gap-3">
+      <Text className="text-text-accent text-5xl font-extrabold">{title}</Text>
+      <Text className="text-text-secondary text-lg font-medium">
+        {description}
+      </Text>
+    </View>
   );
 }

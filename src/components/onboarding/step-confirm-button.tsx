@@ -1,5 +1,5 @@
 import { cn } from '@/libs/utils';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { ArrowRight } from 'lucide-react-native';
 import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
@@ -14,21 +14,17 @@ export function StepConfirmButton({
 }: StepConfirmButtonProps) {
   return (
     <TouchableOpacity
-      className={cn('mt-auto w-full overflow-hidden rounded-3xl', className)}
+      className={cn(
+        'bg-app-accent mt-auto flex w-full flex-row items-center justify-center gap-3 overflow-hidden rounded-full py-4',
+        className
+      )}
       onPress={onNextStep}
       {...props}
     >
-      <LinearGradient
-        colors={['#3D5AFE', '#37438B']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        className="flex flex-row items-center justify-center gap-2  py-6"
-      >
-        <Text className="text-xl font-semibold text-white">
-          {children ? children : 'Continuar'}
-        </Text>
-        <ArrowRight color="#ffffff" size={24} />
-      </LinearGradient>
+      <Text className="text-app-accent-muted text-xl font-extrabold">
+        {children ? children : 'Continuar'}
+      </Text>
+      <ArrowRight color="#0A305F" size={20} strokeWidth={2} />
     </TouchableOpacity>
   );
 }

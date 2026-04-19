@@ -21,7 +21,7 @@ function ProgressBar({ isActive }: { isActive: boolean }) {
       backgroundColor: interpolateColor(
         active.value,
         [0, 1],
-        ['#31353F', '#BBC3FF']
+        ['#31353F', '#D6E3FF']
       ),
     };
   });
@@ -36,22 +36,20 @@ export function OnboardingHeader({
   previousStep: () => void;
 }) {
   return (
-    <View className="h-17 flex w-full flex-row items-center p-4 px-6">
-      <View className="flex size-fit flex-row items-center gap-6">
+    <View className="flex w-full flex-row px-6 py-4">
+      <View className="flex flex-row items-center gap-6">
         <TouchableOpacity
           onPress={previousStep}
           className={twMerge(
             'transition-all duration-[350ms] ease-out',
-            currentStep === 'user' ? '-ml-12' : 'ml-0'
+            currentStep === 'user' ? '-ml-11' : 'ml-0'
           )}
         >
-          <ArrowLeft size={22} color="#3D5AFE" />
+          <ArrowLeft size={18} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text className="text-xl font-semibold text-white">
-          {steps.titles[currentStep]}
-        </Text>
+        <Text className="text-lg font-medium text-white">Onboarding</Text>
       </View>
-      <View className="ml-auto flex size-fit flex-row items-center gap-2">
+      <View className="ml-auto flex flex-row items-center gap-2">
         {steps.keys.map((step) => (
           <ProgressBar key={step} isActive={currentStep === step} />
         ))}

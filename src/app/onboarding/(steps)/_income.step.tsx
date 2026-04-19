@@ -50,7 +50,7 @@ export default function IncomeStep({ onNextStep }: IRenderStepProps) {
 
   return (
     <>
-      <StepHeader>Registre suas entradas</StepHeader>
+      <StepHeader title="Receitas" description="" />
       <View className="mt-6 flex w-full flex-row gap-4">
         <DaySelectorButton>1 dia</DaySelectorButton>
         <DaySelectorButton>Último dia</DaySelectorButton>
