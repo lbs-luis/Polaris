@@ -15,8 +15,11 @@
     "install:android": "adb install android/app/build/outputs/apk/release/app-release.apk"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "eslint --cache --fix",
-    "*.{ts,tsx,js,json,md}": "prettier --cache --write --ignore-unknown"
+    "*.{ts,tsx}": [
+      "eslint --cache --fix",
+      "prettier --cache --write"
+    ],
+    "*.{js,json,md}": "prettier --cache --write --ignore-unknown"
   },
   "engines": {
     "node": ">=24.15.0"
