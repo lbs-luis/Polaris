@@ -1,3 +1,4 @@
+import { CategoryDrawer } from '@/components/onboarding/category/category-drawer';
 import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
 import { StepHeader } from '@/components/onboarding/step-header';
 import {
@@ -5,50 +6,15 @@ import {
   useCategoriesTable,
 } from '@/database/tables/categories.table';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
-import { cn } from '@/libs/utils';
 import { Plus, X } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
+  ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
-  TouchableOpacityProps,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-
-interface CategoryTypeButtonProps extends TouchableOpacityProps {
-  selected: boolean;
-  onSelect: () => void;
-}
-function CategoryTypeButton({
-  selected,
-  className,
-  children,
-  onSelect,
-  ...props
-}: CategoryTypeButtonProps) {
-  return (
-    <TouchableOpacity
-      {...props}
-      onPress={onSelect}
-      className={cn(
-        'flex h-16 flex-1 items-center justify-center rounded-lg',
-        selected ? 'bg-primary-bg-foreground' : 'bg-secondary-bg-foreground',
-        className
-      )}
-    >
-      <Text
-        className={cn(
-          'text-xl font-semibold',
-          selected ? 'text-primary-text' : 'text-secondary-text'
-        )}
-      >
-        {children}
-      </Text>
-    </TouchableOpacity>
-  );
-}
 
 const CategoryBadge = ({
   label,
@@ -57,117 +23,90 @@ const CategoryBadge = ({
   label: string;
   onDelete: () => Promise<void>;
 }) => (
-  <View className="flex flex-row items-center justify-center gap-2 self-start rounded-full border border-primary-text/20 bg-secondary-bg px-4 py-2">
-    <Text className="text-base font-normal text-primary-text">{label}</Text>
+  <View className="flex flex-row items-center justify-center gap-3 self-start rounded-xl bg-surface-secondary px-5 py-3">
+    <Text className="text-xl font-normal text-text-primary">{label}</Text>
     <TouchableWithoutFeedback onPress={onDelete}>
-      <X size={12} color="#ffffff" />
+      <X size={16} color="#ffffff" />
     </TouchableWithoutFeedback>
   </View>
 );
 
 export default function CategoryStep({ onNextStep }: IRenderStepProps) {
-  const { set, list, exclude } = useCategoriesTable();
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [categoryType, setCategoryType] = useState<'income' | 'outcome'>(
-    'outcome'
-  );
-  const [category, setCategory] = useState<string>('');
+  const { list, exclude } = useCategoriesTable();
+
   const [categoryList, setCategoryList] = useState<ICategoriesTRow[]>([]);
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const updateCategoriesList = useCallback(async () => {
+    const newCategoriesList = await list();
+    setCategoryList(newCategoriesList);
+  }, [list]);
+
   useEffect(() => {
-    async function updateCategoriesList() {
-      const newCategoriesList = await list();
-      setCategoryList(newCategoriesList);
-    }
-
-    if (!isSaving) updateCategoriesList();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSaving]);
-
-  async function handleSaveCategory() {
-    setIsSaving(true);
-    await set({ name: category, type: categoryType });
-    setCategory('');
-    setIsSaving(false);
-  }
+    updateCategoriesList();
+  }, [updateCategoriesList]);
 
   async function handleDeleteCategory(name: string) {
-    setIsSaving(true);
     await exclude(name);
-    setIsSaving(false);
   }
 
   return (
     <>
-      <StepHeader title="Categoria" description="" />
-      <View className="mt-6 flex w-full flex-row gap-2 rounded-xl bg-secondary-bg p-2">
-        <CategoryTypeButton
-          selected={categoryType === 'income'}
-          onSelect={() => setCategoryType('income')}
-        >
-          Receita
-        </CategoryTypeButton>
-        <CategoryTypeButton
-          selected={categoryType === 'outcome'}
-          onSelect={() => setCategoryType('outcome')}
-        >
-          Despesa
-        </CategoryTypeButton>
-      </View>
-      <View className="mt-4 flex h-20 w-full flex-row gap-2">
-        <TextInput
-          keyboardType="default"
-          value={category}
-          onChangeText={setCategory}
-          className={cn(
-            'flex-1 rounded-xl bg-secondary-bg px-6 py-5 text-2xl font-normal text-primary-text',
-            'placeholder:text-primary-text/50',
-            isSaving ? 'opacity-50' : 'opacity-100'
-          )}
-          placeholder="ex: Salário"
-        />
-        <TouchableOpacity
-          disabled={category.length <= 1 || isSaving}
-          onPress={handleSaveCategory}
-          className={cn(
-            'w-[24%] items-center justify-center rounded-xl bg-primary-bg-foreground',
-            category.length <= 1 || isSaving ? 'opacity-50' : 'opacity-100'
-          )}
-        >
-          <Plus size={24} color="#ffffff" />
-        </TouchableOpacity>
-      </View>
-      <View className="mt-6 flex w-full flex-col gap-2">
-        <Text className="text-xl font-normal text-primary-text">Receitas</Text>
-        <View className="flex w-full flex-row flex-wrap gap-2">
-          {categoryList
-            .filter((item) => item.type === 'income')
-            .map((item) => (
-              <CategoryBadge
-                label={item.name}
-                key={item.id}
-                onDelete={() => handleDeleteCategory(item.name)}
-              />
-            ))}
+      <StepHeader
+        title="Categoria"
+        description="Organize suas receitas e despesas."
+      />
+      <ScrollView className="mt-8 flex flex-1 flex-col pb-4">
+        <View className=" flex w-full flex-col gap-4">
+          <View className="flex self-start">
+            <Text className="border-b border-text-secondary pb-2 pr-1 text-lg font-normal uppercase text-text-secondary">
+              receitas
+            </Text>
+          </View>
+          <View className="flex w-full flex-row flex-wrap gap-2">
+            {categoryList
+              .filter((item) => item.type === 'income')
+              .map((item) => (
+                <CategoryBadge
+                  label={item.name}
+                  key={item.id}
+                  onDelete={() => handleDeleteCategory(item.name)}
+                />
+              ))}
+          </View>
         </View>
-      </View>
-      <View className="mt-6 flex w-full flex-col gap-2">
-        <Text className="text-xl font-normal text-primary-text">Despesas</Text>
-        <View className="flex w-full flex-row flex-wrap gap-2">
-          {categoryList
-            .filter((item) => item.type === 'outcome')
-            .map((item) => (
-              <CategoryBadge
-                label={item.name}
-                key={item.id}
-                onDelete={() => handleDeleteCategory(item.name)}
-              />
-            ))}
+        <View className="mt-6 flex w-full flex-col gap-4">
+          <View className="flex self-start">
+            <Text className="border-b border-text-secondary pb-2 pr-1 text-lg font-normal uppercase text-text-secondary">
+              despesas
+            </Text>
+          </View>
+          <View className="flex w-full flex-row flex-wrap gap-2">
+            {categoryList
+              .filter((item) => item.type === 'outcome')
+              .map((item) => (
+                <CategoryBadge
+                  label={item.name}
+                  key={item.id}
+                  onDelete={() => handleDeleteCategory(item.name)}
+                />
+              ))}
+          </View>
         </View>
-      </View>
-
+      </ScrollView>
+      <TouchableOpacity
+        className="mx-auto mb-10 flex items-center justify-center rounded-full border border-app-accent/30 bg-surface-secondary p-6"
+        onPress={() => setIsOpen(true)}
+      >
+        <Plus color="#a9c7ff" size={24} strokeWidth={1.6} />
+      </TouchableOpacity>
       <StepConfirmButton onNextStep={onNextStep} />
+      <CategoryDrawer
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onSaved={() => updateCategoriesList()}
+      />
     </>
   );
 }

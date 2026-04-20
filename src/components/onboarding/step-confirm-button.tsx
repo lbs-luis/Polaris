@@ -15,16 +15,16 @@ export function StepConfirmButton({
   return (
     <TouchableOpacity
       className={cn(
-        'mt-auto flex w-full flex-row items-center justify-center gap-3 overflow-hidden rounded-full bg-app-accent py-4',
+        'mt-auto flex w-full flex-row items-center justify-center gap-2 overflow-hidden rounded-full bg-app-accent py-4',
         className
       )}
       onPress={onNextStep}
       {...props}
     >
-      <Text className="text-xl font-extrabold text-app-accent-muted">
-        {children ? children : 'Continuar'}
+      <Text className="text-base font-extrabold uppercase text-app-accent-muted">
+        {children ? children : 'continuar'}
       </Text>
-      <ArrowRight color="#0A305F" size={20} strokeWidth={2} />
+      <ArrowRight color="#0A305F" size={18} strokeWidth={2.4} />
     </TouchableOpacity>
   );
 }
