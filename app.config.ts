@@ -55,6 +55,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     blockedPermissions: ['android.permission.RECORD_AUDIO'],
     allowBackup: false,
+    softwareKeyboardLayoutMode: 'resize',
   },
 
   ios: {
