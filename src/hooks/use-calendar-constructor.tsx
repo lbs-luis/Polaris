@@ -31,5 +31,25 @@ export function useCalendarConstructor() {
     weeks.push(week);
   }
 
-  return { weeks, weekDays: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'] };
+  const monthNames = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
+
+  return {
+    weeks,
+    weekDays: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+    year,
+    month: monthNames[month],
+  };
 }
