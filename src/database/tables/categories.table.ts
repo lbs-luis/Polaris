@@ -1,4 +1,5 @@
 import { useSQLiteContext } from 'expo-sqlite';
+import { useCallback } from 'react';
 
 interface ICategoriesTUpdate {
   name: string;
@@ -17,42 +18,50 @@ type ICategoriesTSelect = ICategoriesTRow | null;
 export function useCategoriesTable() {
   const database = useSQLiteContext();
 
-  async function set(category: ICategoriesTUpdate) {
-    await database.runAsync(
-      `
-      INSERT INTO categories (name, type, updatedAt)
-      VALUES (?, ?, CURRENT_TIMESTAMP)
-      ON CONFLICT(name) DO UPDATE SET
-        name = excluded.name,
-        type = excluded.type,
-        updatedAt = CURRENT_TIMESTAMP
-      `,
-      [category.name, category.type]
-    );
-  }
+  const set = useCallback(
+    async (category: ICategoriesTUpdate) => {
+      await database.runAsync(
+        `INSERT INTO categories (name, type, updatedAt)
+       VALUES (?, ?, CURRENT_TIMESTAMP)
+       ON CONFLICT(name) DO UPDATE SET
+         name = excluded.name,
+         type = excluded.type,
+         updatedAt = CURRENT_TIMESTAMP`,
+        [category.name, category.type]
+      );
+    },
+    [database]
+  );
 
-  async function select(name: string): Promise<ICategoriesTSelect> {
-    return (await database.getFirstAsync(
-      `SELECT * FROM categories WHERE name = ?`,
-      [name]
-    )) as ICategoriesTSelect;
-  }
+  const select = useCallback(
+    async (name: string): Promise<ICategoriesTSelect> => {
+      return (await database.getFirstAsync(
+        `SELECT * FROM categories WHERE name = ?`,
+        [name]
+      )) as ICategoriesTSelect;
+    },
+    [database]
+  );
 
-  async function exclude(name: string) {
-    await database.runAsync('DELETE FROM categories WHERE name = ?', [name]);
-  }
+  const exclude = useCallback(
+    async (name: string) => {
+      await database.runAsync('DELETE FROM categories WHERE name = ?', [name]);
+    },
+    [database]
+  );
 
-  async function list(type?: 'income' | 'outcome'): Promise<ICategoriesTRow[]> {
-    const query = type
-      ? 'SELECT * FROM categories WHERE type = ?'
-      : 'SELECT * FROM categories';
+  const list = useCallback(
+    async (type?: 'income' | 'outcome'): Promise<ICategoriesTRow[]> => {
+      const query = type
+        ? 'SELECT * FROM categories WHERE type = ?'
+        : 'SELECT * FROM categories';
+      const params = type ? [type] : [];
+      return (await database.getAllAsync(query, params)) as ICategoriesTRow[];
+    },
+    [database]
+  );
 
-    const params = type ? [type] : [];
-
-    return (await database.getAllAsync(query, params)) as ICategoriesTRow[];
-  }
-
-  return { set, select, list, exclude };
+  return { set, select, exclude, list };
 }
 
 export const CreateCategoriesTable = `

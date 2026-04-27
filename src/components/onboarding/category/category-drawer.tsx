@@ -1,11 +1,11 @@
 import { LayoutBottomSheet } from '@/components/layout/bottom-sheet.layout';
+import { DrawerButton } from '@/components/ui/drawer-button';
 import { useCategoriesTable } from '@/database/tables/categories.table';
 import { useKeyboardOffset } from '@/hooks/keyboard/use-keyboard-offset';
 import { cn } from '@/libs/utils';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import { Plus } from 'lucide-react-native';
 import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { CategoryTypeButton } from './category-type-button';
 
 interface CategoryDrawerProps {
@@ -41,7 +41,7 @@ export function CategoryDrawer({
 
   return (
     <LayoutBottomSheet isOpen={isOpen} onClose={onClose}>
-      <View className="p-4" style={{ paddingBottom: keyboardHeight + 16 }}>
+      <View className="p-4" style={{ paddingBottom: keyboardHeight + 32 }}>
         <Text className="text-xl font-medium text-text-secondary">
           Nova Categoria
         </Text>
@@ -70,19 +70,14 @@ export function CategoryDrawer({
             Despesa
           </CategoryTypeButton>
         </View>
-        <TouchableOpacity
+        <DrawerButton
+          text="adicionar nova categoria"
           disabled={category.length <= 1 || isSaving}
           onPress={handleSave}
-          className={cn(
-            'mt-4 flex flex-row items-center justify-center gap-2 rounded-xl bg-app-accent py-4',
+          className={
             category.length <= 1 || isSaving ? 'opacity-50' : 'opacity-100'
-          )}
-        >
-          <Plus size={14} color="#0A305F" />
-          <Text className="text-sm font-semibold uppercase text-app-accent-muted">
-            adicionar nova categoria
-          </Text>
-        </TouchableOpacity>
+          }
+        />
       </View>
     </LayoutBottomSheet>
   );

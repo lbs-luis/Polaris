@@ -1,5 +1,5 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface LayoutBottomSheetProps {
   isOpen: boolean;
@@ -14,10 +14,18 @@ export function LayoutBottomSheet({
 }: LayoutBottomSheetProps) {
   const ref = useRef<BottomSheet>(null);
 
+  useEffect(() => {
+    if (isOpen) {
+      ref.current?.expand();
+    } else {
+      ref.current?.close();
+    }
+  }, [isOpen]);
+
   return (
     <BottomSheet
       ref={ref}
-      index={isOpen ? 0 : -1}
+      index={-1}
       enableDynamicSizing
       enablePanDownToClose
       onClose={onClose}

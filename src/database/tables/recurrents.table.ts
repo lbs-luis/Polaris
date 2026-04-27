@@ -1,7 +1,8 @@
 import { useSQLiteContext } from 'expo-sqlite';
+import { useCallback } from 'react';
 
 interface IRecurrentsTUpdate {
-  category_name: string;
+  category_id: number;
   base_value: number;
   due_day: number;
   type: 'income' | 'outcome';
@@ -9,6 +10,7 @@ interface IRecurrentsTUpdate {
 
 export interface IRecurrentsTRow {
   id: number;
+  category_id: number;
   category_name: string;
   base_value: number;
   due_day: number;
@@ -21,68 +23,90 @@ type IRecurrentsTSelect = IRecurrentsTRow | null;
 export function useRecurrentsTable() {
   const database = useSQLiteContext();
 
-  async function set(recurrent: IRecurrentsTUpdate) {
-    await database.runAsync(
-      `
-    INSERT INTO recurrents (category_name, type, base_value, due_day, updatedAt)
-    VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-    `,
-      [
-        recurrent.category_name,
-        recurrent.type,
-        recurrent.base_value,
-        recurrent.due_day,
-      ]
-    );
-  }
+  const set = useCallback(
+    async (recurrent: IRecurrentsTUpdate) => {
+      await database.runAsync(
+        `INSERT INTO recurrents (category_id, type, base_value, due_day, updatedAt)
+       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+        [
+          recurrent.category_id,
+          recurrent.type,
+          recurrent.base_value,
+          recurrent.due_day,
+        ]
+      );
+    },
+    [database]
+  );
 
-  async function update(id: number, recurrent: IRecurrentsTUpdate) {
-    await database.runAsync(
-      `
-    UPDATE recurrents SET
-      category_name = ?,
-      type = ?,
-      base_value = ?,
-      due_day = ?,
-      updatedAt = CURRENT_TIMESTAMP
-    WHERE id = ?
-    `,
-      [
-        recurrent.category_name,
-        recurrent.type,
-        recurrent.base_value,
-        recurrent.due_day,
-        id,
-      ]
-    );
-  }
+  const update = useCallback(
+    async (id: number, recurrent: IRecurrentsTUpdate) => {
+      await database.runAsync(
+        `UPDATE recurrents SET
+        category_id = ?,
+        type = ?,
+        base_value = ?,
+        due_day = ?,
+        updatedAt = CURRENT_TIMESTAMP
+       WHERE id = ?`,
+        [
+          recurrent.category_id,
+          recurrent.type,
+          recurrent.base_value,
+          recurrent.due_day,
+          id,
+        ]
+      );
+    },
+    [database]
+  );
 
-  async function select(id: number): Promise<IRecurrentsTSelect> {
-    return (await database.getFirstAsync(
-      `SELECT * FROM recurrents WHERE id = ?`,
-      [id]
-    )) as IRecurrentsTSelect;
-  }
+  const select = useCallback(
+    async (id: number): Promise<IRecurrentsTSelect> => {
+      return (await database.getFirstAsync(
+        `SELECT r.*, c.name as category_name
+       FROM recurrents r
+       JOIN categories c ON c.id = r.category_id
+       WHERE r.id = ?`,
+        [id]
+      )) as IRecurrentsTSelect;
+    },
+    [database]
+  );
 
-  async function exclude(id: number) {
-    await database.runAsync('DELETE FROM recurrents WHERE id = ?', [id]);
-  }
+  const exclude = useCallback(
+    async (id: number) => {
+      await database.runAsync('DELETE FROM recurrents WHERE id = ?', [id]);
+    },
+    [database]
+  );
 
-  async function list(type?: 'income' | 'outcome'): Promise<IRecurrentsTRow[]> {
-    const query = type
-      ? 'SELECT * FROM recurrents WHERE type = ?'
-      : 'SELECT * FROM recurrents';
-    const params = type ? [type] : [];
-    return (await database.getAllAsync(query, params)) as IRecurrentsTRow[];
-  }
+  const list = useCallback(
+    async (type?: 'income' | 'outcome'): Promise<IRecurrentsTRow[]> => {
+      const query = type
+        ? `SELECT r.*, c.name as category_name
+         FROM recurrents r
+         JOIN categories c ON c.id = r.category_id
+         WHERE r.type = ?
+         ORDER BY r.due_day ASC`
+        : `SELECT r.*, c.name as category_name
+         FROM recurrents r
+         JOIN categories c ON c.id = r.category_id
+         ORDER BY r.due_day ASC`;
 
-  return { set, select, list, exclude, update };
+      const params = type ? [type] : [];
+      return (await database.getAllAsync(query, params)) as IRecurrentsTRow[];
+    },
+    [database]
+  );
+
+  return { set, update, select, exclude, list };
 }
 
 export const CreateRecurrentsTable = `
   CREATE TABLE IF NOT EXISTS recurrents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    category_name TEXT NOT NULL,
+    category_id INTEGER NOT NULL REFERENCES categories(id),
     type TEXT NOT NULL CHECK(type IN ('income', 'outcome')),
     base_value INTEGER NOT NULL,
     due_day INTEGER NOT NULL CHECK(due_day BETWEEN 1 AND 31),
