@@ -71,4 +71,5 @@ export const CreateCategoriesTable = `
     type TEXT NOT NULL CHECK(type IN ('income', 'outcome')),
     updatedAt TIMESTAMP NOT NULL
   );
+  INSERT OR IGNORE INTO categories (id, name, type, updatedAt) VALUES (1, 'Movimento Diário', 'outcome', CURRENT_TIMESTAMP);
 `;
