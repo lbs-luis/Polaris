@@ -1,5 +1,6 @@
 import { OnboardingHeader } from '@/components/layout/onboarding-header.layout';
 import { IRenderStepProps, ISteps, steps } from '@/interfaces/onboarding.types';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import CategoryStep from './(steps)/_category.step';
@@ -21,12 +22,15 @@ const Step = (props: IRenderStepProps) => {
 };
 
 export default function OnboardingScreen() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<ISteps>('user');
 
   function handleNextStep() {
     const currentIndex = steps.keys.indexOf(currentStep);
     if (currentIndex < steps.keys.length - 1) {
       setCurrentStep(steps.keys[currentIndex + 1]);
+    } else {
+      router.replace('/home');
     }
   }
   function handlePreviousStep() {

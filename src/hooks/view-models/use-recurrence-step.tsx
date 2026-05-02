@@ -8,7 +8,7 @@ import {
 } from '@/database/tables/recurrents.table';
 import { useCallback, useEffect, useState } from 'react';
 
-export function useIncomeStep() {
+export function useRecurrenceStep(type: 'income' | 'outcome') {
   const { list: listRecurrents } = useRecurrentsTable();
   const { list: listCategories } = useCategoriesTable();
 
@@ -19,13 +19,13 @@ export function useIncomeStep() {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     const [updatedRegistries, updatedCategories] = await Promise.all([
-      listRecurrents('income'),
-      listCategories('income'),
+      listRecurrents(type),
+      listCategories(type),
     ]);
     setRegistries(updatedRegistries);
     setCategories(updatedCategories);
     setIsLoading(false);
-  }, [listRecurrents, listCategories]);
+  }, [listRecurrents, listCategories, type]);
 
   useEffect(() => {
     loadData();

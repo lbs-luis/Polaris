@@ -5,6 +5,7 @@ interface ITransactionsTUpdate {
   value: number;
   month: number;
   year: number;
+  invoice_id?: string | null;
 }
 
 export interface ITransactionsTRow {
@@ -13,6 +14,7 @@ export interface ITransactionsTRow {
   value: number;
   month: number;
   year: number;
+  invoice_id: string | null;
   updatedAt: string;
 }
 
@@ -24,10 +26,11 @@ export function useTransactionsTable() {
   async function set(transaction: ITransactionsTUpdate) {
     await database.runAsync(
       `
-      INSERT INTO transactions (recurrent_id, value, month, year, updatedAt)
-      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+      INSERT INTO transactions (recurrent_id, value, month, year, invoice_id, updatedAt)
+      VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
       ON CONFLICT(recurrent_id, month, year) DO UPDATE SET
         value = excluded.value,
+        invoice_id = excluded.invoice_id,
         updatedAt = CURRENT_TIMESTAMP
       `,
       [
@@ -35,6 +38,7 @@ export function useTransactionsTable() {
         transaction.value,
         transaction.month,
         transaction.year,
+        transaction.invoice_id ?? null,
       ]
     );
   }
@@ -81,8 +85,10 @@ export const CreateTransactionsTable = `
     value INTEGER NOT NULL,
     month INTEGER NOT NULL CHECK(month BETWEEN 1 AND 12),
     year INTEGER NOT NULL,
+    invoice_id TEXT,
     updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (recurrent_id) REFERENCES recurrents(id) ON DELETE CASCADE,
+    FOREIGN KEY (invoice_id) REFERENCES invoices(chave_acesso) ON DELETE SET NULL,
     UNIQUE(recurrent_id, month, year)
   );
 `;

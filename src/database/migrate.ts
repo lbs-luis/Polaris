@@ -1,5 +1,6 @@
 import { SQLiteDatabase } from 'expo-sqlite';
 import { CreateCategoriesTable } from './tables/categories.table';
+import { CreateInvoicesTable } from './tables/invoices.table';
 import { CreateRecurrentsTable } from './tables/recurrents.table';
 import { CreateSettingsTable } from './tables/settings.table';
 import { CreateTransactionsTable } from './tables/transactions.table';
@@ -11,6 +12,7 @@ export async function migrate(database: SQLiteDatabase) {
       ${CreateSettingsTable}
       ${CreateCategoriesTable}
       ${CreateRecurrentsTable}
+      ${CreateInvoicesTable}
       ${CreateTransactionsTable}
     `);
 }

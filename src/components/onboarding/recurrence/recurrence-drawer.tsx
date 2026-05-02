@@ -16,6 +16,7 @@ interface RecurrenceDrawerProps {
   onSaved: () => Promise<void>;
   day: number | null;
   categories: ICategoriesTRow[];
+  type: 'income' | 'outcome';
 }
 
 export function RecurrenceDrawer({
@@ -24,6 +25,7 @@ export function RecurrenceDrawer({
   onSaved,
   day,
   categories,
+  type,
 }: RecurrenceDrawerProps) {
   const keyboardHeight = useKeyboardOffset();
 
@@ -48,7 +50,7 @@ export function RecurrenceDrawer({
       base_value: parseCurrency(baseValue) * 100, // saving in cents
       category_id: Number(selectedCategory),
       due_day: day,
-      type: 'income',
+      type,
     });
     setIsSaving(false);
     await onSaved();

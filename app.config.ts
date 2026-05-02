@@ -67,7 +67,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       NSPhotoLibraryUsageDescription:
         'Polaris utiliza apenas sua foto de perfil. Ela não é processada nem armazenada — permanece no seu dispositivo.',
       NSCameraUsageDescription:
-        'Utilize a câmera para tirar sua foto de perfil diretamente no app.',
+        'Utilize a câmera para escanear QR codes de notas fiscais e tirar sua foto de perfil.',
       LSSupportsOpeningDocumentsInPlace: true,
       UIFileSharingEnabled: true,
     },
@@ -104,6 +104,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         supportsOpeningDocumentsInPlace: true,
         enableFileSharing: true,
+      },
+    ],
+    [
+      'expo-camera',
+      {
+        cameraPermission:
+          'Permitir que Polaris acesse sua câmera para escanear QR codes de notas fiscais.',
+        barcodeScannerEnabled: true,
       },
     ],
   ],
