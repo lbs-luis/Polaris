@@ -6,12 +6,12 @@ import { View } from 'react-native';
 import CategoryStep from './(steps)/_category.step';
 import IncomeStep from './(steps)/_income.step';
 import OutcomeStep from './(steps)/_outcome.step';
-import UserStep from './(steps)/_user.step';
+import ProfileStep from './(steps)/_profile.step';
 
 const Step = (props: IRenderStepProps) => {
   switch (props.currentStep) {
-    case 'user':
-      return <UserStep {...props} />;
+    case 'profile':
+      return <ProfileStep {...props} />;
     case 'category':
       return <CategoryStep {...props} />;
     case 'income':
@@ -23,20 +23,20 @@ const Step = (props: IRenderStepProps) => {
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState<ISteps>('user');
+  const [currentStep, setCurrentStep] = useState<ISteps>('profile');
 
   function handleNextStep() {
-    const currentIndex = steps.keys.indexOf(currentStep);
-    if (currentIndex < steps.keys.length - 1) {
-      setCurrentStep(steps.keys[currentIndex + 1]);
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex < steps.length - 1) {
+      setCurrentStep(steps[currentIndex + 1]);
     } else {
       router.replace('/home');
     }
   }
   function handlePreviousStep() {
-    const currentIndex = steps.keys.indexOf(currentStep);
+    const currentIndex = steps.indexOf(currentStep);
     if (currentIndex > 0) {
-      setCurrentStep(steps.keys[currentIndex - 1]);
+      setCurrentStep(steps[currentIndex - 1]);
     }
   }
 

@@ -8,9 +8,17 @@ export function StepHeader({
   description: string;
 }) {
   return (
-    <View className="flex w-full flex-col gap-3">
-      <Text className="text-5xl font-extrabold text-text-accent">{title}</Text>
-      <Text className="text-lg font-medium text-text-secondary">
+    <View className="mt-7 flex w-full flex-col">
+      <Text
+        className="text-3xl text-text-primary"
+        style={{ fontFamily: 'Sora_700Bold' }}
+      >
+        {title}
+      </Text>
+      <Text
+        className="mt-2 text-lg text-text-secondary"
+        style={{ fontFamily: 'Sora_400Regular' }}
+      >
         {description}
       </Text>
     </View>

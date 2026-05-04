@@ -1,30 +1,34 @@
 import { cn } from '@/libs/utils';
 
-import { ArrowRight } from 'lucide-react-native';
 import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
 interface StepConfirmButtonProps extends TouchableOpacityProps {
   onNextStep: () => void;
+  disabled?: boolean;
 }
 export function StepConfirmButton({
   onNextStep,
   className,
   children,
+  disabled = false,
   ...props
 }: StepConfirmButtonProps) {
   return (
     <TouchableOpacity
       className={cn(
-        'mt-auto flex w-full flex-row items-center justify-center gap-2 overflow-hidden rounded-full bg-app-accent py-4',
+        'mt-auto flex h-14 w-full flex-row items-center justify-center gap-2 overflow-hidden rounded-2xl',
+        disabled ? 'bg-button-disabled' : 'bg-button-primary',
         className
       )}
       onPress={onNextStep}
       {...props}
     >
-      <Text className="text-base font-extrabold uppercase text-app-accent-muted">
-        {children ? children : 'continuar'}
+      <Text
+        className="text-text-primary-muted text-lg"
+        style={{ fontFamily: 'Sora_700Bold' }}
+      >
+        {children ? children : 'Continuar'}
       </Text>
-      <ArrowRight color="#0A305F" size={18} strokeWidth={2.4} />
     </TouchableOpacity>
   );
 }

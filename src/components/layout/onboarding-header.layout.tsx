@@ -1,14 +1,13 @@
 import { ISteps, steps } from '@/interfaces/onboarding.types';
-import { ArrowLeft } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { twMerge } from 'tailwind-merge';
 
 function ProgressBar({ isActive }: { isActive: boolean }) {
   const active = useSharedValue(0);
@@ -21,7 +20,7 @@ function ProgressBar({ isActive }: { isActive: boolean }) {
       backgroundColor: interpolateColor(
         active.value,
         [0, 1],
-        ['#31353F', '#D6E3FF']
+        ['#454d5e', '#ffffff']
       ),
     };
   });
@@ -36,21 +35,17 @@ export function OnboardingHeader({
   previousStep: () => void;
 }) {
   return (
-    <View className="flex w-full flex-row px-6 py-4">
-      <View className="flex flex-row items-center gap-6">
+    <View className="relative mt-4 flex w-full flex-row items-center  justify-center py-6">
+      {currentStep !== 'profile' && (
         <TouchableOpacity
           onPress={previousStep}
-          className={twMerge(
-            'transition-all duration-[350ms] ease-out',
-            currentStep === 'user' ? '-ml-11' : 'ml-0'
-          )}
+          className="absolute left-4 flex items-center justify-center rounded-full border border-border-default  bg-surface-primary p-2"
         >
-          <ArrowLeft size={18} color="#FFFFFF" />
+          <ChevronLeft size={22} color="#ffffff" />
         </TouchableOpacity>
-        <Text className="text-lg font-medium text-white">Onboarding</Text>
-      </View>
-      <View className="ml-auto flex flex-row items-center gap-2">
-        {steps.keys.map((step) => (
+      )}
+      <View className="m-auto flex flex-row items-center gap-2">
+        {steps.map((step) => (
           <ProgressBar key={step} isActive={currentStep === step} />
         ))}
       </View>

@@ -114,6 +114,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         barcodeScannerEnabled: true,
       },
     ],
+    [
+      'expo-font',
+      {
+        fonts: [
+          'node_modules/@expo-google-fonts/sora/400Regular/Sora_400Regular.ttf',
+          'node_modules/@expo-google-fonts/sora/600SemiBold/Sora_600SemiBold.ttf',
+          'node_modules/@expo-google-fonts/sora/700Bold/Sora_700Bold.ttf',
+        ],
+      },
+    ],
   ],
 
   extra: {

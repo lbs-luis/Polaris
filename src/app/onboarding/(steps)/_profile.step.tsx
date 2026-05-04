@@ -1,17 +1,17 @@
 import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
 import { StepHeader } from '@/components/onboarding/step-header';
+import { Input } from '@/components/ui/input';
 import { useSettingsTable } from '@/database/tables/settings.table';
 import pickImage from '@/hooks/image/pick-image';
 import saveImageToApp from '@/hooks/image/save-image-to-app';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
-import { cn } from '@/libs/utils';
 import * as FileSystem from 'expo-file-system/legacy';
-import { Pencil, User2 } from 'lucide-react-native';
+import { Plus, User2 } from 'lucide-react-native';
 
 import { useEffect, useState } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
 
-export default function UserStep({ onNextStep }: IRenderStepProps) {
+export default function ProfileStep({ onNextStep }: IRenderStepProps) {
   const { select, set } = useSettingsTable();
   const [avatar, setAvatar] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -64,14 +64,17 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
 
   return (
     <>
-      <StepHeader title="Perfil" description="Personalize sua experiência." />
+      <StepHeader
+        title={`Olá,\nseja bem-\nvindo.`}
+        description={`Vamos personalizar \no app para você.`}
+      />
 
       <TouchableOpacity
         onPress={handlePickImage}
-        className="relative mx-auto mt-12 h-40 w-40 rounded-full border border-app-accent/30"
+        className="relative mx-auto mt-12 h-40 w-40 rounded-full border border-border-default"
       >
-        <View className="absolute bottom-0 right-0 z-20 h-12 w-12 items-center justify-center rounded-full border border-app-accent bg-surface-tertiary">
-          <Pencil size={18} fill={'#a9c7ff'} color={'#353534'} />
+        <View className="absolute bottom-0 right-0 z-20 h-9 w-9 items-center justify-center rounded-full border-[2px] border-app-bg bg-accent-blue">
+          <Plus size={14} color={'#ffffff'} />
         </View>
         {avatar ? (
           <Image
@@ -81,26 +84,20 @@ export default function UserStep({ onNextStep }: IRenderStepProps) {
             }}
           />
         ) : (
-          <View className="z-10 flex-1 items-center justify-center rounded-full bg-surface-secondary">
+          <View className="z-10 flex-1 items-center justify-center rounded-full bg-surface-primary">
             <View className="opacity-30">
-              <User2 size={42} strokeWidth={1} color="#a9c7ff" />
+              <User2 size={42} strokeWidth={1} color="#ffffff" />
             </View>
           </View>
         )}
       </TouchableOpacity>
 
       <View className="mt-12 flex w-full flex-col gap-2">
-        <Text className="text-lg font-normal text-text-primary">
-          Nome ou Apelido
-        </Text>
-        <TextInput
+        <Input
+          label="teste"
           value={name}
           onChangeText={setName}
-          className={cn(
-            'w-full rounded-lg bg-input-primary px-5 py-5 text-lg font-normal text-text-primary',
-            'placeholder:text-app-accent/40'
-          )}
-          placeholder="Zero Two"
+          placeholder="Como quer ser chamado?"
         />
       </View>
       <StepConfirmButton onNextStep={handleNextStep} />

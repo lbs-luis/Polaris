@@ -1,39 +1,59 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // NOTE: Update this to include the paths to all files that contain Nativewind classes.
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
       colors: {
-        text: {
-          primary: '#FFFFFF',
-          secondary: '#BABABA',
-          accent: '#D6E3FF',
-        },
         surface: {
-          primary: '#131313',
-          secondary: '#1c1b1b',
-          tertiary: '#353534',
+          primary: 'rgba(255,255,255,0.05)', // cards, shells
+        },
+        button: {
+          primary: '#ffffff',
+          disabled: '#29292c',
         },
         input: {
-          primary: '#0E0E0E',
-        },
-        app: {
-          bg: '#131313',
-          accent: '#a9c7ff',
-          'accent-muted': '#0A305F',
+          primary: '#1f1f22',
         },
 
-        primary: {
-          bg: '#0F131C',
-          'bg-foreground': '#3D5AFE',
-          text: '#DFE2EF',
+        // usar com bg-opacity no RN
+        glass: {
+          light: 'rgba(255,255,255,0.06)', // inputs, back button
+          card: 'rgba(255,255,255,0.05)', // calendário, cards
+          row: 'rgba(255,255,255,0.04)', // transaction rows, log rows
         },
-        secondary: {
-          bg: '#262a34',
-          'bg-foreground': '#0a0e17',
-          text: '#8E8FA2',
+
+        border: {
+          default: 'rgba(255,255,255,0.12)', // cards, inputs, chips
+        },
+
+        text: {
+          primary: '#ffffff', // títulos, valores
+          'primary-muted': '#0a0a0c',
+          secondary: 'rgba(255,255,255,0.35)', // subtítulos, labels
+          placeholder: 'rgba(255,255,255,0.25)', // placeholders, hints
+          tertiary: 'rgba(255,255,255,0.30)', // section labels, datas
+        },
+
+        income: '#34d399', // entradas, valores positivos
+        outcome: '#f87171', // saídas, valores negativos
+        warning: '#ef9f27', // banner vencimento, alertas
+
+        accent: {
+          blue: '#3777e0', // CTA, avatar badge, chip add
+          indigo: '#6366f1', // par do blue no gradiente CTA
+          muted: '#60a5fa', // texto do chip add, ícones leves
+        },
+
+        glow: {
+          blue: '#3b82f6', // bg-glow-blue/[0.18]
+          purple: '#8b5cf6', // bg-glow-purple/[0.15]
+          green: '#10b981', // bg-glow-green/[0.15]
+          orange: '#f97316', // bg-glow-orange/[0.12]
+        },
+
+        app: {
+          bg: '#111114',
         },
       },
       transitionProperty: {
