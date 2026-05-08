@@ -31,9 +31,9 @@ export function Select({
   return (
     <View
       style={{ opacity: disabled ? 0.5 : 1 }}
-      className="w-full overflow-hidden rounded-lg bg-input-primary"
+      className="w-full overflow-hidden rounded-lg border border-border-default bg-input-primary"
     >
-      <View style={{ paddingHorizontal: 8 }}>
+      <View className="px-2">
         <Picker
           selectedValue={selecionado}
           onValueChange={(valor) => {

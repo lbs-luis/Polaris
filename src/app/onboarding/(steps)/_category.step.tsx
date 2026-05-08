@@ -1,4 +1,4 @@
-import { OnboardingBody } from '@/components/layout/onboarding-body.layout';
+import { OnboardingBody } from '@/components/layout/onboarding/onboarding-body.layout';
 import { AddCategoryBadge } from '@/components/onboarding/category/add-category-badge';
 import { CategoryBadge } from '@/components/onboarding/category/category-badge';
 import { CategoryDrawer } from '@/components/onboarding/category/category-drawer';
@@ -37,7 +37,7 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
   }
 
   return (
-    <OnboardingBody className="px-6 pb-6">
+    <OnboardingBody className="px-6 pb-4">
       <StepHeader
         title={`Suas\ncategorias.`}
         description="Organize como preferir."

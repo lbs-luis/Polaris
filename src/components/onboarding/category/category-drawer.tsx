@@ -1,10 +1,10 @@
 import { LayoutBottomSheet } from '@/components/layout/bottom-sheet.layout';
 import { DrawerButton } from '@/components/ui/drawer-button';
+import { Input } from '@/components/ui/input';
 import { useCategoriesTable } from '@/database/tables/categories.table';
 import { useKeyboardOffset } from '@/hooks/keyboard/use-keyboard-offset';
 import { cn } from '@/libs/utils';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { StepLabel } from '../step-label';
 import { CategoryTypeButton } from './category-type-button';
@@ -31,6 +31,10 @@ export function CategoryDrawer({
   );
   const [isSaving, setIsSaving] = useState(false);
 
+  useEffect(() => {
+    setCategoryType(defaultSelected);
+  }, [defaultSelected]);
+
   async function handleSave() {
     if (category.length <= 1 || isSaving) return;
     setIsSaving(true);
@@ -45,24 +49,19 @@ export function CategoryDrawer({
     <LayoutBottomSheet isOpen={isOpen} onClose={onClose}>
       <View
         className="px-6 pt-4"
-        style={{ paddingBottom: keyboardHeight + 20 }}
+        style={{ paddingBottom: keyboardHeight + 16 }}
       >
         <StepLabel
           label="Nova Categoria"
           className="text-xl text-text-primary"
           uppercase={false}
         />
-        <BottomSheetTextInput
+        <Input
           value={category}
           onChangeText={setCategory}
           editable={!isSaving}
           placeholder="Ex.:  salário,  aluguel..."
-          className={cn(
-            'mt-6 w-full rounded-lg bg-input-primary p-4 text-base  text-text-primary',
-            ' placeholder:text-text-secondary',
-            isSaving ? 'opacity-50' : 'opacity-100'
-          )}
-          style={{ fontFamily: 'Sora_400Regular' }}
+          className={cn('mt-6', isSaving ? 'opacity-50' : 'opacity-100')}
         />
         <View className="mt-6 flex w-full flex-row gap-2 rounded-xl bg-input-primary p-2">
           <CategoryTypeButton

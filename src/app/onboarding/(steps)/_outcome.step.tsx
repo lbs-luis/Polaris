@@ -1,4 +1,4 @@
-import { OnboardingBody } from '@/components/layout/onboarding-body.layout';
+import { OnboardingBody } from '@/components/layout/onboarding/onboarding-body.layout';
 import { RecurrenceDrawer } from '@/components/onboarding/recurrence/recurrence-drawer';
 import { RecurrencyCalendar } from '@/components/onboarding/recurrence/recurrency-calendar';
 import { RecurrencyRow } from '@/components/onboarding/recurrence/registry-row';

@@ -35,7 +35,7 @@ export function OnboardingHeader({
   previousStep: () => void;
 }) {
   return (
-    <View className="relative mt-4 flex w-full flex-row items-center  justify-center py-6">
+    <View className="relative flex w-full flex-row items-center  justify-center py-6">
       {currentStep !== 'profile' && (
         <TouchableOpacity
           onPress={previousStep}

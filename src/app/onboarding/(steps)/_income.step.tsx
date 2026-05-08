@@ -1,4 +1,4 @@
-import { OnboardingBody } from '@/components/layout/onboarding-body.layout';
+import { OnboardingBody } from '@/components/layout/onboarding/onboarding-body.layout';
 import { RecurrenceDrawer } from '@/components/onboarding/recurrence/recurrence-drawer';
 import { RecurrencyCalendar } from '@/components/onboarding/recurrence/recurrency-calendar';
 import { RecurrencyRow } from '@/components/onboarding/recurrence/registry-row';
@@ -17,38 +17,34 @@ export default function IncomeStep({ onNextStep }: IRenderStepProps) {
   const [drawerOptions, setDrawerOptions] = useState({ day: 0, isOpen: false });
 
   return (
-    <OnboardingBody className="pb-6">
+    <OnboardingBody className="pb-4">
       <View className="px-6">
         <StepHeader
           title={`Entradas\nrecorrentes.`}
           description="Toque em um dia para registrar."
         />
       </View>
-      <View className="px-6">
+      <View className="relative mb-6 flex flex-1 flex-col  bg-red-400">
         <RecurrencyCalendar
           type="income"
           isLoading={isLoading}
           onSelectDay={(day) => setDrawerOptions({ day, isOpen: true })}
           registries={registries}
         />
-      </View>
-      <View className="mt-4 flex w-full flex-1 flex-col gap-4">
-        <View className="px-6">
+        <View className="absolute bottom-0 mt-4 flex w-full flex-1 flex-col gap-4">
           <StepLabel label="Lançamentos" />
+          <ScrollView className="flex flex-1 flex-col">
+            {registries.map((registry, i) => (
+              <RecurrencyRow
+                registry={registry}
+                key={`${i}-${registry.due_day}`}
+              />
+            ))}
+          </ScrollView>
         </View>
-        <ScrollView className="flex flex-1 flex-col px-6">
-          {registries.map((registry, i) => (
-            <RecurrencyRow
-              registry={registry}
-              key={`${i}-${registry.due_day}`}
-            />
-          ))}
-        </ScrollView>
       </View>
 
-      <View className="px-6">
-        <StepConfirmButton onNextStep={onNextStep} />
-      </View>
+      <StepConfirmButton onNextStep={onNextStep} />
       <RecurrenceDrawer
         isOpen={drawerOptions.isOpen}
         day={drawerOptions.day}

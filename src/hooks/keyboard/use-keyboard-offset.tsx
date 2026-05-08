@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, PixelRatio } from 'react-native';
 
 export function useKeyboardOffset() {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
     const show = Keyboard.addListener('keyboardDidShow', (e) => {
-      setKeyboardHeight(e.endCoordinates.height);
+      setKeyboardHeight(e.endCoordinates.height / PixelRatio.get());
     });
 
     const hide = Keyboard.addListener('keyboardDidHide', () => {

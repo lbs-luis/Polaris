@@ -1,4 +1,4 @@
-import { OnboardingHeader } from '@/components/layout/onboarding-header.layout';
+import { OnboardingHeader } from '@/components/layout/onboarding/onboarding-header.layout';
 import { IRenderStepProps, ISteps, steps } from '@/interfaces/onboarding.types';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -41,7 +41,7 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <View className="relative flex flex-1 flex-col">
+    <View className="flex flex-1 flex-col">
       <OnboardingHeader
         currentStep={currentStep}
         previousStep={handlePreviousStep}

@@ -1,11 +1,12 @@
 import { LayoutBottomSheet } from '@/components/layout/bottom-sheet.layout';
 import { DrawerButton } from '@/components/ui/drawer-button';
+import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { ICategoriesTRow } from '@/database/tables/categories.table';
 import { useRecurrentsTable } from '@/database/tables/recurrents.table';
+import { useKeyboardOffset } from '@/hooks/keyboard/use-keyboard-offset';
 import { formatCurrency, parseCurrency } from '@/libs/masks';
 import { cn } from '@/libs/utils';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useEffect, useState } from 'react';
 import { Keyboard, View } from 'react-native';
 import { StepLabel } from '../step-label';
@@ -27,6 +28,7 @@ export function RecurrenceDrawer({
   categories,
   type,
 }: RecurrenceDrawerProps) {
+  const keyboardHeight = useKeyboardOffset();
   const { set } = useRecurrentsTable();
   const [baseValue, setBaseValue] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -67,7 +69,10 @@ export function RecurrenceDrawer({
 
   return (
     <LayoutBottomSheet isOpen={isOpen} onClose={onClose}>
-      <View className="px-6 pt-4" style={{ paddingBottom: 20 }}>
+      <View
+        className="px-6 pt-4"
+        style={{ paddingBottom: keyboardHeight + 16 }}
+      >
         <View className="w-full flex-row items-center justify-between">
           <StepLabel
             label={`dia ${day}`}
@@ -76,22 +81,15 @@ export function RecurrenceDrawer({
             style={{ fontFamily: 'Sora_400Regular' }}
           />
         </View>
-        <View className="mt-6 flex w-full flex-col gap-2">
-          <StepLabel label="Valor" uppercase={false} />
-          <BottomSheetTextInput
-            value={baseValue}
-            onChangeText={handleChangeBaseValue}
-            editable={!isSaving}
-            placeholder="Ex.:  salário,  aluguel..."
-            className={cn(
-              'w-full rounded-lg bg-input-primary p-4 text-base  text-text-primary',
-              ' placeholder:text-text-secondary',
-              isSaving ? 'opacity-50' : 'opacity-100'
-            )}
-            style={{ fontFamily: 'Sora_400Regular' }}
-            keyboardType="numeric"
-          />
-        </View>
+        <Input
+          label="Valor"
+          value={baseValue}
+          onChangeText={handleChangeBaseValue}
+          editable={!isSaving}
+          placeholder="R$ 0,00"
+          className={cn('mt-6', isSaving ? 'opacity-50' : 'opacity-100')}
+          keyboardType="numeric"
+        />
         <View className="mt-6 flex w-full flex-col gap-2">
           <StepLabel label="Categoria" uppercase={false} />
           {categories && (

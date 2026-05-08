@@ -16,7 +16,7 @@ export function StepConfirmButton({
   return (
     <TouchableOpacity
       className={cn(
-        'mt-auto flex h-14 w-full flex-row items-center justify-center gap-2 overflow-hidden rounded-2xl',
+        'flex h-14 w-full flex-row items-center justify-center gap-2 overflow-hidden rounded-2xl',
         disabled ? 'bg-button-disabled' : 'bg-button-primary',
         className
       )}
@@ -24,7 +24,7 @@ export function StepConfirmButton({
       {...props}
     >
       <Text
-        className="text-text-primary-muted text-lg"
+        className="text-lg text-text-primary-muted"
         style={{ fontFamily: 'Sora_700Bold' }}
       >
         {children ? children : 'Continuar'}

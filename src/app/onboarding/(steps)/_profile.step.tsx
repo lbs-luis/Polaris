@@ -1,4 +1,4 @@
-import { OnboardingBody } from '@/components/layout/onboarding-body.layout';
+import { OnboardingBody } from '@/components/layout/onboarding/onboarding-body.layout';
 import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
 import { StepHeader } from '@/components/onboarding/step-header';
 import { Input } from '@/components/ui/input';
@@ -63,17 +63,16 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
   }, [select]);
 
   return (
-    <OnboardingBody className="px-6  pb-6">
+    <OnboardingBody className="pb-4">
       <StepHeader
         title={`Olá,\nseja bem-\nvindo.`}
         description={`Vamos personalizar \no app para você.`}
       />
-
       <TouchableOpacity
         onPress={handlePickImage}
         className="relative mx-auto mt-12 h-40 w-40 rounded-full border border-border-default"
       >
-        <View className="bg-accent-blue-text/90 absolute bottom-0 right-0 z-20 h-9 w-9 items-center justify-center rounded-full border-[2px] border-app-bg">
+        <View className="absolute bottom-0 right-0 z-20 h-9 w-9 items-center justify-center rounded-full border-[2px] border-app-bg bg-accent-blue-text/90">
           <Plus size={14} color={'#ffffff'} />
         </View>
         {avatar ? (
@@ -91,8 +90,7 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
           </View>
         )}
       </TouchableOpacity>
-
-      <View className="mt-12 flex w-full flex-col gap-2">
+      <View className="mb-6 mt-12 flex w-full flex-col gap-2">
         <Input
           label="seu nome ou apelido"
           value={name}
@@ -100,7 +98,7 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
           placeholder="Como quer ser chamado?"
         />
       </View>
-      <StepConfirmButton onNextStep={handleNextStep} />
+      <StepConfirmButton onNextStep={handleNextStep} className="mt-auto" />
     </OnboardingBody>
   );
 }

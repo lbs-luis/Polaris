@@ -1,8 +1,6 @@
 import { IRecurrentsTRow } from '@/database/tables/recurrents.table';
 import { useCalendarConstructor } from '@/hooks/calendar/use-calendar-constructor';
 import { cn } from '@/libs/utils';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 const HeaderWeekDay = ({ day }: { day: string }) => (
@@ -74,64 +72,34 @@ export function RecurrencyCalendar({
   if (isLoading) return <View className="flex flex-1 bg-app-bg" />;
 
   return (
-    <View className="mt-6 w-full">
-      <LinearGradient
-        colors={[
-          'rgba(45,45,52,0.6)',
-          'rgba(29,29,32,0.4)',
-          'rgba(20,20,24,0.5)',
-        ]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          borderRadius: 20,
-        }}
-      />
-      <BlurView
-        intensity={80}
-        tint="dark"
-        style={{
-          borderRadius: 20,
-          overflow: 'hidden',
-          borderWidth: 0.5,
-          borderColor: 'rgba(255,255,255,0.08)',
-          backgroundColor: 'rgba(29,29,32,0.3)',
-          padding: 14,
-        }}
-      >
-        <Text
-          className="mx-auto text-sm lowercase text-text-primary"
-          style={{ fontFamily: 'Sora_400Regular' }}
-        >{`${month} ${year}`}</Text>
-        <View className="mt-2 flex w-full flex-row gap-1">
-          {weekDays.map((day, i) => (
-            <HeaderWeekDay day={day} key={`${i}-${day}`} />
-          ))}
-        </View>
-        <View className="flex w-full flex-col gap-1">
-          {weeks.map((week, wi) => (
-            <View key={`week-${wi}`} className="flex w-full flex-row gap-1">
-              {week.map((day, di) => (
-                <WeekDay
-                  type={type}
-                  day={day}
-                  key={`week-${wi}-day-${di}`}
-                  onSelect={onSelectDay}
-                  hasRegistry={
-                    !!day &&
-                    registries.some((registry) => registry.due_day === day)
-                  }
-                />
-              ))}
-            </View>
-          ))}
-        </View>
-      </BlurView>
+    <View className="flex w-full rounded-[20px] bg-surface-primary p-4">
+      <Text
+        className="mx-auto text-sm lowercase text-text-primary"
+        style={{ fontFamily: 'Sora_400Regular' }}
+      >{`${month} ${year}`}</Text>
+      <View className="mt-2 flex w-full flex-row gap-1">
+        {weekDays.map((day, i) => (
+          <HeaderWeekDay day={day} key={`${i}-${day}`} />
+        ))}
+      </View>
+      <View className="flex w-full flex-col gap-1">
+        {weeks.map((week, wi) => (
+          <View key={`week-${wi}`} className="flex w-full flex-row gap-1">
+            {week.map((day, di) => (
+              <WeekDay
+                type={type}
+                day={day}
+                key={`week-${wi}-day-${di}`}
+                onSelect={onSelectDay}
+                hasRegistry={
+                  !!day &&
+                  registries.some((registry) => registry.due_day === day)
+                }
+              />
+            ))}
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
