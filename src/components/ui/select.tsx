@@ -43,7 +43,7 @@ export function Select({
           enabled={!disabled}
           style={{
             color: selecionado ? '#ffffff' : '#626262',
-            height: 50,
+            fontFamily: 'Sora_400Regular',
           }}
           dropdownIconColor="#ffffff"
         >
@@ -51,7 +51,7 @@ export function Select({
             label={placeholder}
             value={undefined}
             color={colors.placeholder}
-            style={{ fontSize: 16 }}
+            style={{ fontSize: 14, fontFamily: 'Sora_400Regular' }}
           />
           {options.map((option, i) => (
             <Picker.Item
@@ -59,7 +59,7 @@ export function Select({
               label={option.label}
               value={option.value}
               color={colors.optionText}
-              style={{ fontSize: 16 }}
+              style={{ fontSize: 14, fontFamily: 'Sora_400Regular' }}
             />
           ))}
         </Picker>

@@ -41,15 +41,12 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <View className="flex flex-1 flex-col">
+    <View className="relative flex flex-1 flex-col">
       <OnboardingHeader
         currentStep={currentStep}
         previousStep={handlePreviousStep}
       />
-
-      <View className="flex flex-1 flex-col p-6">
-        <Step currentStep={currentStep} onNextStep={handleNextStep} />
-      </View>
+      <Step currentStep={currentStep} onNextStep={handleNextStep} />
     </View>
   );
 }

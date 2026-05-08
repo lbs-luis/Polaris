@@ -1,5 +1,6 @@
 import { InvoiceSnackbar } from '@/components/ui/invoice-snackbar';
 import { ScannerButton } from '@/components/ui/scanner-button';
+import { TransactionRow } from '@/components/ui/transaction-row';
 import { useTransactionsTable } from '@/database/tables/transactions.table';
 import { useInvoiceProcessor } from '@/hooks/use-invoice-processor';
 import { useCallback, useEffect, useState } from 'react';
@@ -33,34 +34,30 @@ export default function HomeScreen() {
 
   return (
     <View className="flex flex-1 flex-col bg-app-bg p-6">
-      <Text className="text-3xl font-extrabold text-text-accent">Início</Text>
-      <Text className="mt-2 text-base font-medium text-text-secondary">
+      <Text
+        style={{ fontFamily: 'Sora_700Bold' }}
+        className="mt-6 text-3xl text-text-primary"
+      >
+        Ínicio
+      </Text>
+      <Text
+        style={{ fontFamily: 'Sora_400Regular' }}
+        className="mt-6 text-lg text-text-primary/60"
+      >
         Transações
       </Text>
 
       <ScrollView className="mt-6 flex flex-1 flex-col">
         {transactions.length === 0 ? (
-          <Text className="text-center text-base text-text-secondary">
+          <Text
+            style={{ fontFamily: 'Sora_400Regular' }}
+            className="mt-6 text-center text-sm  text-text-secondary"
+          >
             Nenhuma transação registrada.
           </Text>
         ) : (
-          transactions.map((t) => (
-            <View
-              key={t.id}
-              className="mb-3 flex flex-row items-center justify-between rounded-xl bg-surface-secondary p-4"
-            >
-              <View className="flex flex-1 flex-row items-center gap-3">
-                <Text className="text-sm font-medium text-text-secondary">
-                  {t.due_day ?? '--'}
-                </Text>
-                <Text className="flex-1 text-base font-medium text-text-primary">
-                  {t.description || 'Transação'}
-                </Text>
-              </View>
-              <Text className="text-base font-semibold text-text-primary">
-                R$ {(t.value / 100).toFixed(2).replace('.', ',')}
-              </Text>
-            </View>
+          transactions.map((t, i) => (
+            <TransactionRow key={`${i}-${t.id}`} transaction={t} />
           ))
         )}
       </ScrollView>

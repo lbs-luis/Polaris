@@ -7,7 +7,7 @@ export function Input({ label, ...props }: InputProps) {
   return (
     <View className="mt-12 flex w-full flex-col gap-2">
       <Text
-        className="text-base font-normal uppercase text-text-secondary"
+        className="text-base uppercase text-text-primary/65"
         style={{ fontFamily: 'Sora_400Regular' }}
       >
         {label}
@@ -16,7 +16,7 @@ export function Input({ label, ...props }: InputProps) {
         {...props}
         style={{ fontFamily: 'Sora_400Regular' }}
         className={cn(
-          'w-full rounded-2xl border  border-border-default bg-input-primary px-5 py-5 text-lg font-normal text-text-primary',
+          'w-full rounded-2xl border  border-border-default bg-input-primary px-5 py-5 text-lg  text-text-primary',
           'placeholder:text-text-secondary'
         )}
       />

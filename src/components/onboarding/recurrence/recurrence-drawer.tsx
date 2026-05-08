@@ -3,12 +3,12 @@ import { DrawerButton } from '@/components/ui/drawer-button';
 import { Select } from '@/components/ui/select';
 import { ICategoriesTRow } from '@/database/tables/categories.table';
 import { useRecurrentsTable } from '@/database/tables/recurrents.table';
-import { useKeyboardOffset } from '@/hooks/keyboard/use-keyboard-offset';
 import { formatCurrency, parseCurrency } from '@/libs/masks';
 import { cn } from '@/libs/utils';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
+import { StepLabel } from '../step-label';
 
 interface RecurrenceDrawerProps {
   isOpen: boolean;
@@ -27,8 +27,6 @@ export function RecurrenceDrawer({
   categories,
   type,
 }: RecurrenceDrawerProps) {
-  const keyboardHeight = useKeyboardOffset();
-
   const { set } = useRecurrentsTable();
   const [baseValue, setBaseValue] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -44,17 +42,20 @@ export function RecurrenceDrawer({
   }, [isOpen]);
 
   async function handleSave() {
-    if (!day || !selectedCategory) return;
+    if (!day || !selectedCategory || isSaving) return;
     setIsSaving(true);
     await set({
-      base_value: parseCurrency(baseValue) * 100, // saving in cents
+      base_value: parseCurrency(baseValue) * 100,
       category_id: Number(selectedCategory),
       due_day: day,
       type,
     });
     setIsSaving(false);
     await onSaved();
-    onClose();
+    Keyboard.dismiss();
+    setTimeout(() => {
+      onClose();
+    }, 150);
   }
 
   function handleChangeBaseValue(text: string) {
@@ -62,42 +63,37 @@ export function RecurrenceDrawer({
     setBaseValue(formatted);
   }
 
+  const canSave = !day || !selectedCategory || isSaving;
+
   return (
     <LayoutBottomSheet isOpen={isOpen} onClose={onClose}>
-      <View className="p-4" style={{ paddingBottom: keyboardHeight + 32 }}>
+      <View className="px-6 pt-4" style={{ paddingBottom: 20 }}>
         <View className="w-full flex-row items-center justify-between">
-          <Text
-            className="text-xl font-medium text-text-primary"
-            style={{ textTransform: 'uppercase', flexShrink: 0 }}
-          >
-            {`Dia ${day}`}
-          </Text>
-          <Text
-            className="text-sm font-medium text-text-secondary/60"
-            style={{ textTransform: 'uppercase', flexShrink: 0 }}
-          >
-            Novo Lançamento
-          </Text>
+          <StepLabel
+            label={`dia ${day}`}
+            className="text-xl text-text-primary"
+            uppercase={false}
+            style={{ fontFamily: 'Sora_400Regular' }}
+          />
         </View>
-        <View className="mt-4 flex w-full flex-col gap-2">
-          <Text className="text-base font-medium text-text-primary">Valor</Text>
+        <View className="mt-6 flex w-full flex-col gap-2">
+          <StepLabel label="Valor" uppercase={false} />
           <BottomSheetTextInput
             value={baseValue}
             onChangeText={handleChangeBaseValue}
             editable={!isSaving}
-            placeholder="Uber, Assinaturas, Streamings, ..."
+            placeholder="Ex.:  salário,  aluguel..."
             className={cn(
-              'w-full rounded-lg bg-input-primary p-4 text-base font-normal text-text-primary',
-              ' placeholder:text-text-secondary/50',
+              'w-full rounded-lg bg-input-primary p-4 text-base  text-text-primary',
+              ' placeholder:text-text-secondary',
               isSaving ? 'opacity-50' : 'opacity-100'
             )}
+            style={{ fontFamily: 'Sora_400Regular' }}
             keyboardType="numeric"
           />
         </View>
-        <View className="mt-4 flex w-full flex-col gap-2">
-          <Text className="text-base font-medium text-text-primary">
-            Categoria
-          </Text>
+        <View className="mt-6 flex w-full flex-col gap-2">
+          <StepLabel label="Categoria" uppercase={false} />
           {categories && (
             <Select
               options={categories.map((category) => ({
@@ -110,9 +106,9 @@ export function RecurrenceDrawer({
         </View>
         <DrawerButton
           text="salvar"
-          disabled={isSaving}
+          disabled={canSave}
           onPress={handleSave}
-          className={isSaving ? 'opacity-50' : 'opacity-100'}
+          className={cn('mt-6', canSave ? 'opacity-50' : 'opacity-100')}
         />
       </View>
     </LayoutBottomSheet>

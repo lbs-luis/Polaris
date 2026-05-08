@@ -10,6 +10,7 @@ export type ICategoriesTRow = {
   id: number;
   name: string;
   type: 'income' | 'outcome';
+  isDefault: boolean;
   updatedAt: string;
 };
 
@@ -35,17 +36,22 @@ export function useCategoriesTable() {
 
   const select = useCallback(
     async (name: string): Promise<ICategoriesTSelect> => {
-      return (await database.getFirstAsync(
+      const row = await database.getFirstAsync<any>(
         `SELECT * FROM categories WHERE name = ?`,
         [name]
-      )) as ICategoriesTSelect;
+      );
+      if (!row) return null;
+      return { ...row, isDefault: row.isDefault === 1 } as ICategoriesTSelect;
     },
     [database]
   );
 
   const exclude = useCallback(
     async (name: string) => {
-      await database.runAsync('DELETE FROM categories WHERE name = ?', [name]);
+      await database.runAsync(
+        'DELETE FROM categories WHERE name = ? AND isDefault = 0',
+        [name]
+      );
     },
     [database]
   );
@@ -56,7 +62,8 @@ export function useCategoriesTable() {
         ? 'SELECT * FROM categories WHERE type = ?'
         : 'SELECT * FROM categories';
       const params = type ? [type] : [];
-      return (await database.getAllAsync(query, params)) as ICategoriesTRow[];
+      const rows = (await database.getAllAsync(query, params)) as any[];
+      return rows.map((row) => ({ ...row, isDefault: row.isDefault === 1 }));
     },
     [database]
   );
@@ -69,7 +76,8 @@ export const CreateCategoriesTable = `
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     type TEXT NOT NULL CHECK(type IN ('income', 'outcome')),
+    isDefault INTEGER NOT NULL DEFAULT 0,
     updatedAt TIMESTAMP NOT NULL
   );
-  INSERT OR IGNORE INTO categories (id, name, type, updatedAt) VALUES (1, 'Movimento Diário', 'outcome', CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (id, name, type, isDefault, updatedAt) VALUES (1, 'Movimento Diário', 'outcome', 1, CURRENT_TIMESTAMP);
 `;

@@ -1,6 +1,6 @@
 {
   "name": "polaris",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Polaris — local-first finance app",
   "private": true,
   "main": "expo-router/entry",
@@ -30,6 +30,7 @@
     "@react-native-picker/picker": "2.11.4",
     "clsx": "2.1.1",
     "expo": "55.0.6",
+    "expo-blur": "~55.0.14",
     "expo-camera": "~55.0.16",
     "expo-constants": "55.0.7",
     "expo-file-system": "55.0.16",

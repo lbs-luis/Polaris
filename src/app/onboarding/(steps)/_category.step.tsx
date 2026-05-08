@@ -1,42 +1,27 @@
+import { OnboardingBody } from '@/components/layout/onboarding-body.layout';
+import { AddCategoryBadge } from '@/components/onboarding/category/add-category-badge';
+import { CategoryBadge } from '@/components/onboarding/category/category-badge';
 import { CategoryDrawer } from '@/components/onboarding/category/category-drawer';
 import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
 import { StepHeader } from '@/components/onboarding/step-header';
+import { StepLabel } from '@/components/onboarding/step-label';
 import {
   ICategoriesTRow,
   useCategoriesTable,
 } from '@/database/tables/categories.table';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
-import { Plus, X } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
-
-const CategoryBadge = ({
-  label,
-  onDelete,
-}: {
-  label: string;
-  onDelete: () => Promise<void>;
-}) => (
-  <View className="flex flex-row items-center justify-center gap-3 self-start rounded-xl bg-surface-secondary px-5 py-3">
-    <Text className="text-xl font-normal text-text-primary">{label}</Text>
-    <TouchableWithoutFeedback onPress={onDelete}>
-      <X size={16} color="#ffffff" />
-    </TouchableWithoutFeedback>
-  </View>
-);
+import { ScrollView, View } from 'react-native';
 
 export default function CategoryStep({ onNextStep }: IRenderStepProps) {
   const { list, exclude } = useCategoriesTable();
 
   const [categoryList, setCategoryList] = useState<ICategoriesTRow[]>([]);
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [modalOptions, setModalOptions] = useState<{
+    isOpen: boolean;
+    defaultSelected: 'income' | 'outcome';
+  }>({ isOpen: false, defaultSelected: 'income' });
 
   const updateCategoriesList = useCallback(async () => {
     const newCategoriesList = await list();
@@ -52,18 +37,14 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
   }
 
   return (
-    <>
+    <OnboardingBody className="px-6 pb-6">
       <StepHeader
-        title="Categoria"
-        description="Organize suas receitas e despesas."
+        title={`Suas\ncategorias.`}
+        description="Organize como preferir."
       />
       <ScrollView className="mt-8 flex flex-1 flex-col pb-4">
         <View className=" flex w-full flex-col gap-4">
-          <View className="flex self-start">
-            <Text className="border-b border-text-secondary pb-2 pr-1 text-lg font-normal uppercase text-text-secondary">
-              receitas
-            </Text>
-          </View>
+          <StepLabel label="Entradas" />
           <View className="flex w-full flex-row flex-wrap gap-2">
             {categoryList
               .filter((item) => item.type === 'income')
@@ -71,17 +52,19 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
                 <CategoryBadge
                   label={item.name}
                   key={item.id}
+                  isDefault={item.isDefault}
                   onDelete={() => handleDeleteCategory(item.name)}
                 />
               ))}
+            <AddCategoryBadge
+              onPress={() =>
+                setModalOptions({ isOpen: true, defaultSelected: 'income' })
+              }
+            />
           </View>
         </View>
         <View className="mt-6 flex w-full flex-col gap-4">
-          <View className="flex self-start">
-            <Text className="border-b border-text-secondary pb-2 pr-1 text-lg font-normal uppercase text-text-secondary">
-              despesas
-            </Text>
-          </View>
+          <StepLabel label="Saídas" />
           <View className="flex w-full flex-row flex-wrap gap-2">
             {categoryList
               .filter((item) => item.type === 'outcome')
@@ -89,24 +72,28 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
                 <CategoryBadge
                   label={item.name}
                   key={item.id}
+                  isDefault={item.isDefault}
                   onDelete={() => handleDeleteCategory(item.name)}
                 />
               ))}
+            <AddCategoryBadge
+              onPress={() =>
+                setModalOptions({ isOpen: true, defaultSelected: 'outcome' })
+              }
+            />
           </View>
         </View>
       </ScrollView>
-      <TouchableOpacity
-        className="mx-auto mb-10 flex items-center justify-center rounded-full border border-app-accent/30 bg-surface-secondary p-6"
-        onPress={() => setIsOpen(true)}
-      >
-        <Plus color="#a9c7ff" size={24} strokeWidth={1.6} />
-      </TouchableOpacity>
+
       <StepConfirmButton onNextStep={onNextStep} />
       <CategoryDrawer
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        isOpen={modalOptions.isOpen}
+        defaultSelected={modalOptions.defaultSelected}
+        onClose={() =>
+          setModalOptions({ isOpen: false, defaultSelected: 'income' })
+        }
         onSaved={() => updateCategoriesList()}
       />
-    </>
+    </OnboardingBody>
   );
 }

@@ -5,26 +5,29 @@ import { useKeyboardOffset } from '@/hooks/keyboard/use-keyboard-offset';
 import { cn } from '@/libs/utils';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { StepLabel } from '../step-label';
 import { CategoryTypeButton } from './category-type-button';
 
 interface CategoryDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onSaved: () => void;
+  defaultSelected: 'income' | 'outcome';
 }
 
 export function CategoryDrawer({
   isOpen,
   onClose,
   onSaved,
+  defaultSelected,
 }: CategoryDrawerProps) {
   const { set } = useCategoriesTable();
   const keyboardHeight = useKeyboardOffset();
 
   const [category, setCategory] = useState('');
   const [categoryType, setCategoryType] = useState<'income' | 'outcome'>(
-    'outcome'
+    defaultSelected
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -33,7 +36,6 @@ export function CategoryDrawer({
     setIsSaving(true);
     await set({ name: category, type: categoryType });
     setCategory('');
-    setCategoryType('outcome');
     setIsSaving(false);
     onSaved?.();
     onClose();
@@ -41,22 +43,28 @@ export function CategoryDrawer({
 
   return (
     <LayoutBottomSheet isOpen={isOpen} onClose={onClose}>
-      <View className="p-4" style={{ paddingBottom: keyboardHeight + 32 }}>
-        <Text className="text-xl font-medium text-text-secondary">
-          Nova Categoria
-        </Text>
+      <View
+        className="px-6 pt-4"
+        style={{ paddingBottom: keyboardHeight + 20 }}
+      >
+        <StepLabel
+          label="Nova Categoria"
+          className="text-xl text-text-primary"
+          uppercase={false}
+        />
         <BottomSheetTextInput
           value={category}
           onChangeText={setCategory}
           editable={!isSaving}
-          placeholder="Uber, Assinaturas, Streamings, ..."
+          placeholder="Ex.:  salário,  aluguel..."
           className={cn(
-            'mt-4 w-full rounded-lg bg-input-primary p-4 text-base font-normal text-text-primary',
-            ' placeholder:text-text-secondary/50',
+            'mt-6 w-full rounded-lg bg-input-primary p-4 text-base  text-text-primary',
+            ' placeholder:text-text-secondary',
             isSaving ? 'opacity-50' : 'opacity-100'
           )}
+          style={{ fontFamily: 'Sora_400Regular' }}
         />
-        <View className="mt-4 flex w-full flex-row gap-2 rounded-xl bg-input-primary p-2">
+        <View className="mt-6 flex w-full flex-row gap-2 rounded-xl bg-input-primary p-2">
           <CategoryTypeButton
             selected={categoryType === 'income'}
             onSelect={() => setCategoryType('income')}
@@ -71,12 +79,13 @@ export function CategoryDrawer({
           </CategoryTypeButton>
         </View>
         <DrawerButton
-          text="adicionar nova categoria"
+          text="salvar"
           disabled={category.length <= 1 || isSaving}
           onPress={handleSave}
-          className={
+          className={cn(
+            'mt-6',
             category.length <= 1 || isSaving ? 'opacity-50' : 'opacity-100'
-          }
+          )}
         />
       </View>
     </LayoutBottomSheet>

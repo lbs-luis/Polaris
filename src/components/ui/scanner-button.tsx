@@ -72,8 +72,8 @@ export function ScannerButton({ onConfirm }: ScannerButtonProps) {
         </TouchableOpacity>
 
         {scannedUrls.length > 0 && (
-          <View className="absolute left-4 top-4 z-50 rounded-full bg-app-accent px-4 py-2">
-            <Text className="text-sm font-bold text-app-accent-muted">
+          <View className="bg-app-accent absolute left-4 top-4 z-50 rounded-full px-4 py-2">
+            <Text className="text-app-accent-muted text-sm font-bold">
               {scannedUrls.length} nota{scannedUrls.length > 1 ? 's' : ''}
             </Text>
           </View>
@@ -81,11 +81,11 @@ export function ScannerButton({ onConfirm }: ScannerButtonProps) {
 
         {scannedUrls.length > 0 && (
           <TouchableOpacity
-            className="absolute bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full bg-app-accent px-8 py-4"
+            className="bg-app-accent absolute bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full px-8 py-4"
             onPress={handleConfirm}
             activeOpacity={0.8}
           >
-            <Text className="text-base font-extrabold uppercase text-app-accent-muted">
+            <Text className="text-app-accent-muted text-base font-extrabold uppercase">
               Confirmar ({scannedUrls.length})
             </Text>
           </TouchableOpacity>
@@ -96,11 +96,11 @@ export function ScannerButton({ onConfirm }: ScannerButtonProps) {
 
   return (
     <TouchableOpacity
-      className="absolute bottom-4 right-4 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-app-accent shadow-lg"
+      className="absolute bottom-4 right-4 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-black shadow-lg"
       onPress={handleOpen}
       activeOpacity={0.8}
     >
-      <ScanLine color="#0A305F" size={28} strokeWidth={2.4} />
+      <ScanLine color="#ffffff" size={28} strokeWidth={2.4} />
     </TouchableOpacity>
   );
 }

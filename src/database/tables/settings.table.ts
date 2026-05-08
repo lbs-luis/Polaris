@@ -1,4 +1,5 @@
 import { useSQLiteContext } from 'expo-sqlite';
+import { useCallback } from 'react';
 
 export interface ISettingsTUpdate {
   sKey: string;
@@ -15,25 +16,31 @@ export type ISettingsTRow = {
 export function useSettingsTable() {
   const database = useSQLiteContext();
 
-  async function set(settings: ISettingsTUpdate) {
-    await database.runAsync(
-      `
+  const set = useCallback(
+    async (settings: ISettingsTUpdate) => {
+      await database.runAsync(
+        `
       INSERT INTO settings (sKey, sValue, updatedAt)
       VALUES (?, ?, CURRENT_TIMESTAMP)
       ON CONFLICT(sKey) DO UPDATE SET
         sValue = excluded.sValue,
         updatedAt = CURRENT_TIMESTAMP
       `,
-      [settings.sKey, settings.sValue]
-    );
-  }
+        [settings.sKey, settings.sValue]
+      );
+    },
+    [database]
+  );
 
-  async function select(sKey: string): Promise<ISettingsTRow | null> {
-    return (await database.getFirstAsync(
-      `SELECT * FROM settings WHERE sKey = ?`,
-      [sKey]
-    )) as ISettingsTRow | null;
-  }
+  const select = useCallback(
+    async (sKey: string): Promise<ISettingsTRow | null> => {
+      return (await database.getFirstAsync(
+        `SELECT * FROM settings WHERE sKey = ?`,
+        [sKey]
+      )) as ISettingsTRow | null;
+    },
+    [database]
+  );
 
   return { set, select };
 }
