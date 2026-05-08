@@ -1,4 +1,4 @@
-import { OnboardingBody } from '@/components/layout/onboarding/onboarding-body.layout';
+import { DismissKeyboardView } from '@/components/layout/dismiss-keyboard-view.layout';
 import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
 import { StepHeader } from '@/components/onboarding/step-header';
 import { Input } from '@/components/ui/input';
@@ -63,7 +63,7 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
   }, [select]);
 
   return (
-    <OnboardingBody className="pb-4">
+    <DismissKeyboardView className="px-6 pb-4">
       <StepHeader
         title={`Olá,\nseja bem-\nvindo.`}
         description={`Vamos personalizar \no app para você.`}
@@ -99,6 +99,6 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
         />
       </View>
       <StepConfirmButton onNextStep={handleNextStep} className="mt-auto" />
-    </OnboardingBody>
+    </DismissKeyboardView>
   );
 }

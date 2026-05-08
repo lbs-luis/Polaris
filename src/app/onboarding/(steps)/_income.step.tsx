@@ -1,4 +1,4 @@
-import { OnboardingBody } from '@/components/layout/onboarding/onboarding-body.layout';
+import { DismissKeyboardView } from '@/components/layout/dismiss-keyboard-view.layout';
 import { RecurrenceDrawer } from '@/components/onboarding/recurrence/recurrence-drawer';
 import { RecurrencyCalendar } from '@/components/onboarding/recurrence/recurrency-calendar';
 import { RecurrencyRow } from '@/components/onboarding/recurrence/registry-row';
@@ -8,7 +8,7 @@ import { StepLabel } from '@/components/onboarding/step-label';
 import { useRecurrenceStep } from '@/hooks/view-models/use-recurrence-step';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 
 export default function IncomeStep({ onNextStep }: IRenderStepProps) {
   const { registries, categories, isLoading, refresh } =
@@ -17,31 +17,27 @@ export default function IncomeStep({ onNextStep }: IRenderStepProps) {
   const [drawerOptions, setDrawerOptions] = useState({ day: 0, isOpen: false });
 
   return (
-    <OnboardingBody className="pb-4">
-      <View className="px-6">
-        <StepHeader
-          title={`Entradas\nrecorrentes.`}
-          description="Toque em um dia para registrar."
+    <DismissKeyboardView className="px-6 pb-4" scroll={false}>
+      <StepHeader
+        title={`Entradas\nrecorrentes.`}
+        description="Toque em um dia para registrar."
+      />
+
+      <RecurrencyCalendar
+        type="income"
+        isLoading={isLoading}
+        onSelectDay={(day) => setDrawerOptions({ day, isOpen: true })}
+        registries={registries}
+        className="mt-6"
+      />
+      <View className="mt-4 flex flex-1 flex-col gap-2 pb-2">
+        <StepLabel label="Lançamentos" uppercase={false} />
+        <FlatList
+          data={registries}
+          renderItem={(item) => <RecurrencyRow item={item} />}
+          keyExtractor={(item, i) => `${i}-${item.id}`}
+          showsVerticalScrollIndicator={false}
         />
-      </View>
-      <View className="relative mb-6 flex flex-1 flex-col  bg-red-400">
-        <RecurrencyCalendar
-          type="income"
-          isLoading={isLoading}
-          onSelectDay={(day) => setDrawerOptions({ day, isOpen: true })}
-          registries={registries}
-        />
-        <View className="absolute bottom-0 mt-4 flex w-full flex-1 flex-col gap-4">
-          <StepLabel label="Lançamentos" />
-          <ScrollView className="flex flex-1 flex-col">
-            {registries.map((registry, i) => (
-              <RecurrencyRow
-                registry={registry}
-                key={`${i}-${registry.due_day}`}
-              />
-            ))}
-          </ScrollView>
-        </View>
       </View>
 
       <StepConfirmButton onNextStep={onNextStep} />
@@ -55,6 +51,6 @@ export default function IncomeStep({ onNextStep }: IRenderStepProps) {
         }
         onSaved={refresh}
       />
-    </OnboardingBody>
+    </DismissKeyboardView>
   );
 }

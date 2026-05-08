@@ -1,4 +1,3 @@
-import { DismissKeyboardView } from '@/components/layout/dismiss-keyboard-view.layout';
 import { migrate } from '@/database/migrate';
 import '@/styles/global.css';
 import {
@@ -12,6 +11,7 @@ import { Slot } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { Suspense } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
   const [,] = useFonts({
@@ -29,9 +29,13 @@ export default function RootLayout() {
             databaseName="polaris.db"
             useSuspense
           >
-            <DismissKeyboardView>
+            <SafeAreaView
+              edges={['top', 'bottom']}
+              style={{ flex: 1 }}
+              className="bg-app-bg"
+            >
               <Slot />
-            </DismissKeyboardView>
+            </SafeAreaView>
           </SQLiteProvider>
         </Suspense>
       </BottomSheetModalProvider>

@@ -2,7 +2,6 @@ import { OnboardingHeader } from '@/components/layout/onboarding/onboarding-head
 import { IRenderStepProps, ISteps, steps } from '@/interfaces/onboarding.types';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
 import CategoryStep from './(steps)/_category.step';
 import IncomeStep from './(steps)/_income.step';
 import OutcomeStep from './(steps)/_outcome.step';
@@ -41,12 +40,12 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <View className="flex flex-1 flex-col">
+    <>
       <OnboardingHeader
         currentStep={currentStep}
         previousStep={handlePreviousStep}
       />
       <Step currentStep={currentStep} onNextStep={handleNextStep} />
-    </View>
+    </>
   );
 }

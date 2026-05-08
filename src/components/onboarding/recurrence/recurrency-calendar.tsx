@@ -59,6 +59,7 @@ interface RecurrencyCalendarProps {
   registries: IRecurrentsTRow[];
   onSelectDay: (day: number) => void;
   type: 'income' | 'outcome';
+  className?: string;
 }
 
 export function RecurrencyCalendar({
@@ -66,13 +67,19 @@ export function RecurrencyCalendar({
   isLoading,
   registries,
   onSelectDay,
+  className,
 }: RecurrencyCalendarProps) {
   const { weeks, weekDays, month, year } = useCalendarConstructor();
 
   if (isLoading) return <View className="flex flex-1 bg-app-bg" />;
 
   return (
-    <View className="flex w-full rounded-[20px] bg-surface-primary p-4">
+    <View
+      className={cn(
+        'flex w-full rounded-[20px] bg-surface-primary p-4',
+        className
+      )}
+    >
       <Text
         className="mx-auto text-sm lowercase text-text-primary"
         style={{ fontFamily: 'Sora_400Regular' }}

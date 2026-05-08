@@ -1,31 +1,43 @@
 import { useKeyboardBehavior } from '@/hooks/keyboard/use-keyboard-behavior';
+import { cn } from '@/libs/utils';
 import {
   Keyboard,
   KeyboardAvoidingView,
   ScrollView,
   TouchableWithoutFeedback,
+  View,
   ViewProps,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-export function DismissKeyboardView({ children }: ViewProps) {
+
+interface DismissKeyboardViewProps extends ViewProps {
+  scroll?: boolean;
+}
+
+export function DismissKeyboardView({
+  children,
+  className,
+  scroll = true,
+}: DismissKeyboardViewProps) {
   const behavior = useKeyboardBehavior();
 
   return (
-    <SafeAreaView
-      edges={['top', 'bottom']}
-      style={{ flex: 1 }}
-      className="bg-app-bg"
-    >
-      <TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView behavior={behavior} className="flex-1">
-          <ScrollView
-            className="flex flex-1 flex-col"
-            contentContainerStyle={{ flexGrow: 1 }}
-          >
+    <KeyboardAvoidingView behavior={behavior} className="flex-1">
+      {scroll ? (
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName={cn('flex flex-col', className)}
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="never"
+        >
+          {children}
+        </ScrollView>
+      ) : (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className={cn('flex flex-1 flex-col', className)}>
             {children}
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+          </View>
+        </TouchableWithoutFeedback>
+      )}
+    </KeyboardAvoidingView>
   );
 }

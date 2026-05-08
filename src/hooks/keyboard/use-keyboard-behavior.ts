@@ -1,5 +1,5 @@
-import { Keyboard, KeyboardAvoidingViewProps, Platform } from 'react-native';
 import { useEffect, useState } from 'react';
+import { Keyboard, KeyboardAvoidingViewProps, Platform } from 'react-native';
 
 export function useKeyboardBehavior() {
   const [behavior, setBehavior] =
