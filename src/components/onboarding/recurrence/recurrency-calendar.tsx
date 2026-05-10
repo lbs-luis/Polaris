@@ -76,7 +76,7 @@ export function RecurrencyCalendar({
   return (
     <View
       className={cn(
-        'flex w-full rounded-[20px] bg-surface-primary p-4',
+        'flex w-full rounded-3xl bg-surface-primary p-4',
         className
       )}
     >

@@ -39,7 +39,7 @@ export function OnboardingHeader({
       {currentStep !== 'profile' && (
         <TouchableOpacity
           onPress={previousStep}
-          className="absolute left-4 flex items-center justify-center rounded-full border border-border-default  bg-surface-primary p-2"
+          className="absolute left-6 flex items-center justify-center rounded-full border border-border-default  bg-surface-primary p-2"
         >
           <ChevronLeft size={22} color="#ffffff" />
         </TouchableOpacity>

@@ -1,4 +1,4 @@
-import { DismissKeyboardView } from '@/components/layout/dismiss-keyboard-view.layout';
+import { KeyboardView } from '@/components/layout/keyboard-view.layout';
 
 import { StepHeader } from '@/components/onboarding/step-header';
 import { Button } from '@/components/ui/button';
@@ -64,7 +64,7 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
   }, [select]);
 
   return (
-    <DismissKeyboardView className="px-6 pb-4">
+    <KeyboardView className="px-6 pb-4">
       <StepHeader
         title={`Olá,\nseja bem-\nvindo.`}
         description={`Vamos personalizar \no app para você.`}
@@ -100,6 +100,6 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
         />
       </View>
       <Button onPress={handleNextStep} className="mt-auto" text="Continuar" />
-    </DismissKeyboardView>
+    </KeyboardView>
   );
 }

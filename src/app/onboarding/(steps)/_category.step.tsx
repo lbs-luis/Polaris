@@ -1,4 +1,4 @@
-import { DismissKeyboardView } from '@/components/layout/dismiss-keyboard-view.layout';
+import { KeyboardView } from '@/components/layout/keyboard-view.layout';
 import { AddCategoryBadge } from '@/components/onboarding/category/add-category-badge';
 import { AddCategoryForm } from '@/components/onboarding/category/add-category-form';
 import { CategoryBadge } from '@/components/onboarding/category/category-badge';
@@ -33,7 +33,7 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
   }
 
   return (
-    <DismissKeyboardView className="px-6 pb-4">
+    <KeyboardView className="px-6 pb-4">
       <StepHeader
         title={`Suas\ncategorias.`}
         description="Organize como preferir."
@@ -92,6 +92,6 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
       </ScrollView>
 
       <Button onPress={onNextStep} className="mt-auto" text="Continuar" />
-    </DismissKeyboardView>
+    </KeyboardView>
   );
 }

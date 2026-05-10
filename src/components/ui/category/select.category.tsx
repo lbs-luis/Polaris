@@ -37,9 +37,9 @@ export function CategorySelect({
 
   const CategoryRow = ({ item }: { item: ICategoriesTRow }) => (
     <TouchableOpacity onPress={() => handleSelect(item)}>
-      <View className="mb-2.5 flex w-full rounded-md border border-border-default/20 bg-surface-primary/10  p-3">
+      <View className="mb-2.5 flex w-full rounded-md border border-border-default/10 bg-surface-primary/80  p-3">
         <Text
-          className="text-sm text-text-primary"
+          className="text-base text-text-primary"
           style={{ fontFamily: 'Sora_400Regular' }}
         >
           {item.name}
@@ -54,10 +54,14 @@ export function CategorySelect({
         <TouchableWithoutFeedback onPress={handleToggleOpen}>
           <SafeAreaView className="flex-1 items-center justify-center bg-black/50 p-6">
             <View
-              className="flex w-full flex-col gap-4 rounded-lg border border-border-default bg-surface-secondary p-4"
+              className="flex w-full flex-col gap-4 rounded-lg bg-surface-secondary p-4"
               style={{ maxHeight: '60%' }}
             >
-              <Label label="Selecione uma categoria" uppercase={false} />
+              <Label
+                label="Selecione uma categoria"
+                uppercase={false}
+                className="text-base text-text-primary/80"
+              />
               <FlatList
                 data={list}
                 renderItem={({ item }) => <CategoryRow item={item} />}

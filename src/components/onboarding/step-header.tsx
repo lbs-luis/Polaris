@@ -1,14 +1,14 @@
-import { Text, View } from 'react-native';
+import { cn } from '@/libs/utils';
+import { Text, View, ViewProps } from 'react-native';
 
-export function StepHeader({
-  description,
-  title,
-}: {
+interface StepHeaderProps extends ViewProps {
   title: string;
   description: string;
-}) {
+}
+
+export function StepHeader({ description, title, className }: StepHeaderProps) {
   return (
-    <View className="mt-7 flex w-full flex-col">
+    <View className={cn('mt-7 flex w-full flex-col', className)}>
       <Text
         className="text-3xl text-text-primary"
         style={{ fontFamily: 'Sora_700Bold' }}

@@ -1,15 +1,15 @@
-import { DismissKeyboardView } from '@/components/layout/dismiss-keyboard-view.layout';
+import { KeyboardView } from '@/components/layout/keyboard-view.layout';
 import { AddRecurrenceForm } from '@/components/onboarding/recurrence/add-recurrence-form';
 
 import { RecurrencyCalendar } from '@/components/onboarding/recurrence/recurrency-calendar';
-import { RecurrencyRow } from '@/components/onboarding/recurrence/registry-row';
+import { RecurrencyRow } from '@/components/onboarding/recurrence/row.recurrence';
 import { StepHeader } from '@/components/onboarding/step-header';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import { useRecurrenceStep } from '@/hooks/view-models/use-recurrence-step';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function IncomeStep({ onNextStep }: IRenderStepProps) {
   const { registries, categories, isLoading, refresh } =
@@ -23,41 +23,39 @@ export default function IncomeStep({ onNextStep }: IRenderStepProps) {
   }
 
   return (
-    <DismissKeyboardView className="px-6 pb-4" scroll={false}>
-      <StepHeader
-        title={`Entradas\nrecorrentes.`}
-        description="Toque em um dia para registrar."
-      />
-      <RecurrencyCalendar
-        type="income"
-        isLoading={isLoading}
-        onSelectDay={(day) =>
-          openBottomSheet(
-            <AddRecurrenceForm
-              categories={categories}
-              day={day}
-              onSaved={handleOnSaved}
-              type="income"
-            />
-          )
-        }
-        registries={registries}
-        className="mt-6"
-      />
-      <View className="mt-4 flex flex-1 flex-col gap-2 pb-2">
-        <Label label="Lançamentos" uppercase={false} />
-        <FlatList
-          style={{ flex: 1 }}
-          data={registries}
-          renderItem={({ item }) => <RecurrencyRow item={item} />}
-          keyExtractor={(item, i) => `${i}-${item.id}`}
-          showsVerticalScrollIndicator={false}
-          directionalLockEnabled={true}
-          scrollEventThrottle={16}
+    <>
+      <View className="w-full px-6 pb-3">
+        <StepHeader
+          title={`Entradas\nrecorrentes.`}
+          description="Toque em um dia para registrar."
         />
       </View>
-
-      <Button onPress={onNextStep} className="mt-auto" text="Continuar" />
-    </DismissKeyboardView>
+      <KeyboardView className="px-6 pb-4 pt-3">
+        <RecurrencyCalendar
+          type="income"
+          isLoading={isLoading}
+          onSelectDay={(day) =>
+            openBottomSheet(
+              <AddRecurrenceForm
+                categories={categories}
+                day={day}
+                onSaved={handleOnSaved}
+                type="income"
+              />
+            )
+          }
+          registries={registries}
+        />
+        <View className="mt-6 flex flex-1 flex-col gap-2 pb-4">
+          <Label label="Lançamentos" uppercase={false} />
+          {registries.map((item, i) => (
+            <RecurrencyRow item={item} key={`${item.id}-${i}`} />
+          ))}
+        </View>
+      </KeyboardView>
+      <View className="sticky  bottom-0 left-0  right-0 px-6  pb-4 pt-4">
+        <Button onPress={onNextStep} className="mt-auto" text="Continuar" />
+      </View>
+    </>
   );
 }

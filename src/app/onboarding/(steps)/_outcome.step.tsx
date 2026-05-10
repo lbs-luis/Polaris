@@ -2,7 +2,7 @@ import { OnboardingBody } from '@/components/layout/onboarding/onboarding-body.l
 import { AddRecurrenceForm } from '@/components/onboarding/recurrence/add-recurrence-form';
 
 import { RecurrencyCalendar } from '@/components/onboarding/recurrence/recurrency-calendar';
-import { RecurrencyRow } from '@/components/onboarding/recurrence/registry-row';
+import { RecurrencyRow } from '@/components/onboarding/recurrence/row.recurrence';
 import { StepHeader } from '@/components/onboarding/step-header';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -14,7 +14,12 @@ import { FlatList, View } from 'react-native';
 export default function OutcomeStep({ onNextStep }: IRenderStepProps) {
   const { registries, categories, isLoading, refresh } =
     useRecurrenceStep('outcome');
-  const { openBottomSheet } = useBottomSheetContext();
+  const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
+
+  function handleOnSaved() {
+    closeBottomSheet();
+    refresh();
+  }
 
   return (
     <OnboardingBody className="px-6 pb-4">
@@ -31,7 +36,7 @@ export default function OutcomeStep({ onNextStep }: IRenderStepProps) {
             <AddRecurrenceForm
               categories={categories}
               day={day}
-              onSaved={refresh}
+              onSaved={handleOnSaved}
               type="outcome"
             />
           )
