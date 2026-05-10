@@ -4,8 +4,8 @@ import { AddCategoryForm } from '@/components/onboarding/category/add-category-f
 import { CategoryBadge } from '@/components/onboarding/category/category-badge';
 
 import { StepHeader } from '@/components/onboarding/step-header';
-import { StepLabel } from '@/components/onboarding/step-label';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import {
   ICategoriesTRow,
@@ -40,7 +40,7 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
       />
       <ScrollView className="mt-8 flex flex-1 flex-col pb-4">
         <View className=" flex w-full flex-col gap-4">
-          <StepLabel label="Entradas" />
+          <Label label="Entradas" />
           <View className="flex w-full flex-row flex-wrap gap-2">
             {categoryList
               .filter((item) => item.type === 'income')
@@ -65,7 +65,7 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
           </View>
         </View>
         <View className="mt-6 flex w-full flex-col gap-4">
-          <StepLabel label="Saídas" />
+          <Label label="Saídas" />
           <View className="flex w-full flex-row flex-wrap gap-2">
             {categoryList
               .filter((item) => item.type === 'outcome')

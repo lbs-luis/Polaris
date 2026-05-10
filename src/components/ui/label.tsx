@@ -1,17 +1,17 @@
 import { cn } from '@/libs/utils';
 import { Text, TextProps } from 'react-native';
 
-interface StepLabelProps extends TextProps {
+interface LabelProps extends TextProps {
   label: string;
   uppercase?: boolean;
   weight?: 'regular' | 'semibold' | 'bold';
 }
-export function StepLabel({
+export function Label({
   label,
   className,
   uppercase = true,
   weight = 'regular',
-}: StepLabelProps) {
+}: LabelProps) {
   return (
     <Text
       className={cn(

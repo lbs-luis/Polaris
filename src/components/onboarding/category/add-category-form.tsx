@@ -6,7 +6,7 @@ import { cn } from '@/libs/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { Keyboard, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StepLabel } from '../step-label';
+import { Label } from '../../ui/label';
 import { CategoryTypeButton } from './category-type-button';
 
 interface AddCategoryFormProps {
@@ -48,7 +48,7 @@ export function AddCategoryForm({
 
   return (
     <View className="px-6 pt-4" style={{ paddingBottom }}>
-      <StepLabel
+      <Label
         label="Nova Categoria"
         className="text-xl text-text-primary"
         uppercase={false}

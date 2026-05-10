@@ -6,7 +6,8 @@ module.exports = {
     extend: {
       colors: {
         surface: {
-          primary: 'rgba(255,255,255,0.05)', // cards, shells
+          primary: '#1d1d20',
+          secondary: '#18181b',
         },
         button: {
           primary: '#ffffff',

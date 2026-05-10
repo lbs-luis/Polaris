@@ -18,7 +18,7 @@ export function Input({ label, className, ...props }: InputProps) {
         {...props}
         style={{ fontFamily: 'Sora_400Regular' }}
         className={cn(
-          'w-full rounded-lg border  border-border-default bg-input-primary px-5 py-4 text-base  text-text-primary',
+          'h-14 w-full rounded-lg border  border-border-default bg-input-primary px-5 text-base  text-text-primary',
           'placeholder:text-text-secondary'
         )}
       />

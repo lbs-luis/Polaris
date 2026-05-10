@@ -93,7 +93,7 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
       </TouchableOpacity>
       <View className="mb-6 mt-12 flex w-full flex-col gap-2">
         <Input
-          label="seu nome ou apelido"
+          label="Seu nome ou apelido"
           value={name}
           onChangeText={setName}
           placeholder="Como quer ser chamado?"

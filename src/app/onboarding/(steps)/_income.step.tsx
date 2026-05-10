@@ -4,8 +4,8 @@ import { AddRecurrenceForm } from '@/components/onboarding/recurrence/add-recurr
 import { RecurrencyCalendar } from '@/components/onboarding/recurrence/recurrency-calendar';
 import { RecurrencyRow } from '@/components/onboarding/recurrence/registry-row';
 import { StepHeader } from '@/components/onboarding/step-header';
-import { StepLabel } from '@/components/onboarding/step-label';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import { useRecurrenceStep } from '@/hooks/view-models/use-recurrence-step';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
@@ -15,7 +15,12 @@ export default function IncomeStep({ onNextStep }: IRenderStepProps) {
   const { registries, categories, isLoading, refresh } =
     useRecurrenceStep('income');
 
-  const { openBottomSheet } = useBottomSheetContext();
+  const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
+
+  function handleOnSaved() {
+    closeBottomSheet();
+    refresh();
+  }
 
   return (
     <DismissKeyboardView className="px-6 pb-4" scroll={false}>
@@ -31,7 +36,7 @@ export default function IncomeStep({ onNextStep }: IRenderStepProps) {
             <AddRecurrenceForm
               categories={categories}
               day={day}
-              onSaved={refresh}
+              onSaved={handleOnSaved}
               type="income"
             />
           )
@@ -40,7 +45,7 @@ export default function IncomeStep({ onNextStep }: IRenderStepProps) {
         className="mt-6"
       />
       <View className="mt-4 flex flex-1 flex-col gap-2 pb-2">
-        <StepLabel label="Lançamentos" uppercase={false} />
+        <Label label="Lançamentos" uppercase={false} />
         <FlatList
           style={{ flex: 1 }}
           data={registries}

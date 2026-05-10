@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "prebuild": "expo prebuild --clean",
-    "release:android": "npm run prebuild && cd android && ./gradlew assembleRelease && adb install ./android/app/build/outputs/apk/release/app-release.apk",
+    "release:android": "npm run prebuild && cd android && ./gradlew assembleRelease && npm run install:android",
     "install:android": "adb install ./android/app/build/outputs/apk/release/app-release.apk"
   },
   "lint-staged": {
