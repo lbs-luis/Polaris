@@ -1,15 +1,9 @@
 import { IRecurrentsTRow } from '@/database/tables/recurrents.table';
 import { formatCurrency } from '@/libs/masks';
 import { cn } from '@/libs/utils';
-import { ListRenderItemInfo, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-export function RecurrencyRow({
-  item,
-}: {
-  item: ListRenderItemInfo<IRecurrentsTRow>;
-}) {
-  const { item: registry } = item;
-
+export function RecurrencyRow({ item: registry }: { item: IRecurrentsTRow }) {
   return (
     <View className="mb-2 flex flex-row items-center rounded-xl  border border-border-default px-3 py-2">
       <View className="self-start rounded-lg bg-surface-primary px-1.5 py-1">

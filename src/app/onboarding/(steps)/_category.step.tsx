@@ -1,10 +1,12 @@
 import { DismissKeyboardView } from '@/components/layout/dismiss-keyboard-view.layout';
 import { AddCategoryBadge } from '@/components/onboarding/category/add-category-badge';
+import { AddCategoryForm } from '@/components/onboarding/category/add-category-form';
 import { CategoryBadge } from '@/components/onboarding/category/category-badge';
-import { CategoryDrawer } from '@/components/onboarding/category/category-drawer';
-import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
+
 import { StepHeader } from '@/components/onboarding/step-header';
 import { StepLabel } from '@/components/onboarding/step-label';
+import { Button } from '@/components/ui/button';
+import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import {
   ICategoriesTRow,
   useCategoriesTable,
@@ -15,17 +17,11 @@ import { ScrollView, View } from 'react-native';
 
 export default function CategoryStep({ onNextStep }: IRenderStepProps) {
   const { list, exclude } = useCategoriesTable();
-
+  const { openBottomSheet } = useBottomSheetContext();
   const [categoryList, setCategoryList] = useState<ICategoriesTRow[]>([]);
 
-  const [modalOptions, setModalOptions] = useState<{
-    isOpen: boolean;
-    defaultSelected: 'income' | 'outcome';
-  }>({ isOpen: false, defaultSelected: 'income' });
-
   const updateCategoriesList = useCallback(async () => {
-    const newCategoriesList = await list();
-    setCategoryList(newCategoriesList);
+    setCategoryList(await list());
   }, [list]);
 
   useEffect(() => {
@@ -58,7 +54,12 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
               ))}
             <AddCategoryBadge
               onPress={() =>
-                setModalOptions({ isOpen: true, defaultSelected: 'income' })
+                openBottomSheet(
+                  <AddCategoryForm
+                    defaultSelected="income"
+                    onSaved={updateCategoriesList}
+                  />
+                )
               }
             />
           </View>
@@ -78,22 +79,19 @@ export default function CategoryStep({ onNextStep }: IRenderStepProps) {
               ))}
             <AddCategoryBadge
               onPress={() =>
-                setModalOptions({ isOpen: true, defaultSelected: 'outcome' })
+                openBottomSheet(
+                  <AddCategoryForm
+                    defaultSelected="outcome"
+                    onSaved={updateCategoriesList}
+                  />
+                )
               }
             />
           </View>
         </View>
       </ScrollView>
 
-      <StepConfirmButton onNextStep={onNextStep} />
-      <CategoryDrawer
-        isOpen={modalOptions.isOpen}
-        defaultSelected={modalOptions.defaultSelected}
-        onClose={() =>
-          setModalOptions({ isOpen: false, defaultSelected: 'income' })
-        }
-        onSaved={() => updateCategoriesList()}
-      />
+      <Button onPress={onNextStep} className="mt-auto" text="Continuar" />
     </DismissKeyboardView>
   );
 }

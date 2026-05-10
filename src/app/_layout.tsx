@@ -1,3 +1,4 @@
+import { BottomSheetProvider } from '@/context/bottomsheet.context';
 import { migrate } from '@/database/migrate';
 import '@/styles/global.css';
 import {
@@ -6,7 +7,6 @@ import {
   Sora_700Bold,
   useFonts,
 } from '@expo-google-fonts/sora';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Slot } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { Suspense } from 'react';
@@ -22,13 +22,9 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <Suspense>
-          <SQLiteProvider
-            onInit={migrate}
-            databaseName="polaris.db"
-            useSuspense
-          >
+      <Suspense>
+        <SQLiteProvider onInit={migrate} databaseName="polaris.db" useSuspense>
+          <BottomSheetProvider>
             <SafeAreaView
               edges={['top', 'bottom']}
               style={{ flex: 1 }}
@@ -36,9 +32,9 @@ export default function RootLayout() {
             >
               <Slot />
             </SafeAreaView>
-          </SQLiteProvider>
-        </Suspense>
-      </BottomSheetModalProvider>
+          </BottomSheetProvider>
+        </SQLiteProvider>
+      </Suspense>
     </GestureHandlerRootView>
   );
 }

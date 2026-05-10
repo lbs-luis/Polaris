@@ -1,20 +1,20 @@
 import { OnboardingBody } from '@/components/layout/onboarding/onboarding-body.layout';
-import { RecurrenceDrawer } from '@/components/onboarding/recurrence/recurrence-drawer';
+import { AddRecurrenceForm } from '@/components/onboarding/recurrence/add-recurrence-form';
+
 import { RecurrencyCalendar } from '@/components/onboarding/recurrence/recurrency-calendar';
 import { RecurrencyRow } from '@/components/onboarding/recurrence/registry-row';
-import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
 import { StepHeader } from '@/components/onboarding/step-header';
 import { StepLabel } from '@/components/onboarding/step-label';
+import { Button } from '@/components/ui/button';
+import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import { useRecurrenceStep } from '@/hooks/view-models/use-recurrence-step';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
-import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 
 export default function OutcomeStep({ onNextStep }: IRenderStepProps) {
   const { registries, categories, isLoading, refresh } =
     useRecurrenceStep('outcome');
-
-  const [drawerOptions, setDrawerOptions] = useState({ day: 0, isOpen: false });
+  const { openBottomSheet } = useBottomSheetContext();
 
   return (
     <OnboardingBody className="px-6 pb-4">
@@ -26,30 +26,32 @@ export default function OutcomeStep({ onNextStep }: IRenderStepProps) {
       <RecurrencyCalendar
         type="outcome"
         isLoading={isLoading}
-        onSelectDay={(day) => setDrawerOptions({ day, isOpen: true })}
+        onSelectDay={(day) =>
+          openBottomSheet(
+            <AddRecurrenceForm
+              categories={categories}
+              day={day}
+              onSaved={refresh}
+              type="outcome"
+            />
+          )
+        }
         registries={registries}
         className="mt-6"
       />
       <View className="mt-4 flex flex-1 flex-col gap-2 pb-2">
         <StepLabel label="Lançamentos" uppercase={false} />
         <FlatList
+          style={{ flex: 1 }}
           data={registries}
-          renderItem={(item) => <RecurrencyRow item={item} />}
+          renderItem={({ item }) => <RecurrencyRow item={item} />}
           keyExtractor={(item, i) => `${i}-${item.id}`}
           showsVerticalScrollIndicator={false}
+          directionalLockEnabled={true}
+          scrollEventThrottle={16}
         />
       </View>
-      <StepConfirmButton onNextStep={onNextStep} />
-      <RecurrenceDrawer
-        isOpen={drawerOptions.isOpen}
-        day={drawerOptions.day}
-        categories={categories}
-        type={'outcome'}
-        onClose={() =>
-          setDrawerOptions({ day: drawerOptions.day, isOpen: false })
-        }
-        onSaved={refresh}
-      />
+      <Button onPress={onNextStep} className="mt-auto" text="Finalizar" />
     </OnboardingBody>
   );
 }

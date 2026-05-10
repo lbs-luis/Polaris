@@ -1,6 +1,7 @@
 import { DismissKeyboardView } from '@/components/layout/dismiss-keyboard-view.layout';
-import { StepConfirmButton } from '@/components/onboarding/step-confirm-button';
+
 import { StepHeader } from '@/components/onboarding/step-header';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSettingsTable } from '@/database/tables/settings.table';
 import pickImage from '@/hooks/image/pick-image';
@@ -98,7 +99,7 @@ export default function ProfileStep({ onNextStep }: IRenderStepProps) {
           placeholder="Como quer ser chamado?"
         />
       </View>
-      <StepConfirmButton onNextStep={handleNextStep} className="mt-auto" />
+      <Button onPress={handleNextStep} className="mt-auto" text="Continuar" />
     </DismissKeyboardView>
   );
 }
