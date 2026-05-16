@@ -1,97 +1,195 @@
 import { KeyboardView } from '@/components/layout/keyboard-view.layout';
-import { AddCategoryBadge } from '@/components/onboarding/category/add-category-badge';
+import { OnboardingFooter } from '@/components/layout/onboarding/onboarding-footer.layout';
 import { AddCategoryForm } from '@/components/onboarding/category/add-category-form';
-import { CategoryBadge } from '@/components/onboarding/category/category-badge';
-
 import { StepHeader } from '@/components/onboarding/step-header';
-import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { CatIcon, isCatKind } from '@/components/ui/cat-icon';
 import { Label } from '@/components/ui/label';
+import { SwipeableRow } from '@/components/ui/swipeable-row';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
-import {
-  ICategoriesTRow,
-  useCategoriesTable,
-} from '@/database/tables/categories.table';
+import { ICategoriesTRow } from '@/database/tables/categories.table';
+import { useCategoryStep } from '@/hooks/view-models/use-category-step';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
-import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { cn } from '@/libs/utils';
+import { CaretRightIcon, PlusIcon } from 'phosphor-react-native';
+import { Pressable, Text, View } from 'react-native';
 
-export default function CategoryStep({ onNextStep }: IRenderStepProps) {
-  const { list, exclude } = useCategoriesTable();
-  const { openBottomSheet } = useBottomSheetContext();
-  const [categoryList, setCategoryList] = useState<ICategoriesTRow[]>([]);
+function CategoryRow({
+  item,
+  isFirst,
+  onEdit,
+  onDelete,
+}: {
+  item: ICategoriesTRow;
+  isFirst: boolean;
+  onEdit?: (item: ICategoriesTRow) => void;
+  onDelete?: (name: string) => void;
+}) {
+  return (
+    <SwipeableRow
+      onEdit={onEdit ? () => onEdit(item) : undefined}
+      onDelete={onDelete ? () => onDelete(item.name) : undefined}
+    >
+      <View
+        className={`flex-row items-center gap-3 bg-surface px-3 py-2.5 ${isFirst ? '' : 'border-t border-border-subtle'}`}
+      >
+        {isCatKind(item.icon) ? (
+          <CatIcon kind={item.icon} size={36} />
+        ) : (
+          <View className="h-9 w-9 items-center justify-center rounded-tile bg-surface-2">
+            <Text
+              className="text-sm text-text"
+              style={{ fontFamily: 'Sora_700Bold' }}
+            >
+              {item.name.slice(0, 1).toUpperCase()}
+            </Text>
+          </View>
+        )}
+        <Text
+          className="flex-1 text-sm text-text"
+          style={{ fontFamily: 'Sora_600SemiBold' }}
+        >
+          {item.name}
+        </Text>
+        <CaretRightIcon size={16} color="#5E5E66" weight="bold" />
+      </View>
+    </SwipeableRow>
+  );
+}
 
-  const updateCategoriesList = useCallback(async () => {
-    setCategoryList(await list());
-  }, [list]);
+function CategoryGroup({
+  title,
+  tone,
+  items,
+  onEdit,
+  onDelete,
+}: {
+  title: string;
+  tone: 'income' | 'outcome';
+  items: ICategoriesTRow[];
+  onEdit: (item: ICategoriesTRow) => void;
+  onDelete: (name: string) => void;
+}) {
+  const dotColor = tone === 'income' ? 'bg-income' : 'bg-outcome';
+  return (
+    <View className="mt-6">
+      <View className="flex-row items-center gap-2 px-1 pb-2">
+        <View className={`h-2 w-2 rounded-full ${dotColor}`} />
+        <Label label={title} className="text-xs text-text" />
+        <View className="h-px flex-1 bg-border-subtle" />
+        <Text
+          className="text-xs text-text-mute"
+          style={{ fontFamily: 'Sora_600SemiBold' }}
+        >
+          {items.length}
+        </Text>
+      </View>
+      <Card className={cn('p-1.5', items.length > 0 ? 'flex' : 'hidden')}>
+        {items.map((c, i) => (
+          <CategoryRow
+            key={c.id}
+            item={c}
+            isFirst={i === 0}
+            onEdit={c.isDefault ? undefined : onEdit}
+            onDelete={c.isDefault ? undefined : onDelete}
+          />
+        ))}
+      </Card>
+    </View>
+  );
+}
 
-  useEffect(() => {
-    updateCategoriesList();
-  }, [updateCategoriesList]);
+function AddCategoryCTA({
+  tone,
+  onPress,
+}: {
+  tone: 'income' | 'outcome';
+  onPress: () => void;
+}) {
+  const color = tone === 'income' ? '#3CC85F' : '#FF4D4D';
+  return (
+    <Pressable
+      onPress={onPress}
+      className="mt-3 flex-row items-center gap-3 rounded-card border-[1.5px] border-dashed border-border px-4 py-3.5"
+    >
+      <View className="h-10 w-10 items-center justify-center rounded-tile bg-surface-2">
+        <PlusIcon size={20} color={color} weight="bold" />
+      </View>
+      <Text className="text-sm" style={{ fontFamily: 'Sora_700Bold', color }}>
+        Criar nova categoria
+      </Text>
+    </Pressable>
+  );
+}
 
-  async function handleDeleteCategory(name: string) {
-    await exclude(name);
+export default function CategoryStep({
+  onNextStep,
+  onPreviousStep,
+  isFirstStep,
+}: IRenderStepProps) {
+  const { incomes, outcomes, handleDelete, refresh } = useCategoryStep();
+  const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
+
+  async function handleOnSaved() {
+    closeBottomSheet();
+    await refresh();
+  }
+
+  function openAddSheet(type: 'income' | 'outcome') {
+    openBottomSheet(
+      <AddCategoryForm defaultSelected={type} onSaved={handleOnSaved} />,
+      { title: 'Nova categoria' }
+    );
+  }
+
+  function openEditSheet(item: ICategoriesTRow) {
+    openBottomSheet(
+      <AddCategoryForm
+        defaultSelected={item.type}
+        category={item}
+        onSaved={handleOnSaved}
+      />,
+      { title: 'Editar categoria' }
+    );
   }
 
   return (
-    <KeyboardView className="px-6 pb-4">
-      <StepHeader
-        title={`Suas\ncategorias.`}
-        description="Organize como preferir."
-      />
-      <ScrollView className="mt-8 flex flex-1 flex-col pb-4">
-        <View className=" flex w-full flex-col gap-4">
-          <Label label="Entradas" />
-          <View className="flex w-full flex-row flex-wrap gap-2">
-            {categoryList
-              .filter((item) => item.type === 'income')
-              .map((item) => (
-                <CategoryBadge
-                  label={item.name}
-                  key={item.id}
-                  isDefault={item.isDefault}
-                  onDelete={() => handleDeleteCategory(item.name)}
-                />
-              ))}
-            <AddCategoryBadge
-              onPress={() =>
-                openBottomSheet(
-                  <AddCategoryForm
-                    defaultSelected="income"
-                    onSaved={updateCategoriesList}
-                  />
-                )
-              }
-            />
-          </View>
-        </View>
-        <View className="mt-6 flex w-full flex-col gap-4">
-          <Label label="Saídas" />
-          <View className="flex w-full flex-row flex-wrap gap-2">
-            {categoryList
-              .filter((item) => item.type === 'outcome')
-              .map((item) => (
-                <CategoryBadge
-                  label={item.name}
-                  key={item.id}
-                  isDefault={item.isDefault}
-                  onDelete={() => handleDeleteCategory(item.name)}
-                />
-              ))}
-            <AddCategoryBadge
-              onPress={() =>
-                openBottomSheet(
-                  <AddCategoryForm
-                    defaultSelected="outcome"
-                    onSaved={updateCategoriesList}
-                  />
-                )
-              }
-            />
-          </View>
-        </View>
-      </ScrollView>
+    <>
+      <KeyboardView className="px-6 pb-4">
+        <StepHeader
+          title={`Suas\ncategorias.`}
+          description="Organize por tipo. Você pode criar, renomear e remover quando quiser."
+        />
 
-      <Button onPress={onNextStep} className="mt-auto" text="Continuar" />
-    </KeyboardView>
+        <CategoryGroup
+          title="Entradas"
+          tone="income"
+          items={incomes}
+          onEdit={openEditSheet}
+          onDelete={handleDelete}
+        />
+        <AddCategoryCTA tone="income" onPress={() => openAddSheet('income')} />
+
+        <CategoryGroup
+          title="Saídas"
+          tone="outcome"
+          items={outcomes}
+          onEdit={openEditSheet}
+          onDelete={handleDelete}
+        />
+        <AddCategoryCTA
+          tone="outcome"
+          onPress={() => openAddSheet('outcome')}
+        />
+
+        <View className="h-6" />
+      </KeyboardView>
+
+      <OnboardingFooter
+        onContinue={onNextStep}
+        onBack={onPreviousStep}
+        showBack={!isFirstStep}
+      />
+    </>
   );
 }

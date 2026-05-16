@@ -4,52 +4,49 @@ import { cn } from '@/libs/utils';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 const HeaderWeekDay = ({ day }: { day: string }) => (
-  <View className="flex flex-1 items-center justify-center py-2">
+  <View className="flex-1 items-center justify-center py-2">
     <Text
-      className="text-xs text-text-secondary"
-      style={{ fontFamily: 'Sora_400Regular' }}
+      className="text-xs text-text-dim"
+      style={{ fontFamily: 'Sora_600SemiBold' }}
     >
       {day}
     </Text>
   </View>
 );
 
-const WeekDay = ({
-  day,
-  onSelect,
-  hasRegistry,
-  type,
-}: {
+interface WeekDayProps {
   day: number | null;
-  onSelect: (day: number) => void;
   hasRegistry: boolean;
   type: 'income' | 'outcome';
-}) => {
+  onSelect: (day: number) => void;
+}
+
+const WeekDay = ({ day, hasRegistry, type, onSelect }: WeekDayProps) => {
   function handleOnSelect() {
     if (day) onSelect(day);
   }
-
   return (
-    <View className="relative flex flex-1">
+    <View className="flex-1">
       <TouchableOpacity
-        className="flex w-full items-center justify-center rounded-xl py-2"
+        className="relative h-10 items-center justify-center rounded-tile"
         onPress={handleOnSelect}
+        disabled={!day}
       >
         <Text
-          className={cn('text-sm', day ? 'text-text-primary/90' : 'opacity-0')}
-          style={{ fontFamily: 'Sora_400Regular' }}
+          className={cn('text-sm text-text', !day && 'opacity-0')}
+          style={{ fontFamily: 'JetBrainsMono_500Medium' }}
         >
-          {day ? day : 'D'}
+          {day ?? 'D'}
         </Text>
+        {hasRegistry && (
+          <View
+            className={cn(
+              'absolute bottom-1 h-1 w-1 rounded-full',
+              type === 'income' ? 'bg-income' : 'bg-outcome'
+            )}
+          />
+        )}
       </TouchableOpacity>
-      {hasRegistry && (
-        <View
-          className={cn(
-            'absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full',
-            type === 'income' ? 'bg-income' : 'bg-outcome'
-          )}
-        />
-      )}
     </View>
   );
 };
@@ -71,32 +68,40 @@ export function RecurrencyCalendar({
 }: RecurrencyCalendarProps) {
   const { weeks, weekDays, month, year } = useCalendarConstructor();
 
-  if (isLoading) return <View className="flex flex-1 bg-app-bg" />;
+  if (isLoading) return <View className="bg-bg" style={{ height: 320 }} />;
 
   return (
     <View
       className={cn(
-        'flex w-full rounded-3xl bg-surface-primary p-4',
+        'rounded-card border border-border-subtle bg-surface p-4',
         className
       )}
     >
       <Text
-        className="mx-auto text-sm lowercase text-text-primary"
-        style={{ fontFamily: 'Sora_400Regular' }}
-      >{`${month} ${year}`}</Text>
-      <View className="mt-2 flex w-full flex-row gap-1">
+        className="text-sm lowercase text-text"
+        style={{ fontFamily: 'Sora_700Bold' }}
+      >
+        {`${month} `}
+        <Text
+          className="text-text-dim"
+          style={{ fontFamily: 'Sora_400Regular' }}
+        >
+          {year}
+        </Text>
+      </Text>
+      <View className="mt-2 flex-row gap-1">
         {weekDays.map((day, i) => (
           <HeaderWeekDay day={day} key={`${i}-${day}`} />
         ))}
       </View>
-      <View className="flex w-full flex-col gap-1">
+      <View className="mt-1 flex-col gap-1">
         {weeks.map((week, wi) => (
-          <View key={`week-${wi}`} className="flex w-full flex-row gap-1">
+          <View key={`week-${wi}`} className="flex-row gap-1">
             {week.map((day, di) => (
               <WeekDay
+                key={`week-${wi}-day-${di}`}
                 type={type}
                 day={day}
-                key={`week-${wi}-day-${di}`}
                 onSelect={onSelectDay}
                 hasRegistry={
                   !!day &&

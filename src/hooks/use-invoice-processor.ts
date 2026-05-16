@@ -12,24 +12,42 @@ export type ProcessorState =
   | { status: 'processing'; done: number; total: number }
   | { status: 'done'; results: InvoiceResult[] };
 
-function parseInvoiceDate(issued_at: string): {
+interface ParsedDateTime {
   day: number;
   month: number;
   year: number;
-} {
-  const match = issued_at.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  hour: number;
+  minute: number;
+  /** ISO-ish YYYY-MM-DDTHH:MM:SS in local components (sortable lexicographically). */
+  iso: string;
+}
+
+/**
+ * Parses NFC-e issued_at strings like "15/05/2026 18:42:33" (Brazilian DD/MM/YYYY).
+ * Hours/minutes default to 12:00 if not present in the source.
+ */
+function parseInvoiceDateTime(issued_at: string): ParsedDateTime {
+  const match = issued_at.match(
+    /(\d{2})\/(\d{2})\/(\d{4})(?:[\sT]+(\d{2}):(\d{2})(?::(\d{2}))?)?/
+  );
   if (match) {
-    return {
-      day: parseInt(match[1], 10),
-      month: parseInt(match[2], 10),
-      year: parseInt(match[3], 10),
-    };
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const year = parseInt(match[3], 10);
+    const hour = match[4] ? parseInt(match[4], 10) : 12;
+    const minute = match[5] ? parseInt(match[5], 10) : 0;
+    const second = match[6] ? parseInt(match[6], 10) : 0;
+    const iso = `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}`;
+    return { day, month, year, hour, minute, iso };
   }
   const now = new Date();
   return {
     day: now.getDate(),
     month: now.getMonth() + 1,
     year: now.getFullYear(),
+    hour: now.getHours(),
+    minute: now.getMinutes(),
+    iso: now.toISOString().slice(0, 19),
   };
 }
 
@@ -70,16 +88,17 @@ export function useInvoiceProcessor() {
             raw_html: '',
           });
 
-          const { day, month, year } = parseInvoiceDate(invoice.issued_at);
+          const parsed = parseInvoiceDateTime(invoice.issued_at);
 
           await setTransaction({
             value: invoice.total_value,
-            month,
-            year,
-            due_day: day,
+            month: parsed.month,
+            year: parsed.year,
+            due_day: parsed.day,
             description: invoice.establishment_name,
             category_id: 1,
             invoice_id: invoice.chave_acesso,
+            issued_at: parsed.iso,
           });
         } catch {
           // Silently skip if INSERT fails

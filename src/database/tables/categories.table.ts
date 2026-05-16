@@ -4,17 +4,32 @@ import { useCallback } from 'react';
 interface ICategoriesTUpdate {
   name: string;
   type: 'income' | 'outcome';
+  icon?: string | null;
 }
 
 export type ICategoriesTRow = {
   id: number;
   name: string;
   type: 'income' | 'outcome';
+  icon: string | null;
   isDefault: boolean;
   updatedAt: string;
 };
 
 type ICategoriesTSelect = ICategoriesTRow | null;
+
+interface ICategoriesRawRow {
+  id: number;
+  name: string;
+  type: 'income' | 'outcome';
+  icon: string | null;
+  isDefault: number;
+  updatedAt: string;
+}
+
+function normalize(row: ICategoriesRawRow): ICategoriesTRow {
+  return { ...row, isDefault: row.isDefault === 1 };
+}
 
 export function useCategoriesTable() {
   const database = useSQLiteContext();
@@ -22,13 +37,14 @@ export function useCategoriesTable() {
   const set = useCallback(
     async (category: ICategoriesTUpdate) => {
       await database.runAsync(
-        `INSERT INTO categories (name, type, updatedAt)
-       VALUES (?, ?, CURRENT_TIMESTAMP)
+        `INSERT INTO categories (name, type, icon, updatedAt)
+       VALUES (?, ?, ?, CURRENT_TIMESTAMP)
        ON CONFLICT(name) DO UPDATE SET
          name = excluded.name,
          type = excluded.type,
+         icon = excluded.icon,
          updatedAt = CURRENT_TIMESTAMP`,
-        [category.name, category.type]
+        [category.name, category.type, category.icon ?? null]
       );
     },
     [database]
@@ -36,12 +52,23 @@ export function useCategoriesTable() {
 
   const select = useCallback(
     async (name: string): Promise<ICategoriesTSelect> => {
-      const row = await database.getFirstAsync<any>(
+      const row = await database.getFirstAsync<ICategoriesRawRow>(
         `SELECT * FROM categories WHERE name = ?`,
         [name]
       );
-      if (!row) return null;
-      return { ...row, isDefault: row.isDefault === 1 } as ICategoriesTSelect;
+      return row ? normalize(row) : null;
+    },
+    [database]
+  );
+
+  const update = useCallback(
+    async (id: number, category: ICategoriesTUpdate) => {
+      await database.runAsync(
+        `UPDATE categories SET
+          name = ?, type = ?, icon = ?, updatedAt = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        [category.name, category.type, category.icon ?? null, id]
+      );
     },
     [database]
   );
@@ -62,13 +89,16 @@ export function useCategoriesTable() {
         ? 'SELECT * FROM categories WHERE type = ?'
         : 'SELECT * FROM categories';
       const params = type ? [type] : [];
-      const rows = (await database.getAllAsync(query, params)) as any[];
-      return rows.map((row) => ({ ...row, isDefault: row.isDefault === 1 }));
+      const rows = (await database.getAllAsync(
+        query,
+        params
+      )) as ICategoriesRawRow[];
+      return rows.map(normalize);
     },
     [database]
   );
 
-  return { set, select, exclude, list };
+  return { set, update, select, exclude, list };
 }
 
 export const CreateCategoriesTable = `
@@ -76,6 +106,7 @@ export const CreateCategoriesTable = `
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     type TEXT NOT NULL CHECK(type IN ('income', 'outcome')),
+    icon TEXT,
     isDefault INTEGER NOT NULL DEFAULT 0,
     updatedAt TIMESTAMP NOT NULL
   );

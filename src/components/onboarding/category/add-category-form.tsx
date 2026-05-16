@@ -1,44 +1,64 @@
 import { Button } from '@/components/ui/button';
+import { CatKind, isCatKind } from '@/components/ui/cat-icon';
+import { IconPicker } from '@/components/ui/category/icon-picker';
 import { Input } from '@/components/ui/input';
-import { useCategoriesTable } from '@/database/tables/categories.table';
+import { SegItem } from '@/components/ui/seg-item';
+import {
+  ICategoriesTRow,
+  useCategoriesTable,
+} from '@/database/tables/categories.table';
 import { useKeyboardOffset } from '@/hooks/keyboard/use-keyboard-offset';
 import { cn } from '@/libs/utils';
+import { ArrowDownIcon, ArrowUpIcon } from 'phosphor-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Keyboard, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Label } from '../../ui/label';
-import { CategoryTypeButton } from './category-type-button';
 
 interface AddCategoryFormProps {
   onSaved: () => Promise<void>;
   defaultSelected: 'income' | 'outcome';
+  category?: ICategoriesTRow;
 }
 
 export function AddCategoryForm({
   onSaved,
   defaultSelected,
+  category: editing,
 }: AddCategoryFormProps) {
-  const { set } = useCategoriesTable();
+  const { set, update } = useCategoriesTable();
   const keyboardHeight = useKeyboardOffset();
   const insets = useSafeAreaInsets();
-  const [category, setCategory] = useState('');
+
+  const [name, setName] = useState(editing?.name ?? '');
   const [categoryType, setCategoryType] = useState<'income' | 'outcome'>(
-    defaultSelected
+    editing?.type ?? defaultSelected
+  );
+  const [icon, setIcon] = useState<CatKind | null>(
+    isCatKind(editing?.icon) ? (editing!.icon as CatKind) : null
   );
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setCategoryType(defaultSelected);
-  }, [defaultSelected]);
+    if (!editing) setCategoryType(defaultSelected);
+  }, [defaultSelected, editing]);
+
+  const isDisabled = name.trim().length <= 1 || !icon || isSaving;
 
   async function handleSave() {
-    if (category.length <= 1 || isSaving) return;
+    if (isDisabled || !icon) return;
     setIsSaving(true);
-    await set({ name: category, type: categoryType });
-    setCategory('');
+    const payload = { name: name.trim(), type: categoryType, icon };
+    if (editing) {
+      await update(editing.id, payload);
+    } else {
+      await set(payload);
+    }
+    setName('');
+    setIcon(null);
     setIsSaving(false);
     Keyboard.dismiss();
-    onSaved();
+    await onSaved();
   }
 
   const paddingBottom = useMemo(
@@ -47,41 +67,45 @@ export function AddCategoryForm({
   );
 
   return (
-    <View className="px-6 pt-4" style={{ paddingBottom }}>
-      <Label
-        label="Nova Categoria"
-        className="text-xl text-text-primary"
-        uppercase={false}
-      />
-      <Input
-        value={category}
-        onChangeText={setCategory}
-        editable={!isSaving}
-        placeholder="Ex.:  salário,  aluguel..."
-        className={cn('mt-6', isSaving ? 'opacity-50' : 'opacity-100')}
-      />
-      <View className="mt-6 flex w-full flex-row gap-2 rounded-xl bg-input-primary p-2">
-        <CategoryTypeButton
-          selected={categoryType === 'income'}
-          onSelect={() => setCategoryType('income')}
-        >
-          Receita
-        </CategoryTypeButton>
-        <CategoryTypeButton
-          selected={categoryType === 'outcome'}
-          onSelect={() => setCategoryType('outcome')}
-        >
-          Despesa
-        </CategoryTypeButton>
+    <View className="px-6 pt-2" style={{ paddingBottom }}>
+      <Label label="Tipo" uppercase={false} />
+      <View className="mt-2 flex-row gap-2">
+        <SegItem
+          icon={ArrowDownIcon}
+          label="Entrada"
+          tone="income"
+          active={categoryType === 'income'}
+          onPress={() => setCategoryType('income')}
+        />
+        <SegItem
+          icon={ArrowUpIcon}
+          label="Saída"
+          tone="outcome"
+          active={categoryType === 'outcome'}
+          onPress={() => setCategoryType('outcome')}
+        />
       </View>
+
+      <View className="mt-5">
+        <Input
+          label="Nome da categoria"
+          value={name}
+          onChangeText={setName}
+          editable={!isSaving}
+          placeholder="Ex.: salário, aluguel..."
+          className={cn(isSaving && 'opacity-50')}
+        />
+      </View>
+
+      <View className="mt-5">
+        <IconPicker value={icon} onChange={setIcon} />
+      </View>
+
       <Button
-        text="Salvar"
-        disabled={category.length <= 1 || isSaving}
+        text={editing ? 'Atualizar' : 'Adicionar'}
+        disabled={isDisabled}
         onPress={handleSave}
-        className={cn(
-          'mt-6',
-          category.length <= 1 || isSaving ? 'opacity-50' : 'opacity-100'
-        )}
+        className={cn('mt-6', isDisabled && 'opacity-50')}
       />
     </View>
   );

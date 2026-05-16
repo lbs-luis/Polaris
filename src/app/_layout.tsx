@@ -1,6 +1,11 @@
 import { BottomSheetProvider } from '@/context/bottomsheet.context';
+import { InvoiceProcessorProvider } from '@/context/invoice-processor.context';
 import { migrate } from '@/database/migrate';
 import '@/styles/global.css';
+import {
+  JetBrainsMono_500Medium,
+  JetBrainsMono_700Bold,
+} from '@expo-google-fonts/jetbrains-mono';
 import {
   Sora_400Regular,
   Sora_600SemiBold,
@@ -14,25 +19,31 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
-  const [,] = useFonts({
+  const [fontsLoaded] = useFonts({
     Sora_400Regular,
     Sora_600SemiBold,
     Sora_700Bold,
+    JetBrainsMono_500Medium,
+    JetBrainsMono_700Bold,
   });
+
+  if (!fontsLoaded) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Suspense>
         <SQLiteProvider onInit={migrate} databaseName="polaris.db" useSuspense>
-          <BottomSheetProvider>
-            <SafeAreaView
-              edges={['top', 'bottom']}
-              style={{ flex: 1 }}
-              className="bg-app-bg"
-            >
-              <Slot />
-            </SafeAreaView>
-          </BottomSheetProvider>
+          <InvoiceProcessorProvider>
+            <BottomSheetProvider>
+              <SafeAreaView
+                edges={['top', 'bottom']}
+                style={{ flex: 1 }}
+                className="bg-bg"
+              >
+                <Slot />
+              </SafeAreaView>
+            </BottomSheetProvider>
+          </InvoiceProcessorProvider>
         </SQLiteProvider>
       </Suspense>
     </GestureHandlerRootView>

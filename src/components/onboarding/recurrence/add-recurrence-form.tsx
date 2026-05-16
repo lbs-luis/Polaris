@@ -1,13 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { CategorySelect } from '@/components/ui/category/select.category';
-import { Input } from '@/components/ui/input';
 import { ICategoriesTRow } from '@/database/tables/categories.table';
-import { useRecurrentsTable } from '@/database/tables/recurrents.table';
+import {
+  IRecurrentsTRow,
+  useRecurrentsTable,
+} from '@/database/tables/recurrents.table';
 import { useKeyboardOffset } from '@/hooks/keyboard/use-keyboard-offset';
 import { formatCurrency, parseCurrency } from '@/libs/masks';
 import { cn } from '@/libs/utils';
 import { useMemo, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Label } from '../../ui/label';
 
@@ -16,6 +18,7 @@ interface AddRecurrenceFormProps {
   day: number | null;
   categories: ICategoriesTRow[];
   type: 'income' | 'outcome';
+  recurrent?: IRecurrentsTRow;
 }
 
 export function AddRecurrenceForm({
@@ -23,68 +26,89 @@ export function AddRecurrenceForm({
   day,
   categories,
   type,
+  recurrent,
 }: AddRecurrenceFormProps) {
   const keyboardHeight = useKeyboardOffset();
   const insets = useSafeAreaInsets();
-  const { set } = useRecurrentsTable();
-  const [baseValue, setBaseValue] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
+  const { set, update } = useRecurrentsTable();
 
+  const initialCategory = recurrent
+    ? categories.find((c) => c.id === recurrent.category_id)
+    : undefined;
+
+  const [baseValue, setBaseValue] = useState(
+    recurrent ? formatCurrency(recurrent.base_value.toString()) : ''
+  );
+  const [isSaving, setIsSaving] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<
     ICategoriesTRow | undefined
-  >(undefined);
+  >(initialCategory);
 
-  function resetForm() {
-    setBaseValue('');
-    setSelectedCategory(undefined);
-  }
+  const isDisabled =
+    !day || !selectedCategory || !baseValue.trim() || isSaving;
 
   async function handleSave() {
-    if (!day || !selectedCategory || isSaving) return;
+    if (isDisabled || !day || !selectedCategory) return;
     Keyboard.dismiss();
     setIsSaving(true);
-    await set({
+
+    const payload = {
       base_value: parseCurrency(baseValue) * 100,
       category_id: selectedCategory.id,
       due_day: day,
       type,
-    });
+    };
+
+    if (recurrent) {
+      await update(recurrent.id, payload);
+    } else {
+      await set(payload);
+    }
+
     setIsSaving(false);
     onSaved();
   }
 
   function handleChangeBaseValue(text: string) {
-    const formatted = formatCurrency(text);
-    setBaseValue(formatted);
+    setBaseValue(formatCurrency(text));
   }
-
-  const canSave = !day || !selectedCategory || isSaving;
 
   const paddingBottom = useMemo(
     () => keyboardHeight + 16 + insets.bottom,
     [keyboardHeight, insets.bottom]
   );
 
+  const accentBorder = type === 'income' ? 'border-income' : 'border-outcome';
+
   return (
     <View className="px-6 pt-2" style={{ paddingBottom }}>
-      <View className="w-full flex-row items-center justify-between">
-        <Label
-          label={`dia ${day}`}
-          className="text-xl text-text-primary"
-          uppercase={false}
-          style={{ fontFamily: 'Sora_400Regular' }}
+      <Label label="Valor" uppercase={false} />
+      <View
+        className={cn(
+          'mt-2 flex-row items-center rounded-tile border-[1.5px] bg-surface-2 px-4 py-3',
+          accentBorder,
+          isSaving && 'opacity-50'
+        )}
+      >
+        <TextInput
+          value={baseValue}
+          onChangeText={handleChangeBaseValue}
+          editable={!isSaving}
+          placeholder="R$ 0,00"
+          placeholderTextColor="#5E5E66"
+          keyboardType="numeric"
+          style={{
+            flex: 1,
+            fontFamily: 'JetBrainsMono_700Bold',
+            fontSize: 26,
+            color: '#FFFFFF',
+            letterSpacing: -0.5,
+            paddingVertical: 4,
+          }}
         />
       </View>
-      <Input
-        label="Valor"
-        placeholder="R$ 0,00"
-        value={baseValue}
-        onChangeText={handleChangeBaseValue}
-        editable={!isSaving}
-        className={cn('mt-6', isSaving ? 'opacity-50' : 'opacity-100')}
-        keyboardType="numeric"
-      />
-      <View className="mt-6 flex w-full flex-col gap-2">
+
+      <View className="mt-5 flex w-full flex-col gap-2">
         <Label label="Categoria" uppercase={false} />
         <CategorySelect
           list={categories}
@@ -94,10 +118,10 @@ export function AddRecurrenceForm({
       </View>
 
       <Button
-        text="Salvar"
-        disabled={canSave}
+        text={recurrent ? 'Atualizar' : 'Salvar'}
+        disabled={isDisabled}
         onPress={handleSave}
-        className="mt-6"
+        className={cn('mt-6', isDisabled && 'opacity-50')}
       />
     </View>
   );

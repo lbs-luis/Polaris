@@ -1,5 +1,5 @@
 import { cn } from '@/libs/utils';
-import { X } from 'lucide-react-native';
+import { XIcon } from 'phosphor-react-native';
 import { Text, TouchableWithoutFeedback, View } from 'react-native';
 
 interface CategoryBadgeProps {
@@ -17,20 +17,20 @@ export function CategoryBadge({
       className={cn(
         'flex flex-row items-center justify-center gap-3 self-start rounded-full border py-2 pl-5 ',
         !isDefault
-          ? 'border-accent-indigo-border bg-accent-indigo-surface pr-3'
-          : 'border-border-default bg-surface-primary pr-5'
+          ? 'border-border bg-surface-2 pr-3'
+          : 'border-border bg-surface pr-5'
       )}
     >
       <Text
-        className="text-base lowercase text-text-primary"
+        className="text-base lowercase text-text"
         style={{ fontFamily: 'Sora_400Regular' }}
       >
         {label}
       </Text>
       {!isDefault && (
         <TouchableWithoutFeedback onPress={onDelete}>
-          <View className="flex items-center justify-center rounded-full bg-surface-primary p-1">
-            <X size={10} color="#ffffff" />
+          <View className="flex items-center justify-center rounded-full bg-surface p-1">
+            <XIcon size={10} color="#ffffff" weight="bold" />
           </View>
         </TouchableWithoutFeedback>
       )}

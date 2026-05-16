@@ -12,6 +12,7 @@ export interface IRecurrentsTRow {
   id: number;
   category_id: number;
   category_name: string;
+  category_icon: string | null;
   base_value: number;
   due_day: number;
   type: 'income' | 'outcome';
@@ -64,7 +65,7 @@ export function useRecurrentsTable() {
   const select = useCallback(
     async (id: number): Promise<IRecurrentsTSelect> => {
       return (await database.getFirstAsync(
-        `SELECT r.*, c.name as category_name
+        `SELECT r.*, c.name as category_name, c.icon as category_icon
        FROM recurrents r
        JOIN categories c ON c.id = r.category_id
        WHERE r.id = ?`,
@@ -84,12 +85,12 @@ export function useRecurrentsTable() {
   const list = useCallback(
     async (type?: 'income' | 'outcome'): Promise<IRecurrentsTRow[]> => {
       const query = type
-        ? `SELECT r.*, c.name as category_name
+        ? `SELECT r.*, c.name as category_name, c.icon as category_icon
          FROM recurrents r
          JOIN categories c ON c.id = r.category_id
          WHERE r.type = ?
          ORDER BY r.due_day ASC`
-        : `SELECT r.*, c.name as category_name
+        : `SELECT r.*, c.name as category_name, c.icon as category_icon
          FROM recurrents r
          JOIN categories c ON c.id = r.category_id
          ORDER BY r.due_day ASC`;

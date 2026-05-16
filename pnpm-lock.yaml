@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@expo-google-fonts/jetbrains-mono':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@expo-google-fonts/sora':
         specifier: 0.4.2
         version: 0.4.2
@@ -56,12 +59,12 @@ importers:
       expo-status-bar:
         specifier: 55.0.4
         version: 55.0.4(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
-      lucide-react-native:
-        specifier: 0.577.0
-        version: 0.577.0(react-native-svg@15.15.3(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
       nativewind:
         specifier: 4.2.2
         version: 4.2.2(react-native-reanimated@4.2.1(react-native-worklets@0.7.4(@babel/core@7.29.0)(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.2(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)(tailwindcss@3.4.19(yaml@2.8.2))
+      phosphor-react-native:
+        specifier: ^3.0.6
+        version: 3.0.6(react-native-svg@15.15.3(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -80,6 +83,9 @@ importers:
       react-native-screens:
         specifier: 4.23.0
         version: 4.23.0(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      react-native-svg:
+        specifier: 15.15.3
+        version: 15.15.3(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
       react-native-worklets:
         specifier: 0.7.4
         version: 0.7.4(@babel/core@7.29.0)(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
@@ -716,6 +722,9 @@ packages:
   '@eslint/plugin-kit@0.7.1':
     resolution: {integrity: sha512-rZAP3aVgB9ds9KOeUSL+zZ21hPmo8dh6fnIFwRQj5EAZl9gzR7wxYbYXYysAM8CTqGmUGyp2S4kUdV17MnGuWQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@expo-google-fonts/jetbrains-mono@0.4.1':
+    resolution: {integrity: sha512-CslACrtMOcRwoWXCO7OMEI+9w3fukWSoBtvNz46OqPoogEuuoY0tkDY1O8sFumk8t0pC6Cx0Xr95O0TOQhpkug==}
 
   '@expo-google-fonts/material-symbols@0.4.25':
     resolution: {integrity: sha512-MlwOpcYPLYu2+aDAwqv29l3sknNNxA36Jcu07Tg9+MTEvXk2SPcO8eQmwwDeVBbv5Wb6ToD1LmE+e0lLv/9WvA==}
@@ -3122,13 +3131,6 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucide-react-native@0.577.0:
-    resolution: {integrity: sha512-blWv/YqBMrgkYGAgm2wgWiGP1+1GNBf4f/sUlpyfEL8mxvSzhr7H/0MTS1xQgtd1B6gPC/JIPgP3kcdFjnh8zg==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-native: '*'
-      react-native-svg: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0
-
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
 
@@ -3512,6 +3514,13 @@ packages:
   path-scurry@2.0.2:
     resolution: {integrity: sha512-3O/iVVsJAPsOnpwWIeD+d6z/7PmqApyQePUtCndjatj/9I5LylHvt5qluFaBT3I5h3r1ejfR056c+FCv+NnNXg==}
     engines: {node: 18 || 20 || >=22}
+
+  phosphor-react-native@3.0.6:
+    resolution: {integrity: sha512-mIhv+hBbDWz3yLbTOq/esVUkrMoKzEvLIcSeZo3YTdT+sbOBxzxKg5WZN3wpqt3pkkhKf0wVpOyZ3d9mNBNRhg==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+      react-native-svg: '*'
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -5207,6 +5216,8 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
+
+  '@expo-google-fonts/jetbrains-mono@0.4.1': {}
 
   '@expo-google-fonts/material-symbols@0.4.25': {}
 
@@ -8093,12 +8104,6 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide-react-native@0.577.0(react-native-svg@15.15.3(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0):
-    dependencies:
-      react: 19.2.0
-      react-native: 0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0)
-      react-native-svg: 15.15.3(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
-
   makeerror@1.0.12:
     dependencies:
       tmpl: 1.0.5
@@ -8702,6 +8707,12 @@ snapshots:
     dependencies:
       lru-cache: 11.2.6
       minipass: 7.1.3
+
+  phosphor-react-native@3.0.6(react-native-svg@15.15.3(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0))(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0):
+    dependencies:
+      react: 19.2.0
+      react-native: 0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0)
+      react-native-svg: 15.15.3(react-native@0.83.3(@babel/core@7.29.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
 
   picocolors@1.1.1: {}
 

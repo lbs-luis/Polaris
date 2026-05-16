@@ -31,7 +31,7 @@ export function Select({
   return (
     <View
       style={{ opacity: disabled ? 0.5 : 1 }}
-      className="w-full overflow-hidden rounded-lg border border-border-default bg-input-primary"
+      className="w-full overflow-hidden rounded-lg border border-border bg-surface-2"
     >
       <View className="px-2">
         <Picker

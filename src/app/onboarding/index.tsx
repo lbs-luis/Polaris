@@ -24,28 +24,32 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<ISteps>('profile');
 
+  const currentIndex = steps.indexOf(currentStep);
+  const isFirstStep = currentIndex === 0;
+  const isLastStep = currentIndex === steps.length - 1;
+
   function handleNextStep() {
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
-    } else {
+    if (isLastStep) {
       router.replace('/home');
+    } else {
+      setCurrentStep(steps[currentIndex + 1]);
     }
   }
+
   function handlePreviousStep() {
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
-    }
+    if (!isFirstStep) setCurrentStep(steps[currentIndex - 1]);
   }
 
   return (
     <>
-      <OnboardingHeader
+      <OnboardingHeader currentStep={currentStep} />
+      <Step
         currentStep={currentStep}
-        previousStep={handlePreviousStep}
+        onNextStep={handleNextStep}
+        onPreviousStep={handlePreviousStep}
+        isFirstStep={isFirstStep}
+        isLastStep={isLastStep}
       />
-      <Step currentStep={currentStep} onNextStep={handleNextStep} />
     </>
   );
 }

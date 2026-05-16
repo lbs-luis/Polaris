@@ -18,15 +18,12 @@ export function CategoryTypeButton({
       onPress={onSelect}
       className={cn(
         'flex flex-1 items-center justify-center rounded-lg border bg-transparent py-3',
-        selected ? 'border-button-primary/80' : 'border-transparent',
+        selected ? 'border-brand/80' : 'border-transparent',
         className
       )}
     >
       <Text
-        className={cn(
-          'text-base',
-          selected ? 'text-text-primary' : 'text-text-secondary'
-        )}
+        className={cn('text-base', selected ? 'text-text' : 'text-text-dim')}
         style={{ fontFamily: 'Sora_400Regular' }}
       >
         {children}

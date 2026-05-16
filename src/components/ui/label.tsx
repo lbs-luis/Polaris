@@ -15,7 +15,7 @@ export function Label({
   return (
     <Text
       className={cn(
-        'text-base  font-normal  text-text-primary/65',
+        'text-base  font-normal  text-text/65',
         uppercase && 'uppercase',
         className
       )}

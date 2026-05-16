@@ -1,3 +1,4 @@
+import { CatIcon, isCatKind } from '@/components/ui/cat-icon';
 import { Label } from '@/components/ui/label';
 import { ICategoriesTRow } from '@/database/tables/categories.table';
 import { cn } from '@/libs/utils';
@@ -37,10 +38,11 @@ export function CategorySelect({
 
   const CategoryRow = ({ item }: { item: ICategoriesTRow }) => (
     <TouchableOpacity onPress={() => handleSelect(item)}>
-      <View className="mb-2.5 flex w-full rounded-md border border-border-default/10 bg-surface-primary/80  p-3">
+      <View className="mb-2 w-full flex-row items-center gap-3 rounded-tile border border-border-subtle bg-surface px-3 py-2.5">
+        {isCatKind(item.icon) && <CatIcon kind={item.icon} size={32} />}
         <Text
-          className="text-base text-text-primary"
-          style={{ fontFamily: 'Sora_400Regular' }}
+          className="flex-1 text-base text-text"
+          style={{ fontFamily: 'Sora_600SemiBold' }}
         >
           {item.name}
         </Text>
@@ -52,15 +54,15 @@ export function CategorySelect({
     <>
       <Modal visible={open} animationType="fade" transparent>
         <TouchableWithoutFeedback onPress={handleToggleOpen}>
-          <SafeAreaView className="flex-1 items-center justify-center bg-black/50 p-6">
+          <SafeAreaView className="flex-1 items-center justify-center bg-black/60 p-6">
             <View
-              className="flex w-full flex-col gap-4 rounded-lg bg-surface-secondary p-4"
+              className="w-full rounded-card border border-border-subtle bg-surface-2 p-5"
               style={{ maxHeight: '60%' }}
             >
               <Label
                 label="Selecione uma categoria"
                 uppercase={false}
-                className="text-base text-text-primary/80"
+                className="mb-3 text-base text-text"
               />
               <FlatList
                 data={list}
@@ -76,13 +78,13 @@ export function CategorySelect({
       <TouchableOpacity
         onPress={handleToggleOpen}
         className={cn(
-          'flex h-14 w-full justify-center rounded-lg border border-border-default bg-input-primary px-4',
+          'flex h-14 w-full justify-center rounded-tile border border-border bg-surface-2 px-4',
           className
         )}
       >
         <Text
-          className="text-base text-text-primary"
-          style={{ fontFamily: 'Sora_400Regular' }}
+          className="text-base text-text"
+          style={{ fontFamily: 'Sora_600SemiBold' }}
         >
           {selected ? selected.name : 'Selecione'}
         </Text>

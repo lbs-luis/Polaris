@@ -1,70 +1,111 @@
-import { InvoiceSnackbar } from '@/components/ui/invoice-snackbar';
-import { ScannerButton } from '@/components/ui/scanner-button';
-import { TransactionRow } from '@/components/ui/transaction-row';
-import { useTransactionsTable } from '@/database/tables/transactions.table';
-import { useInvoiceProcessor } from '@/hooks/use-invoice-processor';
-import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { AddBankAccountForm } from '@/components/home/add-bank-account-form';
+import { HomeHeader } from '@/components/home/home-header';
+import { MovementCard } from '@/components/home/movement-card';
+import { PredictedBalanceCard } from '@/components/home/predicted-balance-card';
+import { RecentTransactionsCard } from '@/components/home/recent-transactions-card';
+import { SefazNotification } from '@/components/invoice-scanner';
+import {
+  FloatingBottomNav,
+  NavTab,
+} from '@/components/layout/floating-bottom-nav';
+import { useBottomSheetContext } from '@/context/bottomsheet.context';
+import { IBankAccountTRow } from '@/database/tables/bank-accounts.table';
+import { useHomeScreen } from '@/hooks/view-models/use-home-screen';
+import { useRouter } from 'expo-router';
+import { ScrollView, View } from 'react-native';
 
 export default function HomeScreen() {
-  const { list } = useTransactionsTable();
-  const { state, process } = useInvoiceProcessor();
-  const [transactions, setTransactions] = useState<
-    Awaited<ReturnType<typeof list>>
-  >([]);
+  const router = useRouter();
+  const {
+    accounts,
+    total,
+    monthLabel,
+    monthIncome,
+    monthOutcome,
+    monthNet,
+    recentTransactions,
+    isLoadingTransactions,
+    addAccount,
+    updateAccount,
+    removeAccount,
+    refresh,
+  } = useHomeScreen();
+  const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
 
-  useEffect(() => {
-    list().then(setTransactions);
-  }, [list]);
+  async function handleSaved() {
+    closeBottomSheet();
+    await refresh();
+  }
 
-  useEffect(() => {
-    if (state.status === 'done') {
-      list().then(setTransactions);
-    }
-  }, [state.status, list]);
+  function openAddAccountSheet() {
+    openBottomSheet(
+      <AddBankAccountForm
+        onSaved={handleSaved}
+        onAdd={addAccount}
+        onUpdate={updateAccount}
+        onRemove={removeAccount}
+      />,
+      { title: 'Nova conta' }
+    );
+  }
 
-  const handleConfirm = useCallback(
-    async (urls: string[]) => {
-      await process(urls);
-    },
-    [process]
-  );
+  function openEditAccountSheet(account: IBankAccountTRow) {
+    openBottomSheet(
+      <AddBankAccountForm
+        account={account}
+        onSaved={handleSaved}
+        onAdd={addAccount}
+        onUpdate={updateAccount}
+        onRemove={removeAccount}
+      />,
+      { title: 'Editar conta' }
+    );
+  }
 
-  const isProcessing = state.status !== 'idle';
+  function handleTabPress(tab: NavTab) {
+    if (tab === 'scan') router.push('/scan');
+    // tx, me, home — no-op for now
+  }
 
   return (
-    <View className="flex flex-1 flex-col bg-app-bg p-6">
-      <Text
-        style={{ fontFamily: 'Sora_700Bold' }}
-        className="mt-6 text-3xl text-text-primary"
-      >
-        Ínicio
-      </Text>
-      <Text
-        style={{ fontFamily: 'Sora_400Regular' }}
-        className="mt-6 text-lg text-text-primary/60"
-      >
-        Transações
-      </Text>
+    <View className="flex-1 bg-bg pt-2">
+      <HomeHeader />
+      <SefazNotification />
 
-      <ScrollView className="mt-6 flex flex-1 flex-col">
-        {transactions.length === 0 ? (
-          <Text
-            style={{ fontFamily: 'Sora_400Regular' }}
-            className="mt-6 text-center text-sm  text-text-secondary"
-          >
-            Nenhuma transação registrada.
-          </Text>
-        ) : (
-          transactions.map((t, i) => (
-            <TransactionRow key={`${i}-${t.id}`} transaction={t} />
-          ))
-        )}
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 16,
+          paddingBottom: 110,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <PredictedBalanceCard
+          total={total}
+          accounts={accounts}
+          onAddAccount={openAddAccountSheet}
+          onEditAccount={openEditAccountSheet}
+        />
+        <View className="mt-3">
+          <MovementCard
+            month={monthLabel}
+            income={monthIncome}
+            outcome={monthOutcome}
+            net={monthNet}
+          />
+        </View>
+        {/* <QuickActions
+          onScan={() => router.push('/scan')}
+          onAdd={openAddAccountSheet}
+        /> */}
+        <RecentTransactionsCard
+          transactions={recentTransactions}
+          isLoading={isLoadingTransactions}
+        />
       </ScrollView>
 
-      <InvoiceSnackbar state={state} />
-
-      {!isProcessing && <ScannerButton onConfirm={handleConfirm} />}
+      <FloatingBottomNav active="home" onTabPress={handleTabPress} />
     </View>
   );
 }

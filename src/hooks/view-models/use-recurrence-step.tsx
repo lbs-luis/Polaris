@@ -9,7 +9,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 
 export function useRecurrenceStep(type: 'income' | 'outcome') {
-  const { list: listRecurrents } = useRecurrentsTable();
+  const { list: listRecurrents, exclude } = useRecurrentsTable();
   const { list: listCategories } = useCategoriesTable();
 
   const [registries, setRegistries] = useState<IRecurrentsTRow[]>([]);
@@ -31,5 +31,16 @@ export function useRecurrenceStep(type: 'income' | 'outcome') {
     loadData();
   }, [loadData]);
 
-  return { registries, categories, isLoading, refresh: loadData };
+  async function handleExclude(id: number) {
+    await exclude(id);
+    loadData();
+  }
+
+  return {
+    registries,
+    categories,
+    isLoading,
+    refresh: loadData,
+    handleExclude,
+  };
 }

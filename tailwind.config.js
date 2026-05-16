@@ -5,60 +5,63 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        bg: '#000000',
         surface: {
-          primary: '#1d1d20',
-          secondary: '#18181b',
-        },
-        button: {
-          primary: '#ffffff',
-          disabled: '#29292c',
-        },
-        input: {
-          primary: '#1f1f22',
-        },
-        glass: {
-          light: 'rgba(255,255,255,0.06)', // inputs, back button
-          card: 'rgba(255,255,255,0.05)', // calendário, cards
-          row: 'rgba(255,255,255,0.04)', // transaction rows, log rows
+          DEFAULT: '#0E0E10',
+          2: '#18181B',
+          3: '#26262A',
         },
         border: {
-          default: 'rgba(255,255,255,0.12)', // cards, inputs, chips
+          DEFAULT: '#2A2A2E',
+          subtle: '#1B1B1F',
         },
         text: {
-          primary: '#ffffff', // títulos, valores
-          'primary-muted': '#0a0a0c',
-          secondary: 'rgba(255,255,255,0.35)', // subtítulos, labels
-          placeholder: 'rgba(255,255,255,0.25)', // placeholders, hints
-          tertiary: 'rgba(255,255,255,0.30)', // section labels, datas
+          DEFAULT: '#FFFFFF',
+          dim: '#9A9AA2',
+          mute: '#5E5E66',
+          inverse: '#000000',
         },
-
-        income: '#34d399',
-        outcome: '#f87171',
-        warning: '#ef9f27',
-
-        accent: {
-          blue: {
-            text: '#60a5fa',
-            surface: 'rgba(59,130,246,0.12)',
-            border: 'rgba(59,130,246,0.25)',
-          },
-          indigo: {
-            text: '#6366f1',
-            surface: 'rgba(99,102,241,0.1)',
-            border: 'rgba(99,102,241,0.25)',
-          },
-
-          muted: '#60a5fa',
+        brand: {
+          DEFAULT: '#FFFFFF',
+          dark: '#E8E8EC',
         },
-        glow: {
-          blue: '#3b82f6', // bg-glow-blue/[0.18]
-          purple: '#8b5cf6', // bg-glow-purple/[0.15]
-          green: '#10b981', // bg-glow-green/[0.15]
-          orange: '#f97316', // bg-glow-orange/[0.12]
+        income: '#3CC85F',
+        outcome: '#FF4D4D',
+        warning: '#FFB320',
+        cat: {
+          'food-bg': '#1F1818',
+          'food-fg': '#FF8A8A',
+          'home-bg': '#161A21',
+          'home-fg': '#7AB4FF',
+          'trans-bg': '#181820',
+          'trans-fg': '#9BA9FF',
+          'shop-bg': '#1F1A22',
+          'shop-fg': '#C99AFF',
+          'health-bg': '#161E1B',
+          'health-fg': '#6FD8B0',
+          'fun-bg': '#221C16',
+          'fun-fg': '#FFC07A',
+          'edu-bg': '#161E22',
+          'edu-fg': '#7BD3F7',
+          'subs-bg': '#1A171F',
+          'subs-fg': '#A99CFF',
+          'salary-bg': '#161E18',
+          'salary-fg': '#7AE090',
+          'invest-bg': '#1A1A1D',
+          'invest-fg': '#CCD2DE',
         },
-        app: {
-          bg: '#111114',
-        },
+      },
+      borderRadius: {
+        card: '24px',
+        sheet: '26px',
+        tile: '14px',
+      },
+      fontFamily: {
+        sora: ['Sora_400Regular'],
+        'sora-semi': ['Sora_600SemiBold'],
+        'sora-bold': ['Sora_700Bold'],
+        mono: ['JetBrainsMono_500Medium'],
+        'mono-bold': ['JetBrainsMono_700Bold'],
       },
       transitionProperty: {
         width: 'width',

@@ -1,68 +1,62 @@
+import { CatIcon, isCatKind } from '@/components/ui/cat-icon';
+import { Money } from '@/components/ui/money';
 import { ITransactionsTRow } from '@/database/tables/transactions.table';
-import { formatCurrency } from '@/libs/masks';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
+import { formatTransactionTime } from '@/libs/dates';
 import { Text, View } from 'react-native';
 
-export function TransactionRow({
-  transaction,
-}: {
+interface TransactionRowProps {
   transaction: ITransactionsTRow;
-}) {
+  isFirst?: boolean;
+}
+
+export function TransactionRow({ transaction, isFirst }: TransactionRowProps) {
+  const signedValue =
+    transaction.category_type === 'outcome'
+      ? -Math.abs(transaction.value) / 100
+      : transaction.value / 100;
+
+  const subtitle = formatTransactionTime(
+    transaction.issued_at,
+    transaction.due_day,
+    transaction.month,
+    transaction.year
+  );
+
+  const valueClass =
+    signedValue >= 0 ? 'text-sm text-income' : 'text-sm text-text';
+
   return (
-    <View className="mt-2 w-full">
-      <LinearGradient
-        colors={[
-          'rgba(45,45,52,0.6)',
-          'rgba(29,29,32,0.4)',
-          'rgba(20,20,24,0.5)',
-        ]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          borderRadius: 20,
-        }}
-      />
-      <BlurView
-        intensity={80}
-        tint="dark"
-        style={{
-          borderRadius: 14,
-          overflow: 'hidden',
-          borderWidth: 0.5,
-          borderColor: 'rgba(255,255,255,0.08)',
-          backgroundColor: 'rgba(29,29,32,0.3)',
-          paddingHorizontal: 10,
-          paddingVertical: 12,
-        }}
-        className="flex flex-row items-center"
-      >
-        <View className="self-start rounded-lg bg-surface-primary px-1.5 py-1">
+    <View
+      className={`flex-row items-center gap-3 px-3.5 py-3 ${isFirst ? '' : 'border-t border-border-subtle'}`}
+    >
+      {isCatKind(transaction.category_icon) ? (
+        <CatIcon kind={transaction.category_icon} size={36} />
+      ) : (
+        <View className="h-9 w-9 items-center justify-center rounded-tile bg-surface-2">
           <Text
-            className="text-text-primary"
-            style={{ fontFamily: 'Sora_400Regular' }}
+            className="text-xs text-text-dim"
+            style={{ fontFamily: 'Sora_700Bold' }}
           >
-            {transaction.due_day}
+            {transaction.description?.[0]?.toUpperCase() ?? '?'}
           </Text>
         </View>
+      )}
+      <View className="flex-1">
         <Text
-          className="ml-3 text-sm text-text-primary"
-          style={{ fontFamily: 'Sora_400Regular' }}
+          numberOfLines={1}
+          className="text-sm text-text"
+          style={{ fontFamily: 'Sora_700Bold' }}
         >
-          {transaction.description}
+          {transaction.description ?? 'Sem descrição'}
         </Text>
         <Text
-          className={'ml-3 text-sm text-text-primary/80'}
+          className="mt-0.5 text-xs text-text-dim"
           style={{ fontFamily: 'Sora_400Regular' }}
         >
-          {formatCurrency(transaction.value.toString())}
+          {subtitle}
         </Text>
-      </BlurView>
+      </View>
+      <Money value={signedValue} sign className={valueClass} bold />
     </View>
   );
 }

@@ -11,6 +11,7 @@ export function Button({
   className,
   disabled,
   uppercase = false,
+  children,
   ...props
 }: ButtonProps) {
   return (
@@ -18,16 +19,20 @@ export function Button({
       {...props}
       className={cn(
         'flex h-14 w-full flex-row items-center justify-center gap-2 overflow-hidden rounded-2xl',
-        disabled ? 'bg-button-disabled' : 'bg-button-primary',
+        disabled ? 'bg-surface-2' : 'bg-brand',
         className
       )}
     >
-      <Text
-        className="text-lg text-text-primary-muted"
-        style={{ fontFamily: 'Sora_600SemiBold' }}
-      >
-        {uppercase ? text?.toUpperCase() : text}
-      </Text>
+      {text ? (
+        <Text
+          className="text-lg text-text-inverse"
+          style={{ fontFamily: 'Sora_600SemiBold' }}
+        >
+          {uppercase ? text.toUpperCase() : text}
+        </Text>
+      ) : (
+        children
+      )}
     </TouchableOpacity>
   );
 }
