@@ -3,6 +3,7 @@ import { CatIcon, isCatKind } from '@/components/ui/cat-icon';
 import { Money } from '@/components/ui/money';
 import { SwipeableRow } from '@/components/ui/swipeable-row';
 import { IRecurrentsTRow } from '@/database/tables/recurrents.table';
+import { rowRadiusClass } from '@/libs/list-radius';
 import { Text, View } from 'react-native';
 
 interface DayEntriesListProps {
@@ -43,22 +44,24 @@ export function DayEntriesList({
           className="text-center text-sm text-text-dim"
           style={{ fontFamily: 'Sora_400Regular' }}
         >
-          Nenhum lançamento registrado.
+          Nenhuma recorrência registrada.
         </Text>
       </Card>
     );
   }
 
   return (
-    <Card className="mt-2.5 p-1.5">
+    <Card className="mt-2.5 p-0">
       {entries.map((e, i) => (
         <SwipeableRow
           key={e.id}
+          index={i}
+          total={entries.length}
           onEdit={() => onEdit(e)}
           onDelete={() => onDelete(e.id)}
         >
           <View
-            className={`flex-row items-center gap-3 px-3 py-3 ${i === 0 ? '' : 'border-t border-border-subtle'}`}
+            className={`flex-row items-center gap-3 bg-surface px-3 py-3 ${rowRadiusClass(i, entries.length)} ${i === 0 ? '' : 'border-t border-border-subtle'}`}
           >
             <EntryAvatar entry={e} />
             <View className="flex-1">

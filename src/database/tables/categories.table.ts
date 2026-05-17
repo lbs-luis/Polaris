@@ -110,5 +110,15 @@ export const CreateCategoriesTable = `
     isDefault INTEGER NOT NULL DEFAULT 0,
     updatedAt TIMESTAMP NOT NULL
   );
-  INSERT OR IGNORE INTO categories (id, name, type, isDefault, updatedAt) VALUES (1, 'Movimento Diário', 'outcome', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (id, name, type, icon, isDefault, updatedAt) VALUES (1, 'Movimento Diário', 'outcome', NULL, 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Mercado', 'outcome', 'food', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Restaurante', 'outcome', 'food', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Farmácia', 'outcome', 'health', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Combustível', 'outcome', 'trans', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Transporte', 'outcome', 'trans', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Compras', 'outcome', 'shop', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Saúde', 'outcome', 'health', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Lazer', 'outcome', 'fun', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Educação', 'outcome', 'edu', 1, CURRENT_TIMESTAMP);
+  INSERT OR IGNORE INTO categories (name, type, icon, isDefault, updatedAt) VALUES ('Outros', 'outcome', 'shop', 1, CURRENT_TIMESTAMP);
 `;

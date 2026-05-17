@@ -10,28 +10,33 @@ import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import { ICategoriesTRow } from '@/database/tables/categories.table';
 import { useCategoryStep } from '@/hooks/view-models/use-category-step';
 import { IRenderStepProps } from '@/interfaces/onboarding.types';
+import { rowRadiusClass } from '@/libs/list-radius';
 import { cn } from '@/libs/utils';
 import { CaretRightIcon, PlusIcon } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 function CategoryRow({
   item,
-  isFirst,
+  index,
+  total,
   onEdit,
   onDelete,
 }: {
   item: ICategoriesTRow;
-  isFirst: boolean;
+  index: number;
+  total: number;
   onEdit?: (item: ICategoriesTRow) => void;
   onDelete?: (name: string) => void;
 }) {
   return (
     <SwipeableRow
+      index={index}
+      total={total}
       onEdit={onEdit ? () => onEdit(item) : undefined}
       onDelete={onDelete ? () => onDelete(item.name) : undefined}
     >
       <View
-        className={`flex-row items-center gap-3 bg-surface px-3 py-2.5 ${isFirst ? '' : 'border-t border-border-subtle'}`}
+        className={`flex-row items-center gap-3 bg-surface px-3 py-2.5 ${rowRadiusClass(index, total)} ${index === 0 ? '' : 'border-t border-border-subtle'}`}
       >
         {isCatKind(item.icon) ? (
           <CatIcon kind={item.icon} size={36} />
@@ -84,12 +89,13 @@ function CategoryGroup({
           {items.length}
         </Text>
       </View>
-      <Card className={cn('p-1.5', items.length > 0 ? 'flex' : 'hidden')}>
+      <Card className={cn('p-0', items.length > 0 ? 'flex' : 'hidden')}>
         {items.map((c, i) => (
           <CategoryRow
             key={c.id}
             item={c}
-            isFirst={i === 0}
+            index={i}
+            total={items.length}
             onEdit={c.isDefault ? undefined : onEdit}
             onDelete={c.isDefault ? undefined : onDelete}
           />

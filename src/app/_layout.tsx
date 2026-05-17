@@ -1,6 +1,7 @@
 import { BottomSheetProvider } from '@/context/bottomsheet.context';
 import { InvoiceProcessorProvider } from '@/context/invoice-processor.context';
 import { migrate } from '@/database/migrate';
+import { useRecurrentsReconciler } from '@/hooks/use-recurrents-reconciler';
 import '@/styles/global.css';
 import {
   JetBrainsMono_500Medium,
@@ -17,6 +18,15 @@ import { SQLiteProvider } from 'expo-sqlite';
 import { Suspense } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+/**
+ * Mounted inside the SQLiteProvider so the hook can read/write the DB.
+ * Runs the recurrents-to-transactions reconciliation at most once per day.
+ */
+function RecurrentsReconciler() {
+  useRecurrentsReconciler();
+  return null;
+}
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -35,6 +45,7 @@ export default function RootLayout() {
         <SQLiteProvider onInit={migrate} databaseName="polaris.db" useSuspense>
           <InvoiceProcessorProvider>
             <BottomSheetProvider>
+              <RecurrentsReconciler />
               <SafeAreaView
                 edges={['top', 'bottom']}
                 style={{ flex: 1 }}

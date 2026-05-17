@@ -1,5 +1,4 @@
 import { cn } from '@/libs/utils';
-import { ArrowRightIcon } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 interface ConcluirButtonProps {
@@ -31,7 +30,6 @@ export function ConcluirButton({ disabled, onPress }: ConcluirButtonProps) {
         >
           Concluir
         </Text>
-        <ArrowRightIcon size={16} color="#000000" weight="bold" />
       </View>
     </Pressable>
   );

@@ -1,43 +1,46 @@
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback } from 'react';
 
-export interface InvoiceItem {
+export interface IInvoiceItem {
   desc: string;
+  code: string;
   qty: number;
-  unit: number; // centavos
-  total: number; // centavos
+  unit_value: number; // cents
+  total_value: number; // cents
 }
 
 export interface IInvoicesTUpdate {
-  chave_acesso: string;
-  establishment_name: string;
+  key: string; // chave de acesso (44 digits)
+  merchant: string;
   cnpj: string;
-  issued_at: string; // ISO date
-  total_value: number; // centavos
-  tax_icms: number;
-  tax_iof: number;
-  tax_pis: number;
-  tax_cofins: number;
-  tax_others: number;
-  items: string; // JSON array string
+  address?: string | null;
+  issued_at: string; // ISO datetime (YYYY-MM-DDTHH:MM:SS)
+  number?: string | null;
+  series?: string | null;
+  protocol?: string | null;
+  total: number; // cents
+  tax_total: number; // cents
+  payment_method?: string | null;
+  paid?: number | null;
+  items: string; // JSON array of IInvoiceItem
   qrcode_url: string;
-  raw_html: string;
 }
 
 export interface IInvoicesTRow {
-  chave_acesso: string;
-  establishment_name: string;
+  key: string;
+  merchant: string;
   cnpj: string;
+  address: string | null;
   issued_at: string;
-  total_value: number;
-  tax_icms: number;
-  tax_iof: number;
-  tax_pis: number;
-  tax_cofins: number;
-  tax_others: number;
+  number: string | null;
+  series: string | null;
+  protocol: string | null;
+  total: number;
+  tax_total: number;
+  payment_method: string | null;
+  paid: number | null;
   items: string;
   qrcode_url: string;
-  raw_html: string;
   scanned_at: string;
 }
 
@@ -50,24 +53,27 @@ export function useInvoicesTable() {
     async (invoice: IInvoicesTUpdate) => {
       await database.runAsync(
         `INSERT OR IGNORE INTO invoices (
-          chave_acesso, establishment_name, cnpj, issued_at,
-          total_value, tax_icms, tax_iof, tax_pis, tax_cofins, tax_others,
-          items, qrcode_url, raw_html, scanned_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+          key, merchant, cnpj, address, issued_at,
+          number, series, protocol,
+          total, tax_total,
+          payment_method, paid,
+          items, qrcode_url, scanned_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
         [
-          invoice.chave_acesso,
-          invoice.establishment_name,
+          invoice.key,
+          invoice.merchant,
           invoice.cnpj,
+          invoice.address ?? null,
           invoice.issued_at,
-          invoice.total_value,
-          invoice.tax_icms,
-          invoice.tax_iof,
-          invoice.tax_pis,
-          invoice.tax_cofins,
-          invoice.tax_others,
+          invoice.number ?? null,
+          invoice.series ?? null,
+          invoice.protocol ?? null,
+          invoice.total,
+          invoice.tax_total,
+          invoice.payment_method ?? null,
+          invoice.paid ?? null,
           invoice.items,
           invoice.qrcode_url,
-          invoice.raw_html,
         ]
       );
     },
@@ -75,10 +81,10 @@ export function useInvoicesTable() {
   );
 
   const select = useCallback(
-    async (chave_acesso: string): Promise<IInvoicesTSelect> => {
+    async (key: string): Promise<IInvoicesTSelect> => {
       return (await database.getFirstAsync(
-        `SELECT * FROM invoices WHERE chave_acesso = ?`,
-        [chave_acesso]
+        `SELECT * FROM invoices WHERE key = ?`,
+        [key]
       )) as IInvoicesTSelect;
     },
     [database]
@@ -91,10 +97,8 @@ export function useInvoicesTable() {
   }, [database]);
 
   const exclude = useCallback(
-    async (chave_acesso: string) => {
-      await database.runAsync(`DELETE FROM invoices WHERE chave_acesso = ?`, [
-        chave_acesso,
-      ]);
+    async (key: string) => {
+      await database.runAsync(`DELETE FROM invoices WHERE key = ?`, [key]);
     },
     [database]
   );
@@ -104,19 +108,20 @@ export function useInvoicesTable() {
 
 export const CreateInvoicesTable = `
   CREATE TABLE IF NOT EXISTS invoices (
-    chave_acesso TEXT PRIMARY KEY,
-    establishment_name TEXT NOT NULL,
+    key TEXT PRIMARY KEY,
+    merchant TEXT NOT NULL,
     cnpj TEXT NOT NULL,
+    address TEXT,
     issued_at TEXT NOT NULL,
-    total_value INTEGER NOT NULL,
-    tax_icms INTEGER NOT NULL DEFAULT 0,
-    tax_iof INTEGER NOT NULL DEFAULT 0,
-    tax_pis INTEGER NOT NULL DEFAULT 0,
-    tax_cofins INTEGER NOT NULL DEFAULT 0,
-    tax_others INTEGER NOT NULL DEFAULT 0,
+    number TEXT,
+    series TEXT,
+    protocol TEXT,
+    total INTEGER NOT NULL,
+    tax_total INTEGER NOT NULL DEFAULT 0,
+    payment_method TEXT,
+    paid INTEGER,
     items TEXT NOT NULL,
     qrcode_url TEXT NOT NULL,
-    raw_html TEXT NOT NULL,
     scanned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 `;

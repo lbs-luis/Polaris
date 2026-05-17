@@ -4,18 +4,15 @@ import { MovementCard } from '@/components/home/movement-card';
 import { PredictedBalanceCard } from '@/components/home/predicted-balance-card';
 import { RecentTransactionsCard } from '@/components/home/recent-transactions-card';
 import { SefazNotification } from '@/components/invoice-scanner';
-import {
-  FloatingBottomNav,
-  NavTab,
-} from '@/components/layout/floating-bottom-nav';
+import { FloatingBottomNav } from '@/components/layout/floating-bottom-nav';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import { IBankAccountTRow } from '@/database/tables/bank-accounts.table';
+import { useFloatingNavRouter } from '@/hooks/use-floating-nav-router';
 import { useHomeScreen } from '@/hooks/view-models/use-home-screen';
-import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const { onTabPress } = useFloatingNavRouter();
   const {
     accounts,
     total,
@@ -62,11 +59,6 @@ export default function HomeScreen() {
     );
   }
 
-  function handleTabPress(tab: NavTab) {
-    if (tab === 'scan') router.push('/scan');
-    // tx, me, home — no-op for now
-  }
-
   return (
     <View className="flex-1 bg-bg pt-2">
       <HomeHeader />
@@ -105,7 +97,7 @@ export default function HomeScreen() {
         />
       </ScrollView>
 
-      <FloatingBottomNav active="home" onTabPress={handleTabPress} />
+      <FloatingBottomNav active="home" onTabPress={onTabPress} />
     </View>
   );
 }

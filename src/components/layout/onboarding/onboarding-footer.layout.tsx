@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { GhostButton } from '@/components/ui/ghost-button';
-import { ArrowRightIcon } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
 interface OnboardingFooterProps {
@@ -34,7 +33,6 @@ export function OnboardingFooter({
         >
           {continueText}
         </Text>
-        <ArrowRightIcon size={18} color="#000000" weight="bold" />
       </Button>
     </View>
   );

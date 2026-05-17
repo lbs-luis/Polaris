@@ -49,16 +49,11 @@ export function useScannerScreen({ onDone }: UseScannerScreenOptions) {
     onDone();
   }, [clearQueue, onDone]);
 
-  const handleShutter = useCallback(() => {
-    // auto-scan via onBarcodeScanned; shutter is decorative for now
-  }, []);
-
   return {
     permission,
     scannedUrls,
     handleBarcodeScanned,
     handleConcluir,
     handleClose,
-    handleShutter,
   };
 }

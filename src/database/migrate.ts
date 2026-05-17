@@ -36,4 +36,10 @@ export async function migrate(database: SQLiteDatabase) {
 
   await ensureColumn(database, 'categories', 'icon', 'TEXT');
   await ensureColumn(database, 'transactions', 'issued_at', 'TEXT');
+  await ensureColumn(
+    database,
+    'recurrents',
+    'concluded',
+    'INTEGER NOT NULL DEFAULT 0'
+  );
 }

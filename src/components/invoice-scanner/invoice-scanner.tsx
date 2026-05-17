@@ -1,12 +1,12 @@
 import { useScannerScreen } from '@/hooks/view-models/use-scanner-screen';
 import { CameraView } from 'expo-camera';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { ConcluirButton } from './concluir-button';
 import { ScanAimWindow } from './scan-aim-window';
-import { ScanInstruction } from './scan-instruction';
-import { ScanQueueStrip } from './scan-queue-strip';
-import { ScanTopBar } from './scan-top-bar';
-import { ShutterButton } from './shutter-button';
+import { ScanCounter } from './scan-counter';
+
+import { BlurView } from 'expo-blur';
+import { XIcon } from 'phosphor-react-native';
 
 interface InvoiceScannerProps {
   onDone: () => void;
@@ -38,27 +38,26 @@ export function InvoiceScanner({ onDone }: InvoiceScannerProps) {
       />
 
       <ScanAimWindow />
-      <ScanTopBar onClose={vm.handleClose} batchCount={vm.scannedUrls.length} />
-      <ScanInstruction />
 
-      <View className="absolute inset-x-0 bottom-0 pb-6">
-        <ScanQueueStrip urls={vm.scannedUrls} />
-        <View className="mt-3 flex-row items-center justify-between px-6">
-          <View
-            className="h-13 w-13 items-center justify-center rounded-2xl bg-white/[0.08]"
-            style={{
-              width: 52,
-              height: 52,
-              borderWidth: 1,
-              borderColor: 'rgba(255,255,255,0.15)',
-            }}
-          />
-          <ShutterButton onPress={vm.handleShutter} />
-          <ConcluirButton
-            disabled={vm.scannedUrls.length === 0}
-            onPress={vm.handleConcluir}
-          />
-        </View>
+      <Pressable
+        onPress={vm.handleClose}
+        className=" absolute right-4 top-4 overflow-hidden rounded-full"
+      >
+        <BlurView
+          intensity={30}
+          tint="dark"
+          className="h-10 w-10 items-center justify-center bg-black/55"
+        >
+          <XIcon size={22} color="#FFFFFF" weight="bold" />
+        </BlurView>
+      </Pressable>
+      <ScanCounter counter={vm.scannedUrls.length} />
+
+      <View className="absolute bottom-4 right-4  w-28">
+        <ConcluirButton
+          disabled={vm.scannedUrls.length === 0}
+          onPress={vm.handleConcluir}
+        />
       </View>
     </View>
   );

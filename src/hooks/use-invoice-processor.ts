@@ -1,5 +1,7 @@
+import { useCategoriesTable } from '@/database/tables/categories.table';
 import { useInvoicesTable } from '@/database/tables/invoices.table';
 import { useTransactionsTable } from '@/database/tables/transactions.table';
+import { classifyByMerchant } from '@/libs/invoice-classifier';
 import {
   fetchInvoices,
   InvoiceResult,
@@ -54,7 +56,8 @@ function parseInvoiceDateTime(issued_at: string): ParsedDateTime {
 export function useInvoiceProcessor() {
   const [state, setState] = useState<ProcessorState>({ status: 'idle' });
   const { set: setInvoice } = useInvoicesTable();
-  const { set: setTransaction } = useTransactionsTable();
+  const { set: setTransaction, lastByDescription } = useTransactionsTable();
+  const { list: listCategories } = useCategoriesTable();
 
   const process = useCallback(
     async (urls: string[]) => {
@@ -70,25 +73,51 @@ export function useInvoiceProcessor() {
         .filter((r): r is [ParsedInvoice, null] => r[0] !== null)
         .map((r) => r[0]);
 
+      // Load categories once per batch so each invoice can be linked to a
+      // valid id without N round-trips. Resolution order, per merchant:
+      //   1. Static classifier hit (e.g. "Mercado", "Restaurante").
+      //   2. Learned default — the most recent transaction with the same
+      //      description. This makes user edits sticky: rename a single
+      //      "ALPHA POSTO" → "Transporte" once, and every future scan of
+      //      that merchant starts there automatically.
+      //   3. Catch-all "Outros".
+      const categories = await listCategories();
+      const fallbackId = categories.find((c) => c.name === 'Outros')?.id ?? 1;
+
+      const resolveCategoryId = async (merchant: string): Promise<number> => {
+        const matched = classifyByMerchant(merchant);
+        if (matched) {
+          const cat = categories.find((c) => c.name === matched);
+          if (cat) return cat.id;
+        }
+        const previous = await lastByDescription(merchant);
+        if (previous?.category_id != null) return previous.category_id;
+        return fallbackId;
+      };
+
       for (const invoice of successful) {
         try {
           await setInvoice({
-            chave_acesso: invoice.chave_acesso,
-            establishment_name: invoice.establishment_name,
+            key: invoice.chave_acesso,
+            merchant: invoice.establishment_name,
             cnpj: invoice.cnpj,
+            address: invoice.address || null,
             issued_at: invoice.issued_at,
-            total_value: invoice.total_value,
-            tax_icms: 0,
-            tax_iof: 0,
-            tax_pis: 0,
-            tax_cofins: 0,
-            tax_others: invoice.tax_total,
+            number: invoice.number,
+            series: invoice.series,
+            protocol: invoice.protocol,
+            total: invoice.total_value,
+            tax_total: invoice.tax_total,
+            payment_method: invoice.payment_method,
+            paid: invoice.paid,
             items: JSON.stringify(invoice.items),
             qrcode_url: invoice.qrcode_url,
-            raw_html: '',
           });
 
           const parsed = parseInvoiceDateTime(invoice.issued_at);
+          const category_id = await resolveCategoryId(
+            invoice.establishment_name
+          );
 
           await setTransaction({
             value: invoice.total_value,
@@ -96,7 +125,7 @@ export function useInvoiceProcessor() {
             year: parsed.year,
             due_day: parsed.day,
             description: invoice.establishment_name,
-            category_id: 1,
+            category_id,
             invoice_id: invoice.chave_acesso,
             issued_at: parsed.iso,
           });
@@ -108,7 +137,7 @@ export function useInvoiceProcessor() {
       setTimeout(() => setState({ status: 'idle' }), 5000);
       return results;
     },
-    [setInvoice, setTransaction]
+    [setInvoice, setTransaction, listCategories, lastByDescription]
   );
 
   const dismiss = useCallback(() => setState({ status: 'idle' }), []);

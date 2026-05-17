@@ -1,5 +1,6 @@
 export interface InvoiceItem {
   desc: string;
+  code: string;
   qty: number;
   unit: number; // centavos
   total: number; // centavos
@@ -11,8 +12,13 @@ export interface ParsedInvoice {
   cnpj: string;
   address: string;
   issued_at: string;
+  number: string | null;
+  series: string | null;
+  protocol: string | null;
   total_value: number; // centavos
   tax_total: number; // centavos
+  payment_method: string | null;
+  paid: number | null; // centavos
   items: InvoiceItem[];
   qrcode_url: string;
 }
@@ -49,6 +55,7 @@ function parseItems(html: string): InvoiceItem[] {
   return rows.map((row) => {
     const content = row[1];
     const desc = content.match(/class="txtTit">([^<]+)/)?.[1]?.trim() ?? '';
+    const code = content.match(/\(Código:\s*(\d+)\s*\)/)?.[1]?.trim() ?? '';
     const qty = content.match(/Qtde\.:?<\/strong>([^<]+)/)?.[1]?.trim() ?? '1';
     const unit =
       content.match(/Vl\. Unit\.:?<\/strong>[^>]*>?([^<]+)/)?.[1]?.trim() ??
@@ -56,6 +63,7 @@ function parseItems(html: string): InvoiceItem[] {
     const total = content.match(/class="valor">([^<]+)/)?.[1]?.trim() ?? '0';
     return {
       desc,
+      code,
       qty: parseFloat(qty.replace(',', '.')) || 1,
       unit: toCents(unit),
       total: toCents(total),
@@ -72,12 +80,31 @@ function parseHtml(
 
   const cnpj = html.match(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/)?.[0] ?? '';
 
+  // Address: the SEFAZ block emits sibling <div class="text">…</div> entries
+  // under the merchant header — the CNPJ line first, then the address line.
   const textBlocks = [...html.matchAll(/class="text"[^>]*>([\s\S]*?)<\/div>/g)];
   const address = textBlocks[1]?.[1]?.replace(/\s+/g, ' ').trim() ?? '';
 
   const issued_at =
     html.match(/Emiss[aã]o.*?(\d{2}\/\d{2}\/\d{4}\s[\d:]+)/s)?.[1]?.trim() ??
     '';
+
+  const number =
+    html.match(/N[úu]mero:\s*<\/strong>\s*(\d+)/)?.[1]?.trim() ?? null;
+  const series =
+    html.match(/S[ée]rie:\s*<\/strong>\s*(\d+)/)?.[1]?.trim() ?? null;
+  const protocol =
+    html
+      .match(/Protocolo de Autoriza[çc][ãa]o:\s*<\/strong>\s*(\d+)/)?.[1]
+      ?.trim() ?? null;
+
+  // Payment block: look for #linhaForma then capture the following label + value.
+  // Layout per SEFAZ: <div id="linhaForma">…</div><div id="linhaTotal"><label class="tx">…</label><span class="totalNumb">12,98</span></div>
+  const paymentBlock = html.match(
+    /id="linhaForma"[\s\S]*?<label class="tx">\s*([\s\S]*?)<\/label>\s*<span class="totalNumb">([^<]+)<\/span>/
+  );
+  const payment_method = paymentBlock?.[1]?.replace(/\s+/g, ' ').trim() ?? null;
+  const paid = paymentBlock?.[2] ? toCents(paymentBlock[2]) : null;
 
   const totalRaw =
     html.match(/class="totalNumb txtMax"[^>]*>([^<]+)/)?.[1] ?? '0';
@@ -90,8 +117,13 @@ function parseHtml(
     cnpj,
     address,
     issued_at,
+    number,
+    series,
+    protocol,
     total_value: toCents(totalRaw),
     tax_total: toCents(taxRaw),
+    payment_method,
+    paid,
     items,
   };
 }

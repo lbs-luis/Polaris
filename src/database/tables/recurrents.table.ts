@@ -6,6 +6,7 @@ interface IRecurrentsTUpdate {
   base_value: number;
   due_day: number;
   type: 'income' | 'outcome';
+  concluded?: 0 | 1;
 }
 
 export interface IRecurrentsTRow {
@@ -16,6 +17,7 @@ export interface IRecurrentsTRow {
   base_value: number;
   due_day: number;
   type: 'income' | 'outcome';
+  concluded: 0 | 1;
   updatedAt: string;
 }
 
@@ -27,13 +29,14 @@ export function useRecurrentsTable() {
   const set = useCallback(
     async (recurrent: IRecurrentsTUpdate) => {
       await database.runAsync(
-        `INSERT INTO recurrents (category_id, type, base_value, due_day, updatedAt)
-       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+        `INSERT INTO recurrents (category_id, type, base_value, due_day, concluded, updatedAt)
+       VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
         [
           recurrent.category_id,
           recurrent.type,
           recurrent.base_value,
           recurrent.due_day,
+          recurrent.concluded ?? 0,
         ]
       );
     },
@@ -48,6 +51,7 @@ export function useRecurrentsTable() {
         type = ?,
         base_value = ?,
         due_day = ?,
+        concluded = ?,
         updatedAt = CURRENT_TIMESTAMP
        WHERE id = ?`,
         [
@@ -55,6 +59,7 @@ export function useRecurrentsTable() {
           recurrent.type,
           recurrent.base_value,
           recurrent.due_day,
+          recurrent.concluded ?? 0,
           id,
         ]
       );
@@ -111,6 +116,7 @@ export const CreateRecurrentsTable = `
     type TEXT NOT NULL CHECK(type IN ('income', 'outcome')),
     base_value INTEGER NOT NULL,
     due_day INTEGER NOT NULL CHECK(due_day BETWEEN 1 AND 31),
+    concluded INTEGER NOT NULL DEFAULT 0,
     updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 `;
