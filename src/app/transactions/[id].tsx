@@ -5,8 +5,9 @@ import { DetailInvoiceMeta } from '@/components/transactions/detail-invoice-meta
 import { DetailMetaCard } from '@/components/transactions/detail-meta-card';
 import { DetailRecurrentMeta } from '@/components/transactions/detail-recurrent-meta';
 import { useTransactionDetail } from '@/hooks/view-models/use-transaction-detail';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { TrashIcon } from 'phosphor-react-native';
+import { useCallback } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 export default function TransactionDetailScreen() {
@@ -14,8 +15,21 @@ export default function TransactionDetailScreen() {
   const { id: idParam } = useLocalSearchParams<{ id: string }>();
   const id = Number(idParam);
 
-  const { transaction, invoice, recurrent, items, isLoading, remove } =
-    useTransactionDetail(Number.isFinite(id) ? id : -1);
+  const {
+    transaction,
+    invoice,
+    recurrent,
+    items,
+    isLoading,
+    remove,
+    refreshTransaction,
+  } = useTransactionDetail(Number.isFinite(id) ? id : -1);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshTransaction();
+    }, [refreshTransaction])
+  );
 
   function handleDelete() {
     if (!transaction) return;

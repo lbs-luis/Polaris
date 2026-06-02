@@ -12,32 +12,62 @@ import { formatCurrency, parseCurrency } from '@/libs/masks';
 import { cn } from '@/libs/utils';
 import { CalendarDotsIcon } from 'phosphor-react-native';
 import { useMemo, useState } from 'react';
-import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  Keyboard,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-interface AddRecurrentDrawerProps {
+const PARCEL_OPTIONS: { v: number | null; label: string }[] = [
+  { v: null, label: 'Não' },
+  { v: 3, label: '3×' },
+  { v: 6, label: '6×' },
+  { v: 10, label: '10×' },
+  { v: 12, label: '12×' },
+  { v: 18, label: '18×' },
+  { v: 24, label: '24×' },
+];
+
+interface AddRecurrentFormProps {
   type: 'income' | 'outcome';
   categories: ICategoriesTRow[];
   /** All recurrents of the same type — used by the day-picker calendar to
    *  show which days already have entries. */
   registries: IRecurrentsTRow[];
   recurrent?: IRecurrentsTRow;
-  onSaved: () => void;
+  /**
+   * Called after the recurrent row has been saved. Receives the new/edited
+   * row's `due_day`, whether the record is brand new, and the saved row's
+   * id (newly minted when `isNew`, otherwise the existing one). The caller
+   * uses this to surface the same-day "Lançar agora?" prompt or just close
+   * the drawer.
+   */
+  onSaved: (info: {
+    day: number;
+    isNew: boolean;
+    recurrentId: number;
+    value: number;
+    categoryId: number;
+  }) => void;
 }
 
 /**
- * Drawer body used by the /recurrents route to create or edit a recurrent.
+ * Drawer body used by the /recurrence route to create or edit a recurrent.
  * Unlike the onboarding flow (calendar → form), this form owns the day
  * selection internally — the user fills value + category + day all in one
  * place, with the day picker opening as a full-screen modal on demand.
  */
-export function AddRecurrentDrawer({
+export function AddRecurrentForm({
   type,
   categories,
   registries,
   recurrent,
   onSaved,
-}: AddRecurrentDrawerProps) {
+}: AddRecurrentFormProps) {
   const keyboardHeight = useKeyboardOffset();
   const insets = useSafeAreaInsets();
   const { set, update } = useRecurrentsTable();
@@ -53,6 +83,9 @@ export function AddRecurrentDrawer({
   const [selectedCategory, setSelectedCategory] = useState<
     ICategoriesTRow | undefined
   >(initialCategory);
+  const [installments, setInstallments] = useState<number | null>(
+    recurrent?.installments_total ?? null
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -63,23 +96,42 @@ export function AddRecurrentDrawer({
     Keyboard.dismiss();
     setIsSaving(true);
 
+    const valueCents = Math.round(parseCurrency(baseValue) * 100);
     const payload = {
-      base_value: Math.round(parseCurrency(baseValue) * 100),
+      base_value: valueCents,
       category_id: selectedCategory.id,
       due_day: day,
       type,
       concluded: recurrent?.concluded ?? 0,
+      installments_total: installments,
+      first_fire_month: recurrent?.first_fire_month ?? null,
     };
 
+    let recurrentId: number;
     if (recurrent) {
       await update(recurrent.id, payload);
+      recurrentId = recurrent.id;
     } else {
-      await set(payload);
+      recurrentId = await set(payload);
     }
 
     setIsSaving(false);
-    onSaved();
+    onSaved({
+      day,
+      isNew: !recurrent,
+      recurrentId,
+      value: valueCents,
+      categoryId: selectedCategory.id,
+    });
   }
+
+  const previewCents = Math.round(parseCurrency(baseValue) * 100);
+  const installmentSummary =
+    installments !== null && previewCents > 0
+      ? `${installments}× de ${formatCurrency(previewCents.toString())} · total ${formatCurrency(
+          (previewCents * installments).toString()
+        )} · conclui em ${installments} ${installments === 1 ? 'mês' : 'meses'}`
+      : null;
 
   const paddingBottom = useMemo(
     () => keyboardHeight + 16 + insets.bottom,
@@ -150,6 +202,48 @@ export function AddRecurrentDrawer({
         </Pressable>
       </View>
 
+      <View className="mt-5">
+        <Label label="Parcelado?" uppercase={false} />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 6, paddingVertical: 8 }}
+        >
+          {PARCEL_OPTIONS.map((o) => {
+            const active = installments === o.v;
+            return (
+              <Pressable
+                key={String(o.v ?? 'none')}
+                onPress={() => setInstallments(o.v)}
+                className={cn(
+                  'h-10 items-center justify-center rounded-full px-4',
+                  active
+                    ? 'bg-brand'
+                    : 'border border-border-subtle bg-surface-2'
+                )}
+              >
+                <Text
+                  className={cn('text-xs', active ? 'text-bg' : 'text-text')}
+                  style={{ fontFamily: 'Sora_700Bold' }}
+                >
+                  {o.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+        {installmentSummary ? (
+          <View className="mt-1 rounded-tile border border-border-subtle bg-surface px-3.5 py-2.5">
+            <Text
+              className="text-xs text-text-dim"
+              style={{ fontFamily: 'Sora_400Regular' }}
+            >
+              {installmentSummary}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+
       <Button
         text={recurrent ? 'Atualizar' : 'Salvar'}
         disabled={isDisabled}
@@ -161,6 +255,7 @@ export function AddRecurrentDrawer({
         visible={pickerOpen}
         type={type}
         registries={registries}
+        initial={day ?? undefined}
         onSelectDay={(picked) => {
           setDay(picked);
           setPickerOpen(false);

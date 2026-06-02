@@ -42,7 +42,7 @@ export function useTransactionDetail(id: number) {
 
   const [state, setState] = useState<TransactionDetailState>(INITIAL);
 
-  const load = useCallback(async () => {
+  const refreshTransaction = useCallback(async () => {
     setState((s) => ({ ...s, isLoading: true }));
     const tx = await selectTransaction(id);
     if (!tx) {
@@ -74,8 +74,8 @@ export function useTransactionDetail(id: number) {
   }, [id, selectTransaction, selectInvoice, selectRecurrent]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    refreshTransaction();
+  }, [refreshTransaction]);
 
   const remove = useCallback(async () => {
     if (!state.transaction) return;
@@ -84,7 +84,7 @@ export function useTransactionDetail(id: number) {
 
   return {
     ...state,
-    refresh: load,
+    refreshTransaction,
     remove,
   };
 }

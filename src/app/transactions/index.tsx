@@ -1,22 +1,37 @@
+import { AddTransactionForm } from '@/components/drawer-form/transaction/add';
+import { EditTransactionForm } from '@/components/drawer-form/transaction/edit';
 import { TransactionRowSkeleton } from '@/components/home/transaction-row-skeleton';
 import { FloatingBottomNav } from '@/components/layout/floating-bottom-nav';
 import { NavHeader } from '@/components/layout/nav-header';
-import { EditTransactionForm } from '@/components/transactions/edit-transaction-form';
 import { TransactionDayGroup } from '@/components/transactions/transaction-day-group';
 import { Card } from '@/components/ui/card';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import { ITransactionsTRow } from '@/database/tables/transactions.table';
 import { useFloatingNavRouter } from '@/hooks/use-floating-nav-router';
 import { useTransactionsScreen } from '@/hooks/view-models/use-transactions-screen';
-import { ScrollView, Text, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+import { PlusIcon } from 'phosphor-react-native';
+import { useCallback } from 'react';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 const SKELETON_COUNT = 6;
 
 export default function TransactionsScreen() {
-  const { groups, isLoading, refresh, removeTransaction, updateTransaction } =
-    useTransactionsScreen();
+  const {
+    groups,
+    isLoading,
+    refreshTransactions,
+    removeTransaction,
+    updateTransaction,
+  } = useTransactionsScreen();
   const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
   const { onTabPress } = useFloatingNavRouter();
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshTransactions();
+    }, [refreshTransactions])
+  );
 
   function openEditSheet(t: ITransactionsTRow) {
     openBottomSheet(
@@ -25,10 +40,22 @@ export default function TransactionsScreen() {
         onUpdate={updateTransaction}
         onSaved={async () => {
           closeBottomSheet();
-          await refresh();
+          await refreshTransactions();
         }}
       />,
       { title: 'Editar lançamento' }
+    );
+  }
+
+  function openAddSheet() {
+    openBottomSheet(
+      <AddTransactionForm
+        onSaved={async () => {
+          closeBottomSheet();
+          await refreshTransactions();
+        }}
+      />,
+      { title: 'Nova transação' }
     );
   }
 
@@ -41,6 +68,22 @@ export default function TransactionsScreen() {
       <NavHeader
         title="Transações"
         description="Listagem  completa das movimentações"
+        right={
+          <Pressable
+            onPress={openAddSheet}
+            hitSlop={12}
+            className="h-10 w-10 items-center justify-center rounded-full bg-white"
+            style={{
+              shadowColor: '#FFFFFF',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.16,
+              shadowRadius: 14,
+              elevation: 2,
+            }}
+          >
+            <PlusIcon size={18} color="#000000" weight="bold" />
+          </Pressable>
+        }
       />
       <ScrollView
         className="flex-1"

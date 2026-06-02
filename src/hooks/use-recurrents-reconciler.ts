@@ -41,11 +41,18 @@ export function useRecurrentsReconciler() {
       const month = today.getMonth() + 1;
       const year = today.getFullYear();
       const day = today.getDate();
+      const currentMonthKey = `${year}-${String(month).padStart(2, '0')}`;
 
       for (const r of recurrents) {
         if (cancelled) return;
         if (r.concluded) continue;
         if (day < r.due_day) continue;
+        // The same-day prompt may have parked the row on a future
+        // first_fire_month so the reconciler doesn't retroactively insert
+        // a transaction the user already decided about.
+        if (r.first_fire_month && currentMonthKey < r.first_fire_month) {
+          continue;
+        }
         const exists = await selectByMonth(r.id, month, year);
         if (cancelled) return;
         if (exists) continue;

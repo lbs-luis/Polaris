@@ -15,15 +15,15 @@ export function useBankAccounts() {
   const [accounts, setAccounts] = useState<IBankAccountTRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refresh = useCallback(async () => {
+  const refreshAccounts = useCallback(async () => {
     setIsLoading(true);
     setAccounts(await list());
     setIsLoading(false);
   }, [list]);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    refreshAccounts();
+  }, [refreshAccounts]);
 
   const total = useMemo(
     () => accounts.reduce((sum, a) => sum + a.amount, 0) / 100,
@@ -33,32 +33,32 @@ export function useBankAccounts() {
   const addAccount = useCallback(
     async (payload: AccountPayload) => {
       await set(payload);
-      await refresh();
+      await refreshAccounts();
     },
-    [set, refresh]
+    [set, refreshAccounts]
   );
 
   const updateAccount = useCallback(
     async (id: number, payload: AccountPayload) => {
       await update(id, payload);
-      await refresh();
+      await refreshAccounts();
     },
-    [update, refresh]
+    [update, refreshAccounts]
   );
 
   const removeAccount = useCallback(
     async (id: number) => {
       await exclude(id);
-      await refresh();
+      await refreshAccounts();
     },
-    [exclude, refresh]
+    [exclude, refreshAccounts]
   );
 
   return {
     accounts,
     total,
     isLoading,
-    refresh,
+    refreshAccounts,
     addAccount,
     updateAccount,
     removeAccount,

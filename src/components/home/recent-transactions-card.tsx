@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { TransactionRow } from '@/components/ui/transaction-row';
 import { ITransactionsTRow } from '@/database/tables/transactions.table';
+import { PlusIcon } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 import { TransactionRowSkeleton } from './transaction-row-skeleton';
 
@@ -8,6 +9,13 @@ interface RecentTransactionsCardProps {
   transactions: ITransactionsTRow[];
   isLoading?: boolean;
   onSeeAll?: () => void;
+  /**
+   * When provided, renders a white `+ Nova` pill in the section header so the
+   * user can create a manual transaction without leaving home. The button
+   * lives next to "Ver tudo" so the affordance sits beside the content it
+   * creates instead of cluttering the page header.
+   */
+  onNew?: () => void;
 }
 
 const SKELETON_COUNT = 4;
@@ -16,6 +24,7 @@ export function RecentTransactionsCard({
   transactions,
   isLoading,
   onSeeAll,
+  onNew,
 }: RecentTransactionsCardProps) {
   const showSkeleton = isLoading && transactions.length === 0;
   const showEmpty = !isLoading && transactions.length === 0;
@@ -29,14 +38,40 @@ export function RecentTransactionsCard({
         >
           Movimentações
         </Text>
-        <Pressable onPress={onSeeAll}>
-          <Text
-            className="text-[13px] text-text"
-            style={{ fontFamily: 'Sora_700Bold' }}
+        <View className="flex-row items-center gap-2">
+          {onNew ? (
+            <Pressable
+              onPress={onNew}
+              className="flex-row items-center gap-1.5 rounded-full bg-white px-3 py-1.5"
+              style={{
+                shadowColor: '#FFFFFF',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.14,
+                shadowRadius: 14,
+                elevation: 2,
+              }}
+            >
+              <PlusIcon size={12} color="#000000" weight="bold" />
+              <Text
+                className="text-xs text-bg"
+                style={{ fontFamily: 'Sora_700Bold' }}
+              >
+                Nova
+              </Text>
+            </Pressable>
+          ) : null}
+          <Pressable
+            onPress={onSeeAll}
+            className="rounded-full border border-border-subtle px-3 py-1.5"
           >
-            Ver tudo
-          </Text>
-        </Pressable>
+            <Text
+              className="text-xs text-text"
+              style={{ fontFamily: 'Sora_700Bold' }}
+            >
+              Ver tudo
+            </Text>
+          </Pressable>
+        </View>
       </View>
       <Card className="p-1.5">
         {showSkeleton &&

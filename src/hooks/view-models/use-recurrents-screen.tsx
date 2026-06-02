@@ -41,12 +41,12 @@ export function useRecurrentsScreen() {
 
   const [state, setState] = useState<RecurrentsScreenState>(INITIAL);
 
-  const load = useCallback(async () => {
+  const refreshRecurrents = useCallback(async () => {
     setState((s) => ({ ...s, isLoading: true }));
     const [income, outcome, incomeCategories, outcomeCategories] =
       await Promise.all([
-        listRecurrents('income'),
-        listRecurrents('outcome'),
+        listRecurrents({ type: 'income' }),
+        listRecurrents({ type: 'outcome' }),
         listCategories('income'),
         listCategories('outcome'),
       ]);
@@ -60,23 +60,23 @@ export function useRecurrentsScreen() {
   }, [listRecurrents, listCategories]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    refreshRecurrents();
+  }, [refreshRecurrents]);
 
   const tryRemove = useCallback(
     async (id: number): Promise<{ removed: boolean; count: number }> => {
       const count = await countByRecurrent(id);
       if (count > 0) return { removed: false, count };
       await exclude(id);
-      await load();
+      await refreshRecurrents();
       return { removed: true, count: 0 };
     },
-    [countByRecurrent, exclude, load]
+    [countByRecurrent, exclude, refreshRecurrents]
   );
 
   return {
     ...state,
-    refresh: load,
+    refreshRecurrents,
     tryRemove,
   };
 }

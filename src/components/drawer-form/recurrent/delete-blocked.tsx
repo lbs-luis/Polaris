@@ -2,21 +2,19 @@ import { Button } from '@/components/ui/button';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-interface RecurrentDeleteBlockedProps {
+interface RecurrentDeleteBlockedFormProps {
   count: number;
   onClose: () => void;
 }
 
 /**
- * Tiny info-only bottom-sheet body shown when the user tries to delete a
- * recurrent that already has transactions referencing it. The data model
- * doesn't yet support soft-delete or the "Concluir" toggle, so the only
- * action available here is to dismiss.
+ * Drawer body shown when the user tries to delete a recurrent that has at
+ * least one linked transaction. Pure info — the only action is dismiss.
  */
-export function RecurrentDeleteBlocked({
+export function RecurrentDeleteBlockedForm({
   count,
   onClose,
-}: RecurrentDeleteBlockedProps) {
+}: RecurrentDeleteBlockedFormProps) {
   const insets = useSafeAreaInsets();
   const noun = count === 1 ? 'transação' : 'transações';
 

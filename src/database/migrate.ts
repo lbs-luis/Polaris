@@ -42,4 +42,6 @@ export async function migrate(database: SQLiteDatabase) {
     'concluded',
     'INTEGER NOT NULL DEFAULT 0'
   );
+  await ensureColumn(database, 'recurrents', 'installments_total', 'INTEGER');
+  await ensureColumn(database, 'recurrents', 'first_fire_month', 'TEXT');
 }

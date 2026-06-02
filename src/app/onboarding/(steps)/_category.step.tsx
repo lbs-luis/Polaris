@@ -1,6 +1,6 @@
 import { KeyboardView } from '@/components/layout/keyboard-view.layout';
 import { OnboardingFooter } from '@/components/layout/onboarding/onboarding-footer.layout';
-import { AddCategoryForm } from '@/components/onboarding/category/add-category-form';
+import { AddCategoryForm } from '@/components/drawer-form/category/add';
 import { StepHeader } from '@/components/onboarding/step-header';
 import { Card } from '@/components/ui/card';
 import { CatIcon, isCatKind } from '@/components/ui/cat-icon';

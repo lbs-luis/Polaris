@@ -29,7 +29,7 @@ interface EditTransactionFormProps {
 }
 
 /**
- * Bottom-sheet form for editing a transaction. Editability depends on the
+ * Drawer body for editing a transaction. Editability depends on the
  * row's source:
  *   - invoice-linked → value + date are readonly (the invoice is authoritative);
  *     only category and description can change.

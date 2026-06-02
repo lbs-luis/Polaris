@@ -17,15 +17,15 @@ export function useHomeScreen() {
   const [transactions, setTransactions] = useState<ITransactionsTRow[]>([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
 
-  const loadTransactions = useCallback(async () => {
+  const refreshTransactions = useCallback(async () => {
     setIsLoadingTransactions(true);
     setTransactions(await list());
     setIsLoadingTransactions(false);
   }, [list]);
 
   useEffect(() => {
-    loadTransactions();
-  }, [loadTransactions]);
+    refreshTransactions();
+  }, [refreshTransactions]);
 
   // Re-fetch when the SEFAZ processor finishes a batch so freshly-imported
   // transactions show up in the recent list automatically.
@@ -35,10 +35,10 @@ export function useHomeScreen() {
       lastProcessorStatus.current !== 'done' &&
       processorState.status === 'done'
     ) {
-      loadTransactions();
+      refreshTransactions();
     }
     lastProcessorStatus.current = processorState.status;
-  }, [processorState.status, loadTransactions]);
+  }, [processorState.status, refreshTransactions]);
 
   const now = useMemo(() => new Date(), []);
   const currentMonth = now.getMonth() + 1;
@@ -65,10 +65,10 @@ export function useHomeScreen() {
     [transactions]
   );
 
-  const { refresh: refreshAccounts } = bankAccounts;
-  const refresh = useCallback(async () => {
-    await Promise.all([refreshAccounts(), loadTransactions()]);
-  }, [refreshAccounts, loadTransactions]);
+  const { refreshAccounts } = bankAccounts;
+  const refreshHome = useCallback(async () => {
+    await Promise.all([refreshAccounts(), refreshTransactions()]);
+  }, [refreshAccounts, refreshTransactions]);
 
   return {
     accounts: bankAccounts.accounts,
@@ -83,6 +83,8 @@ export function useHomeScreen() {
     recentTransactions,
     isLoadingAccounts: bankAccounts.isLoading,
     isLoadingTransactions,
-    refresh,
+    refreshAccounts,
+    refreshTransactions,
+    refreshHome,
   };
 }

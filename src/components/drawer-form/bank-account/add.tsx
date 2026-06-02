@@ -35,6 +35,14 @@ interface AddBankAccountFormProps {
   account?: IBankAccountTRow;
 }
 
+/**
+ * Drawer body used to create or edit a user-managed bank account from any
+ * screen that needs it (currently the Home predictive balance card).
+ *
+ * Lives under `drawer-form/` per the app convention: every bottom-sheet
+ * form is grouped by feature here so they can be imported from anywhere
+ * without leaking through a screen-specific folder.
+ */
 export function AddBankAccountForm({
   onSaved,
   onAdd,

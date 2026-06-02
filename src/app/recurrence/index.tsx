@@ -1,18 +1,23 @@
+import { AddRecurrentForm } from '@/components/drawer-form/recurrent/add';
+import { RecurrentDeleteBlockedForm } from '@/components/drawer-form/recurrent/delete-blocked';
+import { SameDayPromptForm } from '@/components/drawer-form/recurrent/same-day-prompt';
 import { NavHeader } from '@/components/layout/nav-header';
 import { DayEntriesList } from '@/components/onboarding/recurrence/day-entries-list';
-import { AddRecurrentDrawer } from '@/components/recurrence/add-recurrent-drawer';
-import { RecurrentDeleteBlocked } from '@/components/recurrence/recurrent-delete-blocked';
-
 import { SegItem } from '@/components/ui/seg-item';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
-import { IRecurrentsTRow } from '@/database/tables/recurrents.table';
+import {
+  IRecurrentsTRow,
+  useRecurrentsTable,
+} from '@/database/tables/recurrents.table';
+import { useTransactionsTable } from '@/database/tables/transactions.table';
 import { useRecurrentsScreen } from '@/hooks/view-models/use-recurrents-screen';
 import {
   ArrowDownLeftIcon,
   ArrowUpRightIcon,
   PlusIcon,
 } from 'phosphor-react-native';
-import { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 type Tab = 'income' | 'outcome';
@@ -48,24 +53,93 @@ export default function RecurrentsScreen() {
     outcome,
     incomeCategories,
     outcomeCategories,
-    refresh,
+    refreshRecurrents,
     tryRemove,
   } = useRecurrentsScreen();
+  const { setFirstFireMonth, select: selectRecurrent } = useRecurrentsTable();
+  const { set: setTransaction } = useTransactionsTable();
   const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
   const [tab, setTab] = useState<Tab>('outcome');
+  const router = useRouter();
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshRecurrents();
+    }, [refreshRecurrents])
+  );
 
   const entries = tab === 'income' ? income : outcome;
   const categories = tab === 'income' ? incomeCategories : outcomeCategories;
   const noun = tab === 'income' ? 'entrada' : 'saída';
 
-  function handleSaved() {
+  /**
+   * After save, decide whether to prompt the user about lançar hoje. The
+   * prompt only triggers for brand-new rows whose due_day is today or has
+   * already passed this month — older days would be confusing if we just
+   * silently created a backdated transaction without asking.
+   */
+  async function handleSaved(info: {
+    day: number;
+    isNew: boolean;
+    recurrentId: number;
+    value: number;
+    categoryId: number;
+  }) {
+    const today = new Date();
+    const todayDay = today.getDate();
+    if (!info.isNew || info.day > todayDay) {
+      closeBottomSheet();
+      await refreshRecurrents();
+      return;
+    }
+
+    // Re-fetch so we honour any installments_total the user picked, since
+    // we'll need it when announcing the parcel and inserting the first row.
+    const saved = await selectRecurrent(info.recurrentId);
+    const installments = saved?.installments_total ?? null;
+    const month = today.getMonth() + 1;
+    const year = today.getFullYear();
+    const nextMonthDate = new Date(year, today.getMonth() + 1, 1);
+    const nextMonthKey = `${nextMonthDate.getFullYear()}-${String(
+      nextMonthDate.getMonth() + 1
+    ).padStart(2, '0')}`;
+
     closeBottomSheet();
-    refresh();
+
+    openBottomSheet(
+      <SameDayPromptForm
+        day={info.day}
+        valueCents={info.value}
+        installments={installments}
+        isPastDay={info.day < todayDay}
+        onLaunchNow={async () => {
+          await setTransaction({
+            recurrent_id: info.recurrentId,
+            value: info.value,
+            month,
+            year,
+            due_day: info.day,
+            category_id: info.categoryId,
+          });
+          // Tell the reconciler "this month is handled" so it doesn't
+          // re-insert the same parcela tomorrow.
+          await setFirstFireMonth(info.recurrentId, nextMonthKey);
+          closeBottomSheet();
+          await refreshRecurrents();
+        }}
+        onWaitNextMonth={async () => {
+          await setFirstFireMonth(info.recurrentId, nextMonthKey);
+          closeBottomSheet();
+          await refreshRecurrents();
+        }}
+      />,
+      { title: 'Cobrar hoje?' }
+    );
   }
 
   function openDrawer(recurrent?: IRecurrentsTRow) {
     openBottomSheet(
-      <AddRecurrentDrawer
+      <AddRecurrentForm
         type={tab}
         categories={categories}
         registries={entries}
@@ -80,7 +154,7 @@ export default function RecurrentsScreen() {
     const { removed, count } = await tryRemove(id);
     if (removed) return;
     openBottomSheet(
-      <RecurrentDeleteBlocked count={count} onClose={closeBottomSheet} />,
+      <RecurrentDeleteBlockedForm count={count} onClose={closeBottomSheet} />,
       { title: 'Não é possível excluir' }
     );
   }
@@ -126,6 +200,7 @@ export default function RecurrentsScreen() {
           type={tab}
           onEdit={openDrawer}
           onDelete={handleDelete}
+          onRowPress={(item) => router.push(`/recurrence/${item.id}`)}
         />
       </ScrollView>
       <View className=" px-4 pb-4">

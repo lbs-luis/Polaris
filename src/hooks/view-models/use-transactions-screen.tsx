@@ -61,15 +61,15 @@ export function useTransactionsScreen() {
   const [transactions, setTransactions] = useState<ITransactionsTRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  const refreshTransactions = useCallback(async () => {
     setIsLoading(true);
     setTransactions(await list());
     setIsLoading(false);
   }, [list]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    refreshTransactions();
+  }, [refreshTransactions]);
 
   // Same edge-trigger pattern as the home screen — refresh whenever the
   // SEFAZ processor transitions into 'done' so new invoices show up.
@@ -79,10 +79,10 @@ export function useTransactionsScreen() {
       lastProcessorStatus.current !== 'done' &&
       processorState.status === 'done'
     ) {
-      load();
+      refreshTransactions();
     }
     lastProcessorStatus.current = processorState.status;
-  }, [processorState.status, load]);
+  }, [processorState.status, refreshTransactions]);
 
   const groups = useMemo<TransactionDayGroup[]>(() => {
     const buckets = new Map<string, TransactionDayGroup>();
@@ -127,23 +127,23 @@ export function useTransactionsScreen() {
   const removeTransaction = useCallback(
     async (id: number) => {
       await exclude(id);
-      await load();
+      await refreshTransactions();
     },
-    [exclude, load]
+    [exclude, refreshTransactions]
   );
 
   const updateTransaction = useCallback(
     async (id: number, partial: Parameters<typeof update>[1]) => {
       await update(id, partial);
-      await load();
+      await refreshTransactions();
     },
-    [update, load]
+    [update, refreshTransactions]
   );
 
   return {
     groups,
     isLoading,
-    refresh: load,
+    refreshTransactions,
     removeTransaction,
     updateTransaction,
   };

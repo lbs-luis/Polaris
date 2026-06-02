@@ -6,13 +6,18 @@ import { useMemo, useState } from 'react';
 import { Keyboard, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-interface EditNameFormProps {
+interface EditProfileNameFormProps {
   initial: string;
   onSave: (next: string) => Promise<void>;
   onClose: () => void;
 }
 
-export function EditNameForm({ initial, onSave, onClose }: EditNameFormProps) {
+/** Drawer body for editing the user's display name. */
+export function EditProfileNameForm({
+  initial,
+  onSave,
+  onClose,
+}: EditProfileNameFormProps) {
   const keyboardHeight = useKeyboardOffset();
   const insets = useSafeAreaInsets();
 

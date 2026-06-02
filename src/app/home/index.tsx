@@ -1,4 +1,5 @@
-import { AddBankAccountForm } from '@/components/home/add-bank-account-form';
+import { AddBankAccountForm } from '@/components/drawer-form/bank-account/add';
+import { AddTransactionForm } from '@/components/drawer-form/transaction/add';
 import { HomeHeader } from '@/components/home/home-header';
 import { MovementCard } from '@/components/home/movement-card';
 import { PredictedBalanceCard } from '@/components/home/predicted-balance-card';
@@ -9,9 +10,12 @@ import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import { IBankAccountTRow } from '@/database/tables/bank-accounts.table';
 import { useFloatingNavRouter } from '@/hooks/use-floating-nav-router';
 import { useHomeScreen } from '@/hooks/view-models/use-home-screen';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback } from 'react';
 import { ScrollView, View } from 'react-native';
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { onTabPress } = useFloatingNavRouter();
   const {
     accounts,
@@ -25,19 +29,32 @@ export default function HomeScreen() {
     addAccount,
     updateAccount,
     removeAccount,
-    refresh,
+    refreshAccounts,
+    refreshTransactions,
+    refreshHome,
   } = useHomeScreen();
   const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
 
-  async function handleSaved() {
+  useFocusEffect(
+    useCallback(() => {
+      void refreshHome();
+    }, [refreshHome])
+  );
+
+  async function handleAccountSaved() {
     closeBottomSheet();
-    await refresh();
+    await refreshAccounts();
+  }
+
+  async function handleTransactionSaved() {
+    closeBottomSheet();
+    await refreshTransactions();
   }
 
   function openAddAccountSheet() {
     openBottomSheet(
       <AddBankAccountForm
-        onSaved={handleSaved}
+        onSaved={handleAccountSaved}
         onAdd={addAccount}
         onUpdate={updateAccount}
         onRemove={removeAccount}
@@ -50,13 +67,19 @@ export default function HomeScreen() {
     openBottomSheet(
       <AddBankAccountForm
         account={account}
-        onSaved={handleSaved}
+        onSaved={handleAccountSaved}
         onAdd={addAccount}
         onUpdate={updateAccount}
         onRemove={removeAccount}
       />,
       { title: 'Editar conta' }
     );
+  }
+
+  function openAddTransactionSheet() {
+    openBottomSheet(<AddTransactionForm onSaved={handleTransactionSaved} />, {
+      title: 'Nova transação',
+    });
   }
 
   return (
@@ -94,6 +117,8 @@ export default function HomeScreen() {
         <RecentTransactionsCard
           transactions={recentTransactions}
           isLoading={isLoadingTransactions}
+          onNew={openAddTransactionSheet}
+          onSeeAll={() => router.push('/transactions')}
         />
       </ScrollView>
 

@@ -19,7 +19,7 @@ export function useRecurrenceStep(type: 'income' | 'outcome') {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     const [updatedRegistries, updatedCategories] = await Promise.all([
-      listRecurrents(type),
+      listRecurrents({ type }),
       listCategories(type),
     ]);
     setRegistries(updatedRegistries);

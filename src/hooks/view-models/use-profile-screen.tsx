@@ -15,7 +15,7 @@ export function useProfileScreen() {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  const refreshProfile = useCallback(async () => {
     setIsLoading(true);
     const [nameRow, avatarRow] = await Promise.all([
       select('name'),
@@ -27,8 +27,8 @@ export function useProfileScreen() {
   }, [select]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    refreshProfile();
+  }, [refreshProfile]);
 
   const updateName = useCallback(
     async (next: string) => {
@@ -63,6 +63,6 @@ export function useProfileScreen() {
     isLoading,
     updateName,
     pickAvatar,
-    refresh: load,
+    refreshProfile,
   };
 }

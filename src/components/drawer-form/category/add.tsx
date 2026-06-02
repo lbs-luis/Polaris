@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { CatKind, isCatKind } from '@/components/ui/cat-icon';
 import { IconPicker } from '@/components/ui/category/icon-picker';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { SegItem } from '@/components/ui/seg-item';
 import {
   ICategoriesTRow,
@@ -13,7 +14,6 @@ import { ArrowDownIcon, ArrowUpIcon } from 'phosphor-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Keyboard, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Label } from '../../ui/label';
 
 interface AddCategoryFormProps {
   onSaved: () => Promise<void>;
@@ -21,6 +21,12 @@ interface AddCategoryFormProps {
   category?: ICategoriesTRow;
 }
 
+/**
+ * Drawer body for creating or editing a category. Used today by the
+ * onboarding category step; lives in `drawer-form/` so any future screen
+ * (e.g., a settings/manage-categories page) can mount the same form
+ * without dragging in onboarding-specific dependencies.
+ */
 export function AddCategoryForm({
   onSaved,
   defaultSelected,

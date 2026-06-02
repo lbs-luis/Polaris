@@ -4,13 +4,16 @@ import { Money } from '@/components/ui/money';
 import { SwipeableRow } from '@/components/ui/swipeable-row';
 import { IRecurrentsTRow } from '@/database/tables/recurrents.table';
 import { rowRadiusClass } from '@/libs/list-radius';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 interface DayEntriesListProps {
   entries: IRecurrentsTRow[];
   type: 'income' | 'outcome';
-  onEdit: (item: IRecurrentsTRow) => void;
-  onDelete: (id: number) => Promise<void>;
+  onEdit?: (item: IRecurrentsTRow) => void;
+  onDelete?: (id: number) => Promise<void>;
+  /** Tap-row callback. When set, rows wrap a Pressable that fires on tap;
+   *  swipe still reveals Editar/Excluir if their handlers are provided. */
+  onRowPress?: (item: IRecurrentsTRow) => void;
 }
 
 function EntryAvatar({ entry }: { entry: IRecurrentsTRow }) {
@@ -34,6 +37,7 @@ export function DayEntriesList({
   type,
   onEdit,
   onDelete,
+  onRowPress,
 }: DayEntriesListProps) {
   const accent = type === 'income' ? 'text-income' : 'text-outcome';
 
@@ -52,14 +56,8 @@ export function DayEntriesList({
 
   return (
     <Card className="mt-2.5 p-0">
-      {entries.map((e, i) => (
-        <SwipeableRow
-          key={e.id}
-          index={i}
-          total={entries.length}
-          onEdit={() => onEdit(e)}
-          onDelete={() => onDelete(e.id)}
-        >
+      {entries.map((e, i) => {
+        const content = (
           <View
             className={`flex-row items-center gap-3 bg-surface px-3 py-3 ${rowRadiusClass(i, entries.length)} ${i === 0 ? '' : 'border-t border-border-subtle'}`}
           >
@@ -80,8 +78,23 @@ export function DayEntriesList({
             </View>
             <Money value={e.base_value / 100} className={accent} bold />
           </View>
-        </SwipeableRow>
-      ))}
+        );
+        return (
+          <SwipeableRow
+            key={e.id}
+            index={i}
+            total={entries.length}
+            onEdit={onEdit ? () => onEdit(e) : undefined}
+            onDelete={onDelete ? () => onDelete(e.id) : undefined}
+          >
+            {onRowPress ? (
+              <Pressable onPress={() => onRowPress(e)}>{content}</Pressable>
+            ) : (
+              content
+            )}
+          </SwipeableRow>
+        );
+      })}
     </Card>
   );
 }
