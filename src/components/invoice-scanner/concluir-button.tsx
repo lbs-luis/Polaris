@@ -15,7 +15,7 @@ export function ConcluirButton({ disabled, onPress }: ConcluirButtonProps) {
           disabled && 'opacity-40'
         )}
         style={{
-          minWidth: 92,
+          minWidth: 99,
           height: 52,
           shadowColor: '#FFFFFF',
           shadowOffset: { width: 0, height: 6 },

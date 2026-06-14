@@ -6,6 +6,8 @@ interface IRecurrentsTUpdate {
   base_value: number;
   due_day: number;
   type: 'income' | 'outcome';
+  /** User-facing label for the recurrence (e.g. "Aluguel"). */
+  description?: string | null;
   concluded?: 0 | 1;
   /** Total number of installments. Null = open-ended (e.g. rent, streaming). */
   installments_total?: number | null;
@@ -23,6 +25,7 @@ export interface IRecurrentsTRow {
   category_id: number;
   category_name: string;
   category_icon: string | null;
+  description: string | null;
   base_value: number;
   due_day: number;
   type: 'income' | 'outcome';
@@ -41,15 +44,16 @@ export function useRecurrentsTable() {
     async (recurrent: IRecurrentsTUpdate): Promise<number> => {
       const result = await database.runAsync(
         `INSERT INTO recurrents (
-          category_id, type, base_value, due_day,
+          category_id, type, base_value, due_day, description,
           concluded, installments_total, first_fire_month, updatedAt
          )
-         VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
         [
           recurrent.category_id,
           recurrent.type,
           recurrent.base_value,
           recurrent.due_day,
+          recurrent.description ?? null,
           recurrent.concluded ?? 0,
           recurrent.installments_total ?? null,
           recurrent.first_fire_month ?? null,
@@ -68,6 +72,7 @@ export function useRecurrentsTable() {
           type = ?,
           base_value = ?,
           due_day = ?,
+          description = ?,
           concluded = ?,
           installments_total = ?,
           first_fire_month = ?,
@@ -78,6 +83,7 @@ export function useRecurrentsTable() {
           recurrent.type,
           recurrent.base_value,
           recurrent.due_day,
+          recurrent.description ?? null,
           recurrent.concluded ?? 0,
           recurrent.installments_total ?? null,
           recurrent.first_fire_month ?? null,
@@ -193,6 +199,7 @@ export const CreateRecurrentsTable = `
     type TEXT NOT NULL CHECK(type IN ('income', 'outcome')),
     base_value INTEGER NOT NULL,
     due_day INTEGER NOT NULL CHECK(due_day BETWEEN 1 AND 31),
+    description TEXT,
     concluded INTEGER NOT NULL DEFAULT 0,
     installments_total INTEGER,
     first_fire_month TEXT,

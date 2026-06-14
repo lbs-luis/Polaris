@@ -62,6 +62,7 @@ export function useRecurrentsReconciler() {
           month,
           year,
           due_day: r.due_day,
+          description: r.description ?? undefined,
           category_id: r.category_id,
         });
       }

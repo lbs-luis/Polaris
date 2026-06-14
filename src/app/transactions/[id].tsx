@@ -296,7 +296,11 @@ export default function TransactionDetailScreen() {
                     left={
                       <CategoryGlyph icon={recurrent.category_icon} size={44} />
                     }
-                    title={recurrent.category_name ?? 'Recorrência'}
+                    title={
+                      recurrent.description ??
+                      recurrent.category_name ??
+                      'Recorrência'
+                    }
                     sub={`Todo dia ${recurrent.due_day}`}
                     right={
                       <Money

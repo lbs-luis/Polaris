@@ -183,8 +183,10 @@ export function useTransactionsTable() {
               c.type AS category_type
          FROM transactions t
          LEFT JOIN categories c ON c.id = t.category_id
-         ORDER BY t.issued_at DESC,
-                  t.year DESC, t.month DESC, t.due_day DESC,
+         ORDER BY COALESCE(
+                    t.issued_at,
+                    printf('%04d-%02d-%02dT00:00:00', t.year, t.month, COALESCE(t.due_day, 1))
+                  ) DESC,
                   t.id DESC`
     )) as ITransactionsTRow[];
   }, [database]);

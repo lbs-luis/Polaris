@@ -1,0 +1,19 @@
+{
+  // Polaris uses ESLint + Prettier. Your user profile turns Biome on globally,
+  // so this workspace turns it off and pins JS/TS/JSON formatting to Prettier.
+  // Everything else (icons, terminal, git, tailwind, etc.) is inherited from
+  // your profile — only the keys below are overridden for this folder.
+  "biome.enabled": false,
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
+}

@@ -1,6 +1,7 @@
 import { DayPickerModal } from '@/components/recurrence/day-picker-modal';
 import { Button } from '@/components/ui/button';
 import { CategorySelect } from '@/components/ui/category/select.category';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ICategoriesTRow } from '@/database/tables/categories.table';
 import {
@@ -77,6 +78,7 @@ export function AddRecurrentForm({
     : undefined;
 
   const [day, setDay] = useState<number | null>(recurrent?.due_day ?? null);
+  const [description, setDescription] = useState(recurrent?.description ?? '');
   const [baseValue, setBaseValue] = useState(
     recurrent ? formatCurrency(recurrent.base_value.toString()) : ''
   );
@@ -101,6 +103,7 @@ export function AddRecurrentForm({
       base_value: valueCents,
       category_id: selectedCategory.id,
       due_day: day,
+      description: description.trim() || null,
       type,
       concluded: recurrent?.concluded ?? 0,
       installments_total: installments,
@@ -165,6 +168,17 @@ export function AddRecurrentForm({
             letterSpacing: -0.5,
             paddingVertical: 4,
           }}
+        />
+      </View>
+
+      <View className="mt-5">
+        <Input
+          label="Descrição"
+          value={description}
+          onChangeText={setDescription}
+          editable={!isSaving}
+          placeholder="Ex.: Aluguel, Salário, Spotify…"
+          className={cn(isSaving && 'opacity-50')}
         />
       </View>
 

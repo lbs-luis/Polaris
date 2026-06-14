@@ -144,7 +144,7 @@ function ConcludedRow({ row, index, total, onPress }: RowProps) {
           className="text-sm text-text"
           style={{ fontFamily: 'Sora_700Bold' }}
         >
-          {row.category_name}
+          {row.description || row.category_name}
         </Text>
         <View className="mt-1 flex-row items-center gap-2">
           <Pill tone="income">

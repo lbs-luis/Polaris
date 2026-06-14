@@ -67,11 +67,9 @@ export function useInvoiceProcessor() {
         setState({ status: 'processing', done, total });
       });
 
-      setState({ status: 'done', results });
-
       const successful = results
-        .filter((r): r is [ParsedInvoice, null] => r[0] !== null)
-        .map((r) => r[0]);
+        .filter((result): result is [ParsedInvoice, null] => result[0] !== null)
+        .map((result) => result[0]);
 
       // Load categories once per batch so each invoice can be linked to a
       // valid id without N round-trips. Resolution order, per merchant:
@@ -134,6 +132,9 @@ export function useInvoiceProcessor() {
         }
       }
 
+      // Mark done only after the rows are committed, so screens listening for
+      // the 'done' transition refresh against a database that already has them.
+      setState({ status: 'done', results });
       setTimeout(() => setState({ status: 'idle' }), 5000);
       return results;
     },

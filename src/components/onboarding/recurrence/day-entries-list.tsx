@@ -64,10 +64,11 @@ export function DayEntriesList({
             <EntryAvatar entry={e} />
             <View className="flex-1">
               <Text
+                numberOfLines={1}
                 className="text-sm text-text"
                 style={{ fontFamily: 'Sora_700Bold' }}
               >
-                {e.category_name}
+                {e.description || e.category_name}
               </Text>
               <Text
                 className="mt-0.5 text-xs text-text-dim"

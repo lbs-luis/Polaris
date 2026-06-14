@@ -102,10 +102,11 @@ function Hero({
         <View className="h-14 w-14 items-center justify-center rounded-tile bg-surface-2" />
       )}
       <Text
+        numberOfLines={2}
         className="mt-3 text-center text-base text-text"
         style={{ fontFamily: 'Sora_700Bold' }}
       >
-        {recurrent.category_name}
+        {recurrent.description || recurrent.category_name}
       </Text>
       <View className="mt-2">
         <StatusPill recurrent={recurrent} paidCount={paidCount} />

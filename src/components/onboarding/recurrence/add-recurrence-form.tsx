@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { CategorySelect } from '@/components/ui/category/select.category';
+import { Input } from '@/components/ui/input';
 import { ICategoriesTRow } from '@/database/tables/categories.table';
 import {
   IRecurrentsTRow,
@@ -39,6 +40,7 @@ export function AddRecurrenceForm({
   const [baseValue, setBaseValue] = useState(
     recurrent ? formatCurrency(recurrent.base_value.toString()) : ''
   );
+  const [description, setDescription] = useState(recurrent?.description ?? '');
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<
     ICategoriesTRow | undefined
@@ -55,6 +57,7 @@ export function AddRecurrenceForm({
       base_value: parseCurrency(baseValue) * 100,
       category_id: selectedCategory.id,
       due_day: day,
+      description: description.trim() || null,
       type,
     };
 
@@ -104,6 +107,17 @@ export function AddRecurrenceForm({
             letterSpacing: -0.5,
             paddingVertical: 4,
           }}
+        />
+      </View>
+
+      <View className="mt-5">
+        <Input
+          label="Descrição"
+          value={description}
+          onChangeText={setDescription}
+          editable={!isSaving}
+          placeholder="Ex.: Aluguel, Salário, Spotify…"
+          className={cn(isSaving && 'opacity-50')}
         />
       </View>
 

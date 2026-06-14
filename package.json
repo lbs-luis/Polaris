@@ -1,6 +1,6 @@
 {
   "name": "polaris",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Polaris — local-first finance app",
   "private": true,
   "main": "expo-router/entry",
@@ -11,8 +11,8 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "prebuild": "expo prebuild --clean",
-    "release:android": "npm run prebuild && cd android && ./gradlew assembleRelease && npm run install:android",
-    "install:android": "adb install ./android/app/build/outputs/apk/release/app-release.apk"
+    "release:android": "npm run prebuild && cd android && ./gradlew assembleRelease && cd .. && npm run apk:install",
+    "apk:install": "bash scripts/release-apk.sh"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
