@@ -1,11 +1,12 @@
-import { NavTab } from '@/components/layout/floating-bottom-nav';
+import { NavTab } from '@/components/layout/bottom-nav';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 
 /**
  * Centralizes the `onTabPress` handler used by every screen that mounts the
- * `<FloatingBottomNav />`. Each tab maps to a real route so cross-tab
- * navigation works regardless of which screen the nav is currently rendered on.
+ * `<BottomNav />`. Each tab maps to a real route so cross-tab navigation works
+ * regardless of which screen the nav is currently rendered on. The four tabs
+ * are the app's roots: Início · Transações · Recorrências · Perfil.
  */
 export function useFloatingNavRouter() {
   const router = useRouter();
@@ -19,8 +20,8 @@ export function useFloatingNavRouter() {
         case 'tx':
           router.push('/transactions');
           return;
-        case 'scan':
-          router.push('/scan');
+        case 'rec':
+          router.push('/recurrence');
           return;
         case 'me':
           router.push('/profile');

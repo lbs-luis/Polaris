@@ -29,6 +29,12 @@ const INITIAL: TransactionDetailState = {
   isLoading: true,
 };
 
+type TransactionUpdate = {
+  value?: number;
+  description?: string | null;
+  category_id?: number;
+};
+
 /**
  * Loads a single transaction plus its related invoice (when invoice-linked)
  * or parent recurrency (when recurrent-linked). The detail page renders
@@ -36,22 +42,28 @@ const INITIAL: TransactionDetailState = {
  * exposes both via discriminated optional fields.
  */
 export function useTransactionDetail(id: number) {
-  const { select: selectTransaction, exclude } = useTransactionsTable();
+  const {
+    select: selectTransaction,
+    exclude,
+    update: updateTransactionRow,
+  } = useTransactionsTable();
   const { select: selectInvoice } = useInvoicesTable();
   const { select: selectRecurrent } = useRecurrentsTable();
 
   const [state, setState] = useState<TransactionDetailState>(INITIAL);
 
   const refreshTransaction = useCallback(async () => {
-    setState((s) => ({ ...s, isLoading: true }));
-    const tx = await selectTransaction(id);
-    if (!tx) {
+    setState((previous) => ({ ...previous, isLoading: true }));
+    const transaction = await selectTransaction(id);
+    if (!transaction) {
       setState({ ...INITIAL, isLoading: false });
       return;
     }
-    const invoice = tx.invoice_id ? await selectInvoice(tx.invoice_id) : null;
-    const recurrent = tx.recurrent_id
-      ? await selectRecurrent(tx.recurrent_id)
+    const invoice = transaction.invoice_id
+      ? await selectInvoice(transaction.invoice_id)
+      : null;
+    const recurrent = transaction.recurrent_id
+      ? await selectRecurrent(transaction.recurrent_id)
       : null;
 
     let items: IInvoiceItem[] = [];
@@ -64,13 +76,7 @@ export function useTransactionDetail(id: number) {
       }
     }
 
-    setState({
-      transaction: tx,
-      invoice,
-      recurrent,
-      items,
-      isLoading: false,
-    });
+    setState({ transaction, invoice, recurrent, items, isLoading: false });
   }, [id, selectTransaction, selectInvoice, selectRecurrent]);
 
   useEffect(() => {
@@ -82,9 +88,18 @@ export function useTransactionDetail(id: number) {
     await exclude(state.transaction.id);
   }, [exclude, state.transaction]);
 
+  const update = useCallback(
+    async (transactionId: number, partial: TransactionUpdate) => {
+      await updateTransactionRow(transactionId, partial);
+      await refreshTransaction();
+    },
+    [updateTransactionRow, refreshTransaction]
+  );
+
   return {
     ...state,
     refreshTransaction,
     remove,
+    update,
   };
 }

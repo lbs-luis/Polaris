@@ -3,10 +3,7 @@ import { useCallback } from 'react';
 
 export interface IInvoiceItem {
   desc: string;
-  code: string;
   qty: number;
-  unit_value: number; // cents
-  total_value: number; // cents
 }
 
 export interface IInvoicesTUpdate {

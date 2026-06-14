@@ -1,20 +1,46 @@
 import { AddTransactionForm } from '@/components/drawer-form/transaction/add';
 import { EditTransactionForm } from '@/components/drawer-form/transaction/edit';
 import { TransactionRowSkeleton } from '@/components/home/transaction-row-skeleton';
-import { FloatingBottomNav } from '@/components/layout/floating-bottom-nav';
+import { BottomNav } from '@/components/layout/bottom-nav';
 import { NavHeader } from '@/components/layout/nav-header';
 import { TransactionDayGroup } from '@/components/transactions/transaction-day-group';
 import { Card } from '@/components/ui/card';
+import { FilterChips } from '@/components/ui/filter-chips';
+import { Fab } from '@/components/ui/fab';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import { ITransactionsTRow } from '@/database/tables/transactions.table';
 import { useFloatingNavRouter } from '@/hooks/use-floating-nav-router';
-import { useTransactionsScreen } from '@/hooks/view-models/use-transactions-screen';
+import {
+  TransactionDayGroup as DayGroup,
+  useTransactionsScreen,
+} from '@/hooks/view-models/use-transactions-screen';
 import { useFocusEffect } from 'expo-router';
-import { PlusIcon } from 'phosphor-react-native';
-import { useCallback } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ReceiptIcon } from 'phosphor-react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 
 const SKELETON_COUNT = 6;
+
+type Filter = 'all' | 'in' | 'out' | 'inv';
+
+function rowMatches(t: ITransactionsTRow, filter: Filter): boolean {
+  switch (filter) {
+    case 'in':
+      return (
+        t.category_type === 'income' ||
+        (t.category_type == null && t.value >= 0)
+      );
+    case 'out':
+      return (
+        t.category_type === 'outcome' ||
+        (t.category_type == null && t.value < 0)
+      );
+    case 'inv':
+      return t.invoice_id != null;
+    default:
+      return true;
+  }
+}
 
 export default function TransactionsScreen() {
   const {
@@ -26,12 +52,20 @@ export default function TransactionsScreen() {
   } = useTransactionsScreen();
   const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
   const { onTabPress } = useFloatingNavRouter();
+  const [filter, setFilter] = useState<Filter>('all');
 
   useFocusEffect(
     useCallback(() => {
       void refreshTransactions();
     }, [refreshTransactions])
   );
+
+  const visibleGroups = useMemo<DayGroup[]>(() => {
+    if (filter === 'all') return groups;
+    return groups
+      .map((g) => ({ ...g, rows: g.rows.filter((t) => rowMatches(t, filter)) }))
+      .filter((g) => g.rows.length > 0);
+  }, [groups, filter]);
 
   function openEditSheet(t: ITransactionsTRow) {
     openBottomSheet(
@@ -59,38 +93,32 @@ export default function TransactionsScreen() {
     );
   }
 
-  const hasGroups = groups.length > 0;
-  const showSkeleton = isLoading && !hasGroups;
+  const hasGroups = visibleGroups.length > 0;
+  const showSkeleton = isLoading && groups.length === 0;
   const showEmpty = !isLoading && !hasGroups;
 
   return (
-    <View className="flex-1 bg-bg pt-2">
-      <NavHeader
-        title="Transações"
-        description="Listagem  completa das movimentações"
-        right={
-          <Pressable
-            onPress={openAddSheet}
-            hitSlop={12}
-            className="h-10 w-10 items-center justify-center rounded-full bg-white"
-            style={{
-              shadowColor: '#FFFFFF',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.16,
-              shadowRadius: 14,
-              elevation: 2,
-            }}
-          >
-            <PlusIcon size={18} color="#000000" weight="bold" />
-          </Pressable>
-        }
-      />
+    <View className="flex-1 bg-bg">
+      <NavHeader title="Transações" />
+
+      <View className="py-2">
+        <FilterChips
+          value={filter}
+          onChange={setFilter}
+          chips={[
+            { id: 'all', label: 'Todas' },
+            { id: 'in', label: 'Entradas' },
+            { id: 'out', label: 'Saídas' },
+            { id: 'inv', label: 'Nota fiscal', icon: ReceiptIcon },
+          ]}
+        />
+      </View>
+
       <ScrollView
-        className="flex-1"
+        className="mt-4 flex-1"
         contentContainerStyle={{
           paddingHorizontal: 16,
-          paddingTop: 4,
-          paddingBottom: 110,
+          paddingBottom: 96,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -108,14 +136,15 @@ export default function TransactionsScreen() {
               className="text-center text-sm text-text-dim"
               style={{ fontFamily: 'Sora_400Regular' }}
             >
-              Nenhuma movimentação ainda. Escaneie uma nota fiscal ou aguarde
-              uma recorrência do dia.
+              {filter === 'all'
+                ? 'Nenhuma movimentação ainda. Escaneie uma nota fiscal ou aguarde uma recorrência do dia.'
+                : 'Nenhuma transação neste filtro.'}
             </Text>
           </Card>
         ) : null}
 
         {hasGroups
-          ? groups.map((g) => (
+          ? visibleGroups.map((g) => (
               <TransactionDayGroup
                 key={g.dateKey}
                 group={g}
@@ -126,7 +155,8 @@ export default function TransactionsScreen() {
           : null}
       </ScrollView>
 
-      <FloatingBottomNav active="tx" onTabPress={onTabPress} />
+      <Fab onPress={openAddSheet} />
+      <BottomNav active="tx" onTabPress={onTabPress} />
     </View>
   );
 }

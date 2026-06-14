@@ -1,3 +1,4 @@
+import { theme } from '@/libs/theme';
 import { cn } from '@/libs/utils';
 import { Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Pressable, Text } from 'react-native';
@@ -5,9 +6,9 @@ import { Pressable, Text } from 'react-native';
 type Tone = 'income' | 'outcome' | 'brand';
 
 const TONE_COLORS: Record<Tone, string> = {
-  income: '#3CC85F',
-  outcome: '#FF4D4D',
-  brand: '#FFFFFF',
+  income: theme.income,
+  outcome: theme.outcome,
+  brand: theme.brand,
 };
 
 interface SegItemProps {
@@ -38,13 +39,13 @@ export function SegItem({
       )}
       style={{
         height: 52,
-        borderColor: active ? color : '#2A2A2E',
+        borderColor: active ? color : theme.border,
       }}
     >
       {Icon && (
         <Icon
           size={16}
-          color={active ? color : '#9A9AA2'}
+          color={active ? color : theme.textDim}
           weight={active ? 'bold' : 'regular'}
         />
       )}
@@ -52,7 +53,7 @@ export function SegItem({
         style={{
           fontFamily: 'Sora_700Bold',
           fontSize: 14,
-          color: active ? color : '#9A9AA2',
+          color: active ? color : theme.textDim,
         }}
       >
         {label}

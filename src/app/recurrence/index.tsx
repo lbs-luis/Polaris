@@ -1,51 +1,29 @@
 import { AddRecurrentForm } from '@/components/drawer-form/recurrent/add';
 import { RecurrentDeleteBlockedForm } from '@/components/drawer-form/recurrent/delete-blocked';
 import { SameDayPromptForm } from '@/components/drawer-form/recurrent/same-day-prompt';
+import { BottomNav } from '@/components/layout/bottom-nav';
 import { NavHeader } from '@/components/layout/nav-header';
 import { DayEntriesList } from '@/components/onboarding/recurrence/day-entries-list';
-import { SegItem } from '@/components/ui/seg-item';
+import { Fab } from '@/components/ui/fab';
+import { IconTile } from '@/components/ui/icon-tile';
+import { ListGroup, ListRow } from '@/components/ui/list';
+import { Money } from '@/components/ui/money';
+import { SegmentedControl } from '@/components/ui/segmented-control';
 import { useBottomSheetContext } from '@/context/bottomsheet.context';
 import {
   IRecurrentsTRow,
   useRecurrentsTable,
 } from '@/database/tables/recurrents.table';
 import { useTransactionsTable } from '@/database/tables/transactions.table';
+import { useFloatingNavRouter } from '@/hooks/use-floating-nav-router';
 import { useRecurrentsScreen } from '@/hooks/view-models/use-recurrents-screen';
-import {
-  ArrowDownLeftIcon,
-  ArrowUpRightIcon,
-  PlusIcon,
-} from 'phosphor-react-native';
+import { theme } from '@/libs/theme';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 
 type Tab = 'income' | 'outcome';
-
-function AddNewRecurrence({
-  type,
-  onPress,
-}: {
-  type: 'income' | 'outcome';
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      className="flex-row items-center gap-3 rounded-card border-[1.5px] border-dashed border-border px-4 py-3.5"
-    >
-      <View className="h-10 w-10 items-center justify-center rounded-tile bg-surface-2">
-        <PlusIcon size={20} color="#ffffff" weight="bold" />
-      </View>
-      <Text
-        className="text-sm text-text"
-        style={{ fontFamily: 'Sora_700Bold' }}
-      >
-        Nova {type === 'income' ? 'entrada' : 'saída'} recorrente
-      </Text>
-    </Pressable>
-  );
-}
 
 export default function RecurrentsScreen() {
   const {
@@ -59,6 +37,7 @@ export default function RecurrentsScreen() {
   const { setFirstFireMonth, select: selectRecurrent } = useRecurrentsTable();
   const { set: setTransaction } = useTransactionsTable();
   const { openBottomSheet, closeBottomSheet } = useBottomSheetContext();
+  const { onTabPress } = useFloatingNavRouter();
   const [tab, setTab] = useState<Tab>('outcome');
   const router = useRouter();
 
@@ -71,6 +50,11 @@ export default function RecurrentsScreen() {
   const entries = tab === 'income' ? income : outcome;
   const categories = tab === 'income' ? incomeCategories : outcomeCategories;
   const noun = tab === 'income' ? 'entrada' : 'saída';
+
+  const total = useMemo(
+    () => entries.reduce((s, e) => s + e.base_value, 0) / 100,
+    [entries]
+  );
 
   /**
    * After save, decide whether to prompt the user about lançar hoje. The
@@ -93,8 +77,6 @@ export default function RecurrentsScreen() {
       return;
     }
 
-    // Re-fetch so we honour any installments_total the user picked, since
-    // we'll need it when announcing the parcel and inserting the first row.
     const saved = await selectRecurrent(info.recurrentId);
     const installments = saved?.installments_total ?? null;
     const month = today.getMonth() + 1;
@@ -121,8 +103,6 @@ export default function RecurrentsScreen() {
             due_day: info.day,
             category_id: info.categoryId,
           });
-          // Tell the reconciler "this month is handled" so it doesn't
-          // re-insert the same parcela tomorrow.
           await setFirstFireMonth(info.recurrentId, nextMonthKey);
           closeBottomSheet();
           await refreshRecurrents();
@@ -160,38 +140,40 @@ export default function RecurrentsScreen() {
   }
 
   return (
-    <View className="flex-1 bg-bg pt-2">
-      <NavHeader
-        back
-        title="Recorrências"
-        description="Entradas e saídas que se repetem todo mês."
-      />
+    <View className="flex-1 bg-bg">
+      <NavHeader title="Recorrências" />
 
-      <View className="px-4 pt-2">
-        <View className="flex-row gap-2">
-          <SegItem
-            icon={ArrowDownLeftIcon}
-            label="Entradas"
-            tone="income"
-            active={tab === 'income'}
-            onPress={() => setTab('income')}
-          />
-          <SegItem
-            icon={ArrowUpRightIcon}
-            label="Saídas"
-            tone="outcome"
-            active={tab === 'outcome'}
-            onPress={() => setTab('outcome')}
-          />
-        </View>
+      <View className="px-6 py-2">
+        <SegmentedControl<Tab>
+          value={tab}
+          onChange={setTab}
+          options={[
+            { id: 'income', label: 'Entradas' },
+            { id: 'outcome', label: 'Saídas' },
+          ]}
+        />
+      </View>
+
+      <View className="mt-2 px-7 py-2">
+        <Text
+          className="text-xs uppercase text-text-mute"
+          style={{ fontFamily: 'Sora_700Bold', letterSpacing: 0.6 }}
+        >
+          {tab === 'income' ? 'Recebimentos mensais' : 'Compromissos mensais'}
+        </Text>
+        <Money
+          value={total}
+          bold
+          className={`text-[28px] ${tab === 'income' ? 'text-income' : 'text-text'}`}
+          style={{ letterSpacing: -0.6, marginTop: 8 }}
+        />
       </View>
 
       <ScrollView
-        className="my-3.5  flex-1"
+        className="mt-2 flex-1"
         contentContainerStyle={{
           paddingHorizontal: 16,
-          paddingTop: 6,
-          paddingBottom: 6,
+          paddingBottom: 96,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -202,10 +184,23 @@ export default function RecurrentsScreen() {
           onDelete={handleDelete}
           onRowPress={(item) => router.push(`/recurrence/${item.id}`)}
         />
+
+        {/* History — natural end of the list, within thumb reach */}
+        <View className="mt-4">
+          <ListGroup>
+            <ListRow
+              left={<IconTile icon={CheckCircleIcon} color={theme.income} />}
+              title="Concluídas"
+              sub="Parcelamentos quitados e contratos encerrados"
+              chevron
+              onPress={() => router.push('/recurrence/concluded')}
+            />
+          </ListGroup>
+        </View>
       </ScrollView>
-      <View className=" px-4 pb-4">
-        <AddNewRecurrence onPress={() => openDrawer()} type={tab} />
-      </View>
+
+      <Fab onPress={() => openDrawer()} />
+      <BottomNav active="rec" onTabPress={onTabPress} />
     </View>
   );
 }

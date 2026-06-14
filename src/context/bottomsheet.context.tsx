@@ -80,15 +80,15 @@ export const BottomSheetProvider: FC<PropsWithChildren> = ({ children }) => {
         enablePanDownToClose
         onChange={handleSheetChanges}
         backgroundStyle={{
-          backgroundColor: '#0E0E10',
-          borderTopLeftRadius: 26,
-          borderTopRightRadius: 26,
+          backgroundColor: '#000000',
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
           elevation: 9,
         }}
         handleIndicatorStyle={{
-          width: 44,
+          width: 40,
           height: 4,
-          backgroundColor: '#26262A',
+          backgroundColor: '#2E2E33',
         }}
       >
         <BottomSheetScrollView>

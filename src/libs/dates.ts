@@ -30,6 +30,21 @@ export const MONTH_NAMES = [
 
 const WEEKDAY_SHORT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
 
+const WEEKDAY_LONG = [
+  'domingo',
+  'segunda-feira',
+  'terça-feira',
+  'quarta-feira',
+  'quinta-feira',
+  'sexta-feira',
+  'sábado',
+];
+
+/** Formats a date as "14/06 segunda-feira" for the home greeting. */
+export function formatDayWithWeekday(date: Date): string {
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)} ${WEEKDAY_LONG[date.getDay()]}`;
+}
+
 /**
  * Returns "Hoje", "Ontem", or "Sex, 12 Mai" based on how recent the date is.
  * Always interprets the date in the user's local timezone.

@@ -48,8 +48,8 @@ export function SefazNotification() {
     const pct =
       state.total > 0 ? Math.round((state.done / state.total) * 100) : 0;
     return (
-      <View className="mx-4 mt-3 flex-row items-center gap-2.5 rounded-tile border border-border-subtle bg-surface p-2.5">
-        <View className="h-7 w-7 items-center justify-center rounded-lg bg-surface-2">
+      <View className="flex-row items-center gap-3 rounded-[18px] bg-surface p-3.5">
+        <View className="h-9 w-9 items-center justify-center rounded-xl bg-surface-2">
           <Spinner />
         </View>
         <View className="flex-1">
@@ -82,9 +82,9 @@ export function SefazNotification() {
   // status === 'done'
   const success = state.results.filter((r) => r[0] !== null).length;
   return (
-    <View className="mx-4 mt-3 flex-row items-center gap-2.5 rounded-tile border border-border-subtle bg-surface p-2.5">
-      <View className="h-7 w-7 items-center justify-center rounded-lg bg-income">
-        <CheckIcon size={16} color="#FFFFFF" weight="bold" />
+    <View className="flex-row items-center gap-3 rounded-[18px] bg-surface p-3.5">
+      <View className="h-9 w-9 items-center justify-center rounded-xl bg-income">
+        <CheckIcon size={18} color="#FFFFFF" weight="bold" />
       </View>
       <View className="flex-1">
         <Text

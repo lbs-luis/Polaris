@@ -45,7 +45,7 @@ export function TransactionListRow({
   );
 
   const valueClass =
-    signedValue >= 0 ? 'text-sm text-income' : 'text-sm text-text';
+    signedValue >= 0 ? 'text-[15px] text-income' : 'text-[15px] text-text';
 
   return (
     <SwipeableRow
@@ -56,30 +56,31 @@ export function TransactionListRow({
     >
       <Pressable
         onPress={() => router.push(`/transactions/${transaction.id}`)}
-        className={`flex-row items-center gap-3 bg-surface px-3.5 py-3 ${rowRadiusClass(index, total)} ${index === 0 ? '' : 'border-t border-border-subtle'}`}
+        className={`flex-row items-center gap-3.5 bg-surface px-[18px] py-[15px] ${rowRadiusClass(index, total)} ${index === 0 ? '' : 'border-t border-border-subtle'}`}
       >
         {isCatKind(transaction.category_icon) ? (
-          <CatIcon kind={transaction.category_icon} size={36} />
+          <CatIcon kind={transaction.category_icon} size={44} />
         ) : (
-          <View className="h-9 w-9 items-center justify-center rounded-tile bg-surface-2">
+          <View className="h-11 w-11 items-center justify-center rounded-tile bg-surface-2">
             <Text
-              className="text-xs text-text-dim"
+              className="text-sm text-text-dim"
               style={{ fontFamily: 'Sora_700Bold' }}
             >
               {transaction.description?.[0]?.toUpperCase() ?? '?'}
             </Text>
           </View>
         )}
-        <View className="flex-1">
+        <View className="min-w-0 flex-1">
           <Text
             numberOfLines={1}
-            className="text-sm text-text"
-            style={{ fontFamily: 'Sora_700Bold' }}
+            className="text-base text-text"
+            style={{ fontFamily: 'Sora_600SemiBold', letterSpacing: -0.1 }}
           >
             {transaction.description ?? 'Sem descrição'}
           </Text>
           <Text
-            className="mt-0.5 text-xs text-text-dim"
+            numberOfLines={1}
+            className="mt-0.5 text-[13.5px] text-text-dim"
             style={{ fontFamily: 'Sora_400Regular' }}
           >
             {subtitle}

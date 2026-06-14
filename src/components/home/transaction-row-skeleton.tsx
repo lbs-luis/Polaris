@@ -32,27 +32,30 @@ export function TransactionRowSkeleton({
   const pulseStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
   return (
-    <View
-      className={`flex-row items-center gap-3 px-3.5 py-3 ${isFirst ? '' : 'border-t border-border-subtle'}`}
-    >
-      <Animated.View
-        style={pulseStyle}
-        className="h-9 w-9 rounded-tile bg-surface-2"
-      />
-      <View className="flex-1 gap-1.5">
+    <View className="bg-surface">
+      {!isFirst ? (
+        <View className="h-px bg-border-subtle" style={{ marginLeft: 74 }} />
+      ) : null}
+      <View className="flex-row items-center gap-3.5 px-[18px] py-[15px]">
         <Animated.View
           style={pulseStyle}
-          className="h-3 w-40 rounded bg-surface-2"
+          className="h-11 w-11 rounded-tile bg-surface-2"
         />
+        <View className="flex-1 gap-1.5">
+          <Animated.View
+            style={pulseStyle}
+            className="h-3 w-40 rounded bg-surface-2"
+          />
+          <Animated.View
+            style={pulseStyle}
+            className="h-2.5 w-24 rounded bg-surface-2"
+          />
+        </View>
         <Animated.View
           style={pulseStyle}
-          className="h-2.5 w-24 rounded bg-surface-2"
+          className="h-3.5 w-16 rounded bg-surface-2"
         />
       </View>
-      <Animated.View
-        style={pulseStyle}
-        className="h-3.5 w-16 rounded bg-surface-2"
-      />
     </View>
   );
 }

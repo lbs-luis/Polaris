@@ -18,14 +18,16 @@ export function TransactionDayGroup({
 }: TransactionDayGroupProps) {
   const net = group.netCents / 100;
   const netClass =
-    group.netCents >= 0 ? 'text-xs text-income' : 'text-xs text-text-dim';
+    group.netCents >= 0
+      ? 'text-[13px] text-income'
+      : 'text-[13px] text-text-dim';
 
   return (
-    <View className="mb-4">
-      <View className="flex-row items-center justify-between px-1 pb-2">
+    <View className="mb-5">
+      <View className="flex-row items-baseline justify-between px-2.5 pb-2.5">
         <Text
-          className="text-sm text-text"
-          style={{ fontFamily: 'Sora_700Bold' }}
+          className="text-xs uppercase text-text-mute"
+          style={{ fontFamily: 'Sora_700Bold', letterSpacing: 0.6 }}
         >
           {group.label}
         </Text>

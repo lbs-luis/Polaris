@@ -44,8 +44,7 @@ export function AddRecurrenceForm({
     ICategoriesTRow | undefined
   >(initialCategory);
 
-  const isDisabled =
-    !day || !selectedCategory || !baseValue.trim() || isSaving;
+  const isDisabled = !day || !selectedCategory || !baseValue.trim() || isSaving;
 
   async function handleSave() {
     if (isDisabled || !day || !selectedCategory) return;

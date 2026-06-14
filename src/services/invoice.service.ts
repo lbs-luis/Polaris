@@ -1,9 +1,6 @@
 export interface InvoiceItem {
   desc: string;
-  code: string;
   qty: number;
-  unit: number; // centavos
-  total: number; // centavos
 }
 
 export interface ParsedInvoice {
@@ -50,23 +47,19 @@ function extractSefazError(html: string): string | null {
   return null;
 }
 
+// SEFAZ exposes a description and quantity per item, but not a reliable
+// per-product price, so we only keep name + quantity.
 function parseItems(html: string): InvoiceItem[] {
   const rows = [...html.matchAll(/<tr id="Item[^"]*">([\s\S]*?)<\/tr>/gi)];
   return rows.map((row) => {
     const content = row[1];
-    const desc = content.match(/class="txtTit">([^<]+)/)?.[1]?.trim() ?? '';
-    const code = content.match(/\(Código:\s*(\d+)\s*\)/)?.[1]?.trim() ?? '';
-    const qty = content.match(/Qtde\.:?<\/strong>([^<]+)/)?.[1]?.trim() ?? '1';
-    const unit =
-      content.match(/Vl\. Unit\.:?<\/strong>[^>]*>?([^<]+)/)?.[1]?.trim() ??
-      '0';
-    const total = content.match(/class="valor">([^<]+)/)?.[1]?.trim() ?? '0';
+    const description =
+      content.match(/class="txtTit">([^<]+)/)?.[1]?.trim() ?? '';
+    const quantity =
+      content.match(/Qtde\.:?<\/strong>([^<]+)/)?.[1]?.trim() ?? '1';
     return {
-      desc,
-      code,
-      qty: parseFloat(qty.replace(',', '.')) || 1,
-      unit: toCents(unit),
-      total: toCents(total),
+      desc: description,
+      qty: parseFloat(quantity.replace(',', '.')) || 1,
     };
   });
 }

@@ -40,9 +40,9 @@ export function useProfileScreen() {
     [set]
   );
 
-  const pickAvatar = useCallback(async () => {
+  const pickAvatar = useCallback(async (): Promise<string | null> => {
     const result = await pickImage();
-    if (!result || result.canceled) return;
+    if (!result || result.canceled) return null;
     const uri = result.assets[0].uri;
     const current = await select('avatar');
     if (current) {
@@ -55,6 +55,7 @@ export function useProfileScreen() {
     const savedUri = await saveImageToApp(uri);
     await set({ sKey: 'avatar', sValue: savedUri });
     setAvatar(savedUri);
+    return savedUri;
   }, [select, set]);
 
   return {

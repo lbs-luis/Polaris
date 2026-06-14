@@ -16,10 +16,7 @@ export function Card({
     <View
       {...rest}
       style={style}
-      className={cn(
-        'rounded-card border border-border-subtle bg-surface p-5',
-        className
-      )}
+      className={cn('rounded-card bg-surface p-5', className)}
     >
       {children}
     </View>

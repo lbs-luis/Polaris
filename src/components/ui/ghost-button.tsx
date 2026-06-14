@@ -15,7 +15,7 @@ export function GhostButton({
     <TouchableOpacity
       {...props}
       className={cn(
-        'h-14 w-full flex-row items-center justify-center gap-2 rounded-2xl border-[1.5px] border-border bg-transparent',
+        'h-14 w-full flex-row items-center justify-center gap-2 rounded-full border-[1.5px] border-border bg-transparent',
         className
       )}
     >

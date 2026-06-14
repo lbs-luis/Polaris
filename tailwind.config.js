@@ -5,25 +5,27 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // True-black canvas; cards are tone-lifted (One UI elevation-by-tone,
+        // no borders) so they read on black without hairlines.
         bg: '#000000',
         surface: {
-          DEFAULT: '#0E0E10',
-          2: '#18181B',
-          3: '#26262A',
+          DEFAULT: '#161618', // cards / list groups
+          2: '#212124', // inner chips, inputs, nested blocks
+          3: '#2E2E33', // tracks, pressed
         },
         border: {
-          DEFAULT: '#2A2A2E',
-          subtle: '#1B1B1F',
+          DEFAULT: '#34343A',
+          subtle: '#242428', // hairline dividers only (inside groups)
         },
         text: {
           DEFAULT: '#FFFFFF',
-          dim: '#9A9AA2',
-          mute: '#5E5E66',
+          dim: '#9C9CA6',
+          mute: '#62626B',
           inverse: '#000000',
         },
         brand: {
-          DEFAULT: '#FFFFFF',
-          dark: '#E8E8EC',
+          DEFAULT: '#FFFFFF', // WHITE is the primary
+          dark: '#E8E8EC', // pressed/hover
         },
         income: '#3CC85F',
         outcome: '#FF4D4D',
@@ -52,8 +54,8 @@ module.exports = {
         },
       },
       borderRadius: {
-        card: '24px',
-        sheet: '26px',
+        card: '26px',
+        sheet: '30px',
         tile: '14px',
       },
       fontFamily: {

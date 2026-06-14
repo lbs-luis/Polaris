@@ -9,6 +9,11 @@ interface TransactionRowProps {
   isFirst?: boolean;
 }
 
+/**
+ * Canonical transaction row: CatIcon · description · time · signed amount.
+ * Matches the kit ListRow footprint (CatIcon 44, inset hairline divider) so it
+ * drops into a ListGroup and looks identical everywhere it's used.
+ */
 export function TransactionRow({ transaction, isFirst }: TransactionRowProps) {
   const signedValue =
     transaction.category_type === 'outcome'
@@ -22,41 +27,49 @@ export function TransactionRow({ transaction, isFirst }: TransactionRowProps) {
     transaction.year
   );
 
-  const valueClass =
-    signedValue >= 0 ? 'text-sm text-income' : 'text-sm text-text';
+  const valueColor = signedValue >= 0 ? 'text-income' : 'text-text';
 
   return (
-    <View
-      className={`flex-row items-center gap-3 px-3.5 py-3 ${isFirst ? '' : 'border-t border-border-subtle'}`}
-    >
-      {isCatKind(transaction.category_icon) ? (
-        <CatIcon kind={transaction.category_icon} size={36} />
-      ) : (
-        <View className="h-9 w-9 items-center justify-center rounded-tile bg-surface-2">
+    <View className="bg-surface">
+      {!isFirst ? (
+        <View className="h-px bg-border-subtle" style={{ marginLeft: 74 }} />
+      ) : null}
+      <View className="flex-row items-center gap-3.5 px-[18px] py-[15px]">
+        {isCatKind(transaction.category_icon) ? (
+          <CatIcon kind={transaction.category_icon} size={44} />
+        ) : (
+          <View className="h-11 w-11 items-center justify-center rounded-tile bg-surface-2">
+            <Text
+              className="text-sm text-text-dim"
+              style={{ fontFamily: 'Sora_700Bold' }}
+            >
+              {transaction.description?.[0]?.toUpperCase() ?? '?'}
+            </Text>
+          </View>
+        )}
+        <View className="min-w-0 flex-1">
           <Text
-            className="text-xs text-text-dim"
-            style={{ fontFamily: 'Sora_700Bold' }}
+            numberOfLines={1}
+            className="text-base text-text"
+            style={{ fontFamily: 'Sora_600SemiBold', letterSpacing: -0.1 }}
           >
-            {transaction.description?.[0]?.toUpperCase() ?? '?'}
+            {transaction.description ?? 'Sem descrição'}
+          </Text>
+          <Text
+            numberOfLines={1}
+            className="mt-0.5 text-[13.5px] text-text-dim"
+            style={{ fontFamily: 'Sora_400Regular' }}
+          >
+            {subtitle}
           </Text>
         </View>
-      )}
-      <View className="flex-1">
-        <Text
-          numberOfLines={1}
-          className="text-sm text-text"
-          style={{ fontFamily: 'Sora_700Bold' }}
-        >
-          {transaction.description ?? 'Sem descrição'}
-        </Text>
-        <Text
-          className="mt-0.5 text-xs text-text-dim"
-          style={{ fontFamily: 'Sora_400Regular' }}
-        >
-          {subtitle}
-        </Text>
+        <Money
+          value={signedValue}
+          sign
+          bold
+          className={`text-[15px] ${valueColor}`}
+        />
       </View>
-      <Money value={signedValue} sign className={valueClass} bold />
     </View>
   );
 }
